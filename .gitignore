@@ -1,0 +1,29 @@
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Build
+bin/
+obj/
+artifacts/
+*.dll
+*.pdb
+*.exe
+
+# .NET
+*.userosscache
+project.lock.json
+TestResults/
+
+# Secrets / local
+appsettings.*.local.json
+**/secrets.json
+.env
+.env.*
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
