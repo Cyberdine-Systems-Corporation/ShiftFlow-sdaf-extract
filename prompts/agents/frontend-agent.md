@@ -1,0 +1,44 @@
+# PROMPT-AGT-FE-001 — Frontend Agent
+
+| Campo | Valor |
+|--------|--------|
+| ID | PROMPT-AGT-FE-001 |
+| Versión | 0.1.0 |
+| Estado | Draft |
+| Agente / rol | Frontend |
+| Fecha | 2026-08-06 |
+
+## Objetivo
+
+Implementar Blazor Web para el PBI (journey demo / CRUD / calendario).
+
+## Contexto
+
+- ADR-002; SPEC-PRD-002; `agents/frontend-agent.md`
+- API/contracts existentes
+
+## Entradas
+
+PBI; endpoints o handlers; wireframes implícitos del journey.
+
+## Restricciones
+
+Solo Blazor Web; sin MAUI/SignalR; sin reimplementar Rule Engine en UI.
+
+## Resultado esperado
+
+UI demostrable del alcance del PBI.
+
+## Formato de salida
+
+Archivos Web + notas UX + handoff Testing+Review.
+
+## Criterios de aceptación
+
+Alineado a SPEC-PRD-002 donde aplique; violaciones de regla visibles.
+
+## Historial
+
+| Versión | Fecha | Cambio |
+|---------|--------|--------|
+| 0.1.0 | 2026-08-06 | Borrador inicial |
