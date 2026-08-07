@@ -102,3 +102,13 @@ Si .NET 10 bloquea el avance de tooling de forma material, se emitirá enmienda 
 
 - El skeleton de solución y el runbook local deben reflejar este stack.
 - Cualquier desviación material requiere nuevo ADR o enmienda de este.
+
+---
+
+## Historial
+
+| Versión / fecha | Cambio |
+|-----------------|--------|
+| 2026-08-05 | Aceptado: stack MVP con .NET 10 como TFM preferido |
+| 2026-08-07 | Contingencia activada: TFM **net9.0** (SDK .NET 9 LTS; .NET 10 no disponible entonces). |
+| 2026-08-07 | Contingencia revertida: TFM **net10.0** tras instalar SDK 10.0.302 y Docker Desktop. |

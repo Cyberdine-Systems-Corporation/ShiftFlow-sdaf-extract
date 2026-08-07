@@ -1,0 +1,40 @@
+﻿@page "/"
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>ShiftFlow</PageTitle>
+
+<h1>ShiftFlow</h1>
+<p>Skeleton del runtime local (PBI-001). Sin features de negocio.</p>
+
+@if (_apiStatus is null)
+{
+    <p>Comprobando API…</p>
+}
+else if (_error is not null)
+{
+    <p>API: no disponible (@_error)</p>
+}
+else
+{
+    <p>API: @_apiStatus</p>
+}
+
+@code {
+    private string? _apiStatus;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var client = HttpClientFactory.CreateClient("api");
+            using var response = await client.GetAsync("/api/status");
+            response.EnsureSuccessStatusCode();
+            _apiStatus = await response.Content.ReadAsStringAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+}

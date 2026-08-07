@@ -1,0 +1,20 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.4.6">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ShiftFlow.Api\ShiftFlow.Api.csproj" />
+    <ProjectReference Include="..\ShiftFlow.Web\ShiftFlow.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.4.6" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>dd3a794f-cbb0-4b14-8b5a-578dcfb6121c</UserSecretsId>
+  </PropertyGroup>
+
+</Project>

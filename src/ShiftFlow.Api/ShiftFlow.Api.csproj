@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ShiftFlow.Application\ShiftFlow.Application.csproj" />
+    <ProjectReference Include="..\ShiftFlow.Infrastructure\ShiftFlow.Infrastructure.csproj" />
+    <ProjectReference Include="..\ShiftFlow.ServiceDefaults\ShiftFlow.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>
