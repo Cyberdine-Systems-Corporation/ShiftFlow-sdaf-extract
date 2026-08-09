@@ -65,6 +65,8 @@ public static class DependencyInjection
         services.ConfigureApplicationCookie(options =>
         {
             options.Cookie.Name = "ShiftFlow.Auth";
+            options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
             options.SlidingExpiration = true;
             options.Events.OnRedirectToLogin = context =>
             {
@@ -83,6 +85,8 @@ public static class DependencyInjection
             options.AddPolicy(AuthRoles.Administrator, policy =>
                 policy.RequireRole(AuthRoles.Administrator));
         });
+
+        services.AddSingleton<AccessTokenService>();
 
         #endregion
 

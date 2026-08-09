@@ -1,0 +1,13 @@
+@page "/calendar"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = AuthRoles.Administrator)]
+@using ShiftFlow.Application.Auth
+
+<PageTitle>Calendario — ShiftFlow</PageTitle>
+
+<h1>Calendario</h1>
+<p>
+    Vista de planificación mensual (Sprint 2 / PBI-005).
+    El shell de navegación ya está listo; la asignación de turnos llegará con el Rule Engine.
+</p>
+<p><a href="/organizations">Ir a maestros (org / dept / employee / shift type)</a></p>

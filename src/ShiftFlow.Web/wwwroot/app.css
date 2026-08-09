@@ -11,6 +11,45 @@ h1:focus {
     border-bottom: 1px solid #ccc;
 }
 
+.nav-user {
+    margin-left: auto;
+    color: #444;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #0645ad;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    font: inherit;
+}
+
+.panel {
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #e5e5e5;
+}
+
+.panel h2 {
+    margin-top: 0;
+    font-size: 1.15rem;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
+}
+
+.data-table th,
+.data-table td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #ddd;
+}
+
 .auth-field {
     display: flex;
     flex-direction: column;

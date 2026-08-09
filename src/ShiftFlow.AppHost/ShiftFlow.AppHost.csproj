@@ -15,6 +15,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>dd3a794f-cbb0-4b14-8b5a-578dcfb6121c</UserSecretsId>
+    <LaunchProfileName>https</LaunchProfileName>
   </PropertyGroup>
 
 </Project>

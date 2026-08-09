@@ -40,6 +40,7 @@ try
     app.UseSerilogRequestLogging();
     app.UseHttpsRedirection();
     app.UseAuthentication();
+    app.UseShiftFlowAccessTokens();
     app.UseAuthorization();
 
     app.MapGet("/api/status", async (ShiftFlowDbContext db, CancellationToken cancellationToken) =>

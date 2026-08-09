@@ -35,8 +35,16 @@ dotnet restore ShiftFlow.sln
 Desde la raíz del repo:
 
 ```powershell
-dotnet run --project src/ShiftFlow.AppHost
+dotnet run --project src/ShiftFlow.AppHost --launch-profile https
 ```
+
+**Depurar en Visual Studio / Cursor:** proyecto de arranque = `ShiftFlow.AppHost`, perfil de lanzamiento = **`https`** (no `http`).
+
+Si usas el perfil `http`, Aspire exige `ASPIRE_ALLOW_UNSECURED_TRANSPORT=true` (ya está en ese perfil del AppHost). Sin eso verás:
+
+`The 'applicationUrl' setting must be an https address unless the 'ASPIRE_ALLOW_UNSECURED_TRANSPORT' environment variable is set to true`.
+
+No depurar solo `ShiftFlow.Web` o `ShiftFlow.Api` como arranque principal: el Web resuelve la Api vía service discovery de Aspire (`https+http://api`).
 
 Aspire levantará:
 
@@ -68,7 +76,7 @@ dotnet user-secrets set "Authentication:DemoUser:Password" "<tu-password>" --pro
 
 O variable de entorno: `Authentication__DemoUser__Password`.
 
-Login Web: `/login`. Endpoints Api: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
+Login Web: `/login` (prefill demo). Tras login: `/organizations` (CRUD maestros), detalle `/organizations/{id}`, placeholder `/calendar` (Sprint 2). Endpoints Api: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
 
 ### Maestros (PBI-003 / PBI-004)
 

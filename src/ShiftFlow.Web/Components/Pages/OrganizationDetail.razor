@@ -1,0 +1,332 @@
+@page "/organizations/{OrganizationId:guid}"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = AuthRoles.Administrator)]
+@using ShiftFlow.Application.Auth
+@using ShiftFlow.Application.Departments
+@using ShiftFlow.Application.Employees
+@using ShiftFlow.Application.Organizations
+@using ShiftFlow.Application.ShiftTypes
+@using ShiftFlow.Web.Api
+@inject MastersApiClient Api
+
+<PageTitle>@( _org?.Name ?? "Organización" ) — ShiftFlow</PageTitle>
+
+<p><a href="/organizations">← Organizaciones</a></p>
+
+@if (!string.IsNullOrEmpty(_error))
+{
+    <p class="auth-error">@_error</p>
+}
+
+@if (_org is null)
+{
+    <p>Cargando organización…</p>
+}
+else
+{
+    <h1>@_org.Name</h1>
+    <p>Estado: @(_org.IsActive ? "Activa" : "Inactiva")</p>
+
+    <section class="panel">
+        <h2>Organización</h2>
+        <div class="auth-field">
+            <label>Renombrar</label>
+            <InputText @bind-Value="_renameOrg" />
+        </div>
+        <button type="button" disabled="@_busy" @onclick="RenameOrgAsync">Guardar nombre</button>
+        <button type="button" disabled="@_busy" @onclick="ToggleOrgActiveAsync">
+            @(_org.IsActive ? "Desactivar" : "Activar")
+        </button>
+    </section>
+
+    <section class="panel">
+        <h2>Departamentos</h2>
+        <div class="auth-field">
+            <label>Nuevo departamento</label>
+            <InputText @bind-Value="_newDeptName" />
+        </div>
+        <button type="button" disabled="@_busy" @onclick="CreateDeptAsync">Crear departamento</button>
+        <table class="data-table">
+            <thead>
+                <tr><th>Nombre</th><th>Activo</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var d in _departments)
+                {
+                    <tr>
+                        <td>@d.Name</td>
+                        <td>@(d.IsActive ? "Sí" : "No")</td>
+                        <td>
+                            <button type="button" class="btn-link" disabled="@_busy" @onclick="() => ToggleDeptAsync(d)">
+                                @(d.IsActive ? "Desactivar" : "Activar")
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>Empleados</h2>
+        <div class="auth-field">
+            <label>Departamento</label>
+            <select @bind="_newEmpDeptIdText">
+                <option value="">— seleccionar —</option>
+                @foreach (var d in _departments.Where(x => x.IsActive))
+                {
+                    <option value="@d.Id">@d.Name</option>
+                }
+            </select>
+        </div>
+        <div class="auth-field">
+            <label>Nombre visible</label>
+            <InputText @bind-Value="_newEmpName" />
+        </div>
+        <div class="auth-field">
+            <label>Email (opcional)</label>
+            <InputText @bind-Value="_newEmpEmail" />
+        </div>
+        <button type="button" disabled="@_busy" @onclick="CreateEmpAsync">Crear empleado</button>
+        <table class="data-table">
+            <thead>
+                <tr><th>Nombre</th><th>Email</th><th>Departamento</th><th>Activo</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var e in _employees)
+                {
+                    <tr>
+                        <td>@e.DisplayName</td>
+                        <td>@(e.Email ?? "—")</td>
+                        <td>@DeptName(e.DepartmentId)</td>
+                        <td>@(e.IsActive ? "Sí" : "No")</td>
+                        <td>
+                            <button type="button" class="btn-link" disabled="@_busy" @onclick="() => ToggleEmpAsync(e)">
+                                @(e.IsActive ? "Desactivar" : "Activar")
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>Tipos de turno</h2>
+        <div class="auth-field">
+            <label>Nombre</label>
+            <InputText @bind-Value="_newStName" />
+        </div>
+        <div class="auth-field">
+            <label>Código (opcional)</label>
+            <InputText @bind-Value="_newStCode" />
+        </div>
+        <div class="auth-field">
+            <label>Inicio por defecto (HH:mm)</label>
+            <InputText @bind-Value="_newStStart" placeholder="08:00" />
+        </div>
+        <div class="auth-field">
+            <label>Fin por defecto (HH:mm)</label>
+            <InputText @bind-Value="_newStEnd" placeholder="15:00" />
+        </div>
+        <button type="button" disabled="@_busy" @onclick="CreateShiftTypeAsync">Crear tipo de turno</button>
+        <table class="data-table">
+            <thead>
+                <tr><th>Nombre</th><th>Código</th><th>Horario</th><th>Activo</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var s in _shiftTypes)
+                {
+                    <tr>
+                        <td>@s.Name</td>
+                        <td>@(s.Code ?? "—")</td>
+                        <td>@FormatWindow(s.DefaultStartTime, s.DefaultEndTime)</td>
+                        <td>@(s.IsActive ? "Sí" : "No")</td>
+                        <td>
+                            <button type="button" class="btn-link" disabled="@_busy" @onclick="() => ToggleShiftTypeAsync(s)">
+                                @(s.IsActive ? "Desactivar" : "Activar")
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}
+
+@code {
+    [Parameter] public Guid OrganizationId { get; set; }
+
+    private OrganizationDto? _org;
+    private IReadOnlyList<DepartmentDto> _departments = [];
+    private IReadOnlyList<EmployeeDto> _employees = [];
+    private IReadOnlyList<ShiftTypeDto> _shiftTypes = [];
+
+    private string _renameOrg = string.Empty;
+    private string _newDeptName = string.Empty;
+    private string _newEmpDeptIdText = string.Empty;
+    private string _newEmpName = string.Empty;
+    private string _newEmpEmail = string.Empty;
+    private string _newStName = string.Empty;
+    private string _newStCode = string.Empty;
+    private string _newStStart = "08:00";
+    private string _newStEnd = "15:00";
+
+    private string? _error;
+    private bool _busy;
+
+    protected override async Task OnParametersSetAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _error = null;
+        try
+        {
+            var org = await Api.GetOrganizationAsync(OrganizationId);
+            if (!org.Succeeded)
+            {
+                _error = org.Error;
+                _org = null;
+                return;
+            }
+
+            _org = org.Value;
+            _renameOrg = _org!.Name;
+            _departments = await Api.ListDepartmentsAsync(OrganizationId);
+            _employees = await Api.ListEmployeesAsync(OrganizationId);
+            _shiftTypes = await Api.ListShiftTypesAsync(OrganizationId);
+
+            if (string.IsNullOrEmpty(_newEmpDeptIdText) && _departments.Any(d => d.IsActive))
+            {
+                _newEmpDeptIdText = _departments.First(d => d.IsActive).Id.ToString();
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private string DeptName(Guid departmentId) =>
+        _departments.FirstOrDefault(d => d.Id == departmentId)?.Name ?? departmentId.ToString("N")[..8];
+
+    private static string FormatWindow(TimeOnly? start, TimeOnly? end)
+    {
+        if (start is null && end is null) return "—";
+        return $"{start?.ToString("HH:mm") ?? "?"} – {end?.ToString("HH:mm") ?? "?"}";
+    }
+
+    private async Task RenameOrgAsync()
+    {
+        await RunAsync(async () =>
+        {
+            var result = await Api.RenameOrganizationAsync(OrganizationId, _renameOrg);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            await ReloadAsync();
+        });
+    }
+
+    private async Task ToggleOrgActiveAsync()
+    {
+        if (_org is null) return;
+        await RunAsync(async () =>
+        {
+            var result = await Api.SetOrganizationActiveAsync(OrganizationId, !_org.IsActive);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            await ReloadAsync();
+        });
+    }
+
+    private async Task CreateDeptAsync()
+    {
+        await RunAsync(async () =>
+        {
+            var result = await Api.CreateDepartmentAsync(OrganizationId, _newDeptName);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            _newDeptName = string.Empty;
+            await ReloadAsync();
+        });
+    }
+
+    private async Task ToggleDeptAsync(DepartmentDto dept)
+    {
+        await RunAsync(async () =>
+        {
+            var result = await Api.SetDepartmentActiveAsync(dept.Id, !dept.IsActive);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            await ReloadAsync();
+        });
+    }
+
+    private async Task CreateEmpAsync()
+    {
+        await RunAsync(async () =>
+        {
+            if (!Guid.TryParse(_newEmpDeptIdText, out var deptId) || deptId == Guid.Empty)
+            {
+                _error = "Selecciona un departamento.";
+                return;
+            }
+
+            var email = string.IsNullOrWhiteSpace(_newEmpEmail) ? null : _newEmpEmail;
+            var result = await Api.CreateEmployeeAsync(OrganizationId, deptId, _newEmpName, email);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            _newEmpName = string.Empty;
+            _newEmpEmail = string.Empty;
+            await ReloadAsync();
+        });
+    }
+
+    private async Task ToggleEmpAsync(EmployeeDto emp)
+    {
+        await RunAsync(async () =>
+        {
+            var result = await Api.SetEmployeeActiveAsync(emp.Id, !emp.IsActive);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            await ReloadAsync();
+        });
+    }
+
+    private async Task CreateShiftTypeAsync()
+    {
+        await RunAsync(async () =>
+        {
+            TimeOnly? start = TimeOnly.TryParse(_newStStart, out var s) ? s : null;
+            TimeOnly? end = TimeOnly.TryParse(_newStEnd, out var e) ? e : null;
+            var code = string.IsNullOrWhiteSpace(_newStCode) ? null : _newStCode;
+            var result = await Api.CreateShiftTypeAsync(OrganizationId, _newStName, code, start, end);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            _newStName = string.Empty;
+            _newStCode = string.Empty;
+            await ReloadAsync();
+        });
+    }
+
+    private async Task ToggleShiftTypeAsync(ShiftTypeDto shiftType)
+    {
+        await RunAsync(async () =>
+        {
+            var result = await Api.SetShiftTypeActiveAsync(shiftType.Id, !shiftType.IsActive);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            await ReloadAsync();
+        });
+    }
+
+    private async Task RunAsync(Func<Task> action)
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            await action();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

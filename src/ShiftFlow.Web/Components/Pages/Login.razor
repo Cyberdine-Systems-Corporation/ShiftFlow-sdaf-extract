@@ -1,10 +1,12 @@
 @page "/login"
 @rendermode InteractiveServer
 @using System.Net.Http.Json
+@using System.Text.Json
 @using ShiftFlow.Application.Auth
 @using ShiftFlow.Web.Auth
 @inject IHttpClientFactory HttpClientFactory
 @inject ApiAuthenticationStateProvider AuthState
+@inject CookieContainerHolder CookieJar
 @inject NavigationManager Navigation
 
 <PageTitle>Login — ShiftFlow</PageTitle>
@@ -30,7 +32,13 @@
 </EditForm>
 
 @code {
-    private readonly LoginModel _model = new() { UserName = DemoCredentials.UserName };
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+
+    private readonly LoginModel _model = new()
+    {
+        UserName = DemoCredentials.UserName,
+        Password = DemoCredentials.DefaultDevelopmentPassword
+    };
     private string? _error;
     private bool _busy;
 
@@ -40,6 +48,7 @@
         _error = null;
         try
         {
+            CookieJar.Clear();
             var client = HttpClientFactory.CreateClient("api");
             using var response = await client.PostAsJsonAsync("/api/auth/login", new
             {
@@ -49,12 +58,58 @@
 
             if (!response.IsSuccessStatusCode)
             {
-                _error = "Credenciales inválidas.";
+                _error = $"Credenciales inválidas (HTTP {(int)response.StatusCode}).";
                 return;
             }
 
+            var payload = await response.Content.ReadFromJsonAsync<LoginResponse>(JsonOptions);
+            if (payload is null)
+            {
+                _error = "Login OK pero respuesta vacía.";
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(payload.AccessToken))
+            {
+                CookieJar.SetAccessToken(payload.AccessToken);
+            }
+
+            if (payload.SessionCookies is { Length: > 0 })
+            {
+                CookieJar.AbsorbNameValuePairs(payload.SessionCookies);
+            }
+            else if (response.Headers.NonValidated.TryGetValues("Set-Cookie", out var setCookies))
+            {
+                CookieJar.AbsorbSetCookieHeaders(setCookies, response.RequestMessage?.RequestUri);
+            }
+
+            if (string.IsNullOrWhiteSpace(CookieJar.AccessToken) && CookieJar.Count == 0)
+            {
+                _error = "Login OK pero sin accessToken ni cookie de sesión.";
+                return;
+            }
+
+            // Claims locales: el GET HTTP a páginas [Authorize] usa PassThrough (HttpContext), no solo el AuthState Blazor.
+            CookieJar.SetSession(
+                payload.UserName,
+                payload.Roles ?? [],
+                CookieJar.AccessToken);
+
             AuthState.NotifyChanged();
-            Navigation.NavigateTo("/");
+            var state = await AuthState.GetAuthenticationStateAsync();
+            if (state.User.Identity?.IsAuthenticated != true)
+            {
+                _error = "Credenciales de sesión guardadas pero /api/auth/me anónimo.";
+                return;
+            }
+
+            if (!state.User.IsInRole(AuthRoles.Administrator))
+            {
+                _error = "Sesión OK pero sin rol Administrator.";
+                return;
+            }
+
+            Navigation.NavigateTo("/organizations", forceLoad: true);
         }
         catch (Exception ex)
         {
@@ -71,4 +126,10 @@
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
+
+    private sealed record LoginResponse(
+        string UserName,
+        string[] Roles,
+        string? AccessToken,
+        string[]? SessionCookies);
 }

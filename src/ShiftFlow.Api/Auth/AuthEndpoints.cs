@@ -38,7 +38,9 @@ public static class AuthEndpoints
     private static async Task<IResult> LoginAsync(
         [FromBody] LoginRequest request,
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        AccessTokenService accessTokens,
+        HttpContext httpContext)
     {
         if (string.IsNullOrWhiteSpace(request.UserName) || string.IsNullOrWhiteSpace(request.Password))
         {
@@ -63,7 +65,35 @@ public static class AuthEndpoints
         }
 
         var roles = await userManager.GetRolesAsync(user);
-        return Results.Ok(new AuthUserResponse(user.UserName!, roles.ToArray()));
+        var accessToken = accessTokens.Issue(user.UserName!, roles.ToArray());
+        // sessionCookies: compat BFF / diagnóstico; el Web usa accessToken (Bearer).
+        var sessionCookies = ExtractSessionCookiePairs(httpContext.Response.Headers.SetCookie);
+        return Results.Ok(new AuthUserResponse(user.UserName!, roles.ToArray(), accessToken, sessionCookies));
+    }
+
+    private static string[] ExtractSessionCookiePairs(Microsoft.Extensions.Primitives.StringValues setCookieHeaders)
+    {
+        if (setCookieHeaders.Count == 0)
+        {
+            return [];
+        }
+
+        var pairs = new List<string>(setCookieHeaders.Count);
+        foreach (var header in setCookieHeaders)
+        {
+            if (string.IsNullOrWhiteSpace(header))
+            {
+                continue;
+            }
+
+            var firstSegment = header.Split(';', 2)[0].Trim();
+            if (firstSegment.Contains('=', StringComparison.Ordinal))
+            {
+                pairs.Add(firstSegment);
+            }
+        }
+
+        return pairs.ToArray();
     }
 
     private static async Task<IResult> LogoutAsync(SignInManager<ApplicationUser> signInManager)
@@ -92,9 +122,15 @@ public static class AuthEndpoints
     public sealed record LoginRequest(string UserName, string Password);
 
     /// <summary>
-    /// Usuario autenticado expuesto a clientes (nombre y roles).
+    /// Usuario autenticado expuesto a clientes (nombre, roles y credenciales de sesión BFF).
     /// </summary>
     /// <param name="UserName">Nombre de usuario.</param>
     /// <param name="Roles">Roles asignados al usuario.</param>
-    public sealed record AuthUserResponse(string UserName, string[] Roles);
+    /// <param name="AccessToken">Token Bearer para HttpClient BFF (Blazor Web).</param>
+    /// <param name="SessionCookies">Pares name=value de cookie Identity (opcional / diagnóstico).</param>
+    public sealed record AuthUserResponse(
+        string UserName,
+        string[] Roles,
+        string? AccessToken = null,
+        string[]? SessionCookies = null);
 }

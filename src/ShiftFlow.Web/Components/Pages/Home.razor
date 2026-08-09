@@ -1,23 +1,38 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Authorization
+@using ShiftFlow.Application.Auth
 @inject IHttpClientFactory HttpClientFactory
 
 <PageTitle>ShiftFlow</PageTitle>
 
 <h1>ShiftFlow</h1>
-<p>Skeleton del runtime local (PBI-001). Sin features de negocio.</p>
+<p>Planificación de turnos — runtime local. Journey demo: maestros en UI (AC-01), calendario en Sprint 2.</p>
 
-@if (_apiStatus is null)
+@if (_apiStatus is null && _error is null)
 {
     <p>Comprobando API…</p>
 }
 else if (_error is not null)
 {
-    <p>API: no disponible (@_error)</p>
+    <p class="auth-error">API: no disponible (@_error)</p>
 }
 else
 {
-    <p>API: @_apiStatus</p>
+    <p>API: ok</p>
 }
+
+<AuthorizeView Roles="@AuthRoles.Administrator">
+    <Authorized>
+        <ul>
+            <li><a href="/organizations">Organizaciones y maestros</a></li>
+            <li><a href="/calendar">Calendario (próximamente)</a></li>
+        </ul>
+    </Authorized>
+    <NotAuthorized>
+        <p><a href="/login">Iniciar sesión</a> para administrar maestros.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private string? _apiStatus;
@@ -30,7 +45,7 @@ else
             var client = HttpClientFactory.CreateClient("api");
             using var response = await client.GetAsync("/api/status");
             response.EnsureSuccessStatusCode();
-            _apiStatus = await response.Content.ReadAsStringAsync();
+            _apiStatus = "ok";
         }
         catch (Exception ex)
         {
