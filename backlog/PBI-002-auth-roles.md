@@ -4,7 +4,7 @@
 |--------|--------|
 | Sprint | 1 |
 | Prioridad | 2 |
-| Specs | SPEC-PRD-001 (C-AUTH) — ampliar con spec app/domain |
+| Specs | SPEC-PRD-001 (C-AUTH), SPEC-DOM-004, SPEC-APP-002, SPEC-ACC-001 (**Approved**) |
 | DoD | Login/usuario demo; rol que permite administrar y planificar |
 
 ## Descripción

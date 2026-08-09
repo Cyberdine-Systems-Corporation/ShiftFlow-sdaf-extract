@@ -7,10 +7,10 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 
 | Orden | ID | Título | Sprint | Specs | Estado |
 |------:|----|--------|--------|-------|--------|
-| 1 | [PBI-001](PBI-001-skeleton-solucion.md) | Skeleton solución .NET + runtime local | 0 | SPEC-PRD-001 Approved (C-LOC, C-API, C-WEB), ADR-004 | DoD cumplido (net10 + AppHost validado); pendiente merge |
-| 2 | [PBI-002](PBI-002-auth-roles.md) | Auth y roles básicos | 1 | SPEC-PRD-001 Approved (C-AUTH) | Spec dominio/app pendiente |
-| 3 | [PBI-003](PBI-003-organization-department-employee.md) | Organization, Department, Employee | 1 | SPEC-PRD-001 Approved (C-ORG…C-EMP) | Spec dominio pendiente |
-| 4 | [PBI-004](PBI-004-shift-types.md) | Shift types | 1 | SPEC-PRD-001 Approved (C-STT) | Spec dominio pendiente |
+| 1 | [PBI-001](PBI-001-skeleton-solucion.md) | Skeleton solución .NET + runtime local | 0 | SPEC-PRD-001 Approved (C-LOC, C-API, C-WEB), ADR-004 | Hecho (mergeado) |
+| 2 | [PBI-002](PBI-002-auth-roles.md) | Auth y roles básicos | 1 | SPEC-DOM-004, SPEC-APP-002, SPEC-ACC-001 Approved | Ready (Gate 0) |
+| 3 | [PBI-003](PBI-003-organization-department-employee.md) | Organization, Department, Employee | 1 | SPEC-DOM-001/002, SPEC-APP-001, SPEC-ACC-001 Approved | Ready (Gate 0) |
+| 4 | [PBI-004](PBI-004-shift-types.md) | Shift types | 1 | SPEC-DOM-003, SPEC-APP-001, SPEC-ACC-001 Approved | Ready (Gate 0) |
 | 5 | [PBI-005](PBI-005-calendar-assign-shift.md) | Calendario y asignación manual | 2 | SPEC-PRD-001/002 Approved | Spec dominio pendiente |
 | 6 | [PBI-006](PBI-006-rule-engine-v1.md) | Rule Engine v1 (3 hard rules) | 2 | SPEC-PRD-001/002 Approved, ADR-003 | Spec dominio pendiente |
 | 7 | [PBI-007](PBI-007-leaves.md) | Leaves / ausencias | 2 | SPEC-PRD-001/002 Approved (C-LEA) | Spec dominio pendiente |
@@ -20,7 +20,7 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | 11 | [PBI-011](PBI-011-ai-explain-stub.md) | Stub IA explicación de reglas | 3 | ADR-003, SPEC-PRD-001 | — |
 | 12 | [PBI-012](PBI-012-presentacion-slides-video.md) | Slides + vídeo de presentación | 3 | SPEC-PRD-001 (C-PRE) | — |
 
-Specs de producto **Approved**. Las features de negocio (PBI-002+) siguen necesitando specs de dominio/aplicación Approved (Gate 0 completo) antes de implementar.
+Specs de producto **Approved**. Specs de dominio/aplicación/aceptación del Sprint 1 (`SPEC-DOM-001…004`, `SPEC-APP-001/002`, `SPEC-ACC-001`) **Approved** — Gate 0 listo para PBI-002…004.
 
 ## Leyenda de estado Gate 0
 
