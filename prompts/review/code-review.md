@@ -4,7 +4,7 @@
 |--------|--------|
 | ID | PROMPT-REV-CODE-001 |
 | Versión | 0.1.0 |
-| Estado | Draft |
+| Estado | Approved |
 | Agente / rol | review |
 | Fecha | 2026-08-06 |
 

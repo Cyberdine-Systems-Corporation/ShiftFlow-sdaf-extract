@@ -1,10 +1,10 @@
-# PROMPT-AGT-TESTREV-001 — Testing+Review Agent
+﻿# PROMPT-AGT-TESTREV-001 — Testing+Review Agent
 
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-TESTREV-001 |
 | Versión | 0.1.1 |
-| Estado | Draft |
+| Estado | Approved |
 | Agente / rol | Testing+Review |
 | Fecha | 2026-08-06 |
 

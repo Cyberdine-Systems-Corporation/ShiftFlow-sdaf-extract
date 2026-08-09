@@ -1,10 +1,10 @@
-# PROMPT-AGT-DOMAPP-001 — Domain+Application Agent
+﻿# PROMPT-AGT-DOMAPP-001 — Domain+Application Agent
 
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-DOMAPP-001 |
 | Versión | 0.1.1 |
-| Estado | Draft |
+| Estado | Approved |
 | Agente / rol | Domain+Application |
 | Fecha | 2026-08-06 |
 

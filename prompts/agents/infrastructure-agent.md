@@ -4,7 +4,7 @@
 |--------|--------|
 | ID | PROMPT-AGT-INF-001 |
 | Versión | 0.1.0 |
-| Estado | Draft |
+| Estado | Approved |
 | Agente / rol | stub |
 | Fecha | 2026-08-06 |
 

@@ -1,9 +1,9 @@
-# AGENTS.md — Router de agentes ShiftFlow
+﻿# AGENTS.md — Router de agentes ShiftFlow
 
 | Campo | Valor |
 |--------|--------|
 | Versión | 0.1.0 |
-| Estado | Draft |
+| Estado | Approved |
 | Fecha | 2026-08-06 |
 | Norma | `handbook/13-ai-agent-framework.md`, `handbook/14-prompt-engineering-standard.md`, `handbook/15-agent-traceability.md` |
 

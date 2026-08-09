@@ -1,9 +1,9 @@
-# Testing+Review Agent
+﻿# Testing+Review Agent
 
 | Campo | Valor |
 |--------|--------|
 | Versión | 0.1.1 |
-| Estado | Draft |
+| Estado | Approved |
 | Fecha | 2026-08-09 |
 | Modo | active |
 | Prompt base | `prompts/agents/testing-review-agent.md` |

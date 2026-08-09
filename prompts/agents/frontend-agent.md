@@ -1,10 +1,10 @@
-# PROMPT-AGT-FE-001 — Frontend Agent
+﻿# PROMPT-AGT-FE-001 — Frontend Agent
 
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-FE-001 |
 | Versión | 0.1.1 |
-| Estado | Draft |
+| Estado | Approved |
 | Agente / rol | Frontend |
 | Fecha | 2026-08-09 |
 

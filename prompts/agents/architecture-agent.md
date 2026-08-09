@@ -1,10 +1,10 @@
-# PROMPT-AGT-ARCH-001 — Architecture Agent
+﻿# PROMPT-AGT-ARCH-001 — Architecture Agent
 
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-ARCH-001 |
 | Versión | 0.1.0 |
-| Estado | Draft |
+| Estado | Approved |
 | Agente / rol | Architecture |
 | Fecha | 2026-08-06 |
 

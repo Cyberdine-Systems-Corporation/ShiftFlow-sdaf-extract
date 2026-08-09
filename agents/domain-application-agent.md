@@ -1,9 +1,9 @@
-# Domain+Application Agent
+﻿# Domain+Application Agent
 
 | Campo | Valor |
 |--------|--------|
 | Versión | 0.1.1 |
-| Estado | Draft |
+| Estado | Approved |
 | Fecha | 2026-08-06 |
 | Modo | active |
 | Prompt base | `prompts/agents/domain-application-agent.md` |

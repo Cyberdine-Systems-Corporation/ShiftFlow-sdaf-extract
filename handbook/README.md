@@ -103,7 +103,7 @@ Los **prompts** y **worklogs** son infraestructura de ingeniería, no sustituyen
 |------|---------|--------|--------|
 | A | [A-glossary.md](A-glossary.md) | Glossary | Approved |
 | B | [B-templates.md](B-templates.md) | Templates | Approved |
-| — | [CHANGELOG.md](CHANGELOG.md) | Historial de versiones | Draft |
+| — | [CHANGELOG.md](CHANGELOG.md) | Historial de versiones | Approved |
 
 ---
 

@@ -14,4 +14,4 @@ Router de agentes: [`AGENTS.md`](../AGENTS.md).
 | `documentation/` | handbook, specification, adr authors |
 | `quality/` | testing-strategy, quality-gates |
 
-Todo prompt en **Draft** hasta aprobación humana. Citar `ID@version` en worklogs.
+Los prompts de la biblioteca están **Approved** tras revisión humana (2026-08-09). Citar `ID@version` en worklogs.

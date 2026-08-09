@@ -1,10 +1,10 @@
-# PROMPT-SYS-001 — Master Architect
+﻿# PROMPT-SYS-001 — Master Architect
 
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-SYS-001 |
 | Versión | 0.1.0 |
-| Estado | Draft |
+| Estado | Approved |
 | Agente / rol | Director técnico / System |
 | Fecha | 2026-08-06 |
 

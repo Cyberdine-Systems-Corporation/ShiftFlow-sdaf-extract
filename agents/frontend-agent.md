@@ -1,9 +1,9 @@
-# Frontend Agent
+﻿# Frontend Agent
 
 | Campo | Valor |
 |--------|--------|
 | Versión | 0.1.0 |
-| Estado | Draft |
+| Estado | Approved |
 | Fecha | 2026-08-06 |
 | Modo | active |
 | Prompt base | `prompts/agents/frontend-agent.md` |
