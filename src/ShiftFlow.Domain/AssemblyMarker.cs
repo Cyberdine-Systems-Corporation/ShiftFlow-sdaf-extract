@@ -1,6 +1,6 @@
 namespace ShiftFlow.Domain;
 
 /// <summary>
-/// Marcador de ensamblado del dominio WorkforceScheduling (sin entidades de negocio en el skeleton).
+/// Marcador de ensamblado del dominio WorkforceScheduling.
 /// </summary>
 public static class AssemblyMarker;

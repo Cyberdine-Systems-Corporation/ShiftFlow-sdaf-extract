@@ -4,11 +4,18 @@ using ShiftFlow.Infrastructure.Persistence;
 
 namespace ShiftFlow.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// Adaptador EF Core del puerto <see cref="IShiftTypeRepository"/>.
+/// </summary>
 public sealed class ShiftTypeRepository(ShiftFlowDbContext db) : IShiftTypeRepository
 {
+    #region Queries
+
+    /// <inheritdoc />
     public Task<ShiftType?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         db.ShiftTypes.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+    /// <inheritdoc />
     public async Task<IReadOnlyList<ShiftType>> ListByOrganizationAsync(
         Guid organizationId,
         CancellationToken cancellationToken = default) =>
@@ -17,6 +24,7 @@ public sealed class ShiftTypeRepository(ShiftFlowDbContext db) : IShiftTypeRepos
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
 
+    /// <inheritdoc />
     public Task<bool> ExistsWithNameAsync(
         Guid organizationId,
         string name,
@@ -31,6 +39,7 @@ public sealed class ShiftTypeRepository(ShiftFlowDbContext db) : IShiftTypeRepos
             cancellationToken);
     }
 
+    /// <inheritdoc />
     public Task<bool> ExistsWithCodeAsync(
         Guid organizationId,
         string code,
@@ -46,6 +55,13 @@ public sealed class ShiftTypeRepository(ShiftFlowDbContext db) : IShiftTypeRepos
             cancellationToken);
     }
 
+    #endregion
+
+    #region Commands
+
+    /// <inheritdoc />
     public async Task AddAsync(ShiftType shiftType, CancellationToken cancellationToken = default) =>
         await db.ShiftTypes.AddAsync(shiftType, cancellationToken);
+
+    #endregion
 }

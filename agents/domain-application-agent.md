@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.1.0 |
+| Versión | 0.1.1 |
 | Estado | Draft |
 | Fecha | 2026-08-06 |
 | Modo | active |
@@ -37,6 +37,7 @@ Implementar aggregates, Rule Engine v1 / Scheduling y vertical slices CQRS deriv
 - [ ] Spec Approved citada
 - [ ] Slice command/query coherente
 - [ ] Reglas en Domain
+- [ ] ADR-006 (regiones, comentarios de impacto, XML docs)
 - [ ] Worklog
 
 ## KPIs
@@ -45,7 +46,7 @@ Implementar aggregates, Rule Engine v1 / Scheduling y vertical slices CQRS deriv
 
 ## Definition of Done
 
-Slice compilable alineado a spec; handoff Frontend y/o Testing+Review.
+Slice compilable alineado a spec y ADR-006; handoff Frontend y/o Testing+Review.
 
 ## Prompt base
 

@@ -1,0 +1,39 @@
+---
+description: Estándares C# ShiftFlow (ADR-006) — regiones, comentarios y XML docs
+globs: src/**/*.cs
+alwaysApply: false
+---
+
+# Coding standards C# (ADR-006)
+
+Al editar código bajo `src/`:
+
+## Regiones
+
+En tipos no triviales (aggregates, handlers multi-método, endpoint maps, repositorios), usa `#region` / `#endregion` con fronteras conceptuales:
+
+- Domain: `Factory`, `Behavior`, `Invariants`
+- Application: `Commands`, `Queries`, `Handlers` (si el archivo agrupa varios)
+- Api: `Endpoints`, `Contracts`
+- Infrastructure: `Configuration`, `Repositories`
+
+Prohibido: regiones “misc”, “helpers” cajón de sastre, o envolver una sola línea sin frontera real.
+
+## Comentarios
+
+- Castellano.
+- Solo lógica de alto impacto o no obvia (invariantes sutiles, trade-offs, porqués).
+- No narrar lo que el nombre del símbolo ya dice.
+
+## XML docs
+
+Obligatorio en miembros `public` e `internal` visibles:
+
+- `<summary>` siempre
+- `<param>`, `<returns>`, `<exception>` cuando aporten
+
+El build de `src/` trata `CS1591` como error (`Directory.Build.props`). Sin docs no hay commit/PR válido.
+
+Identificadores en inglés idiomático .NET; comentarios/docs en castellano.
+
+Norma: `architecture/decisions/ADR-006-coding-standards.md` y checklist `handbook/17-code-review-and-quality-gates.md`.

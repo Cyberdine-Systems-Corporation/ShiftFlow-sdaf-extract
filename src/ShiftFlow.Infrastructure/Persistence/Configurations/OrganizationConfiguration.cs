@@ -4,8 +4,15 @@ using ShiftFlow.Domain.Organizations;
 
 namespace ShiftFlow.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Mapeo Fluent API de <see cref="Organization"/>.
+/// </summary>
 public sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
 {
+    /// <summary>
+    /// Configura tabla, clave y propiedades de organización.
+    /// </summary>
+    /// <param name="builder">Constructor de la entidad.</param>
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
         builder.ToTable("Organizations");

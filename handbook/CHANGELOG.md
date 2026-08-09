@@ -2,6 +2,7 @@
 
 | Versión handbook | Fecha | Cambio |
 |------------------|--------|--------|
+| 1.0.1 | 2026-08-09 | Cap. 17 v0.1.2 + ADR-006 (regiones, XML docs, QG-Docs) |
 | 1.0.0 | 2026-08-05 | Handbook completo Approved: caps. 10–19, A–B (Partes III–VI + apéndices) |
 | 0.1.14 | 2026-08-05 | H8 Draft: caps. 16–19, A–B |
 | 0.1.13 | 2026-08-05 | H7 Draft: `13-ai-agent-framework.md`, `14-prompt-engineering-standard.md`, `15-agent-traceability.md` |

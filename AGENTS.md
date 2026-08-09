@@ -56,7 +56,8 @@ El saliente cierra worklog con “siguiente agente”. El entrante lee worklog +
 - Biblioteca: [prompts/README.md](prompts/README.md)
 - Worklogs: `worklogs/` (ATF)
 - Idioma: castellano (`.cursor/rules/idioma-castellano.mdc`)
+- Coding standards C#: ADR-006 + `.cursor/rules/coding-standards-csharp.mdc` (`CS1591` error en `src/`)
 
 ## Restricciones globales
 
-Ningún agente: aprueba handbook/specs por sí solo; salta Gate 0; implementa alcance Out del MVP; introduce secretos; reescribe historia git sin orden humana.
+Ningún agente: aprueba handbook/specs por sí solo; salta Gate 0; implementa alcance Out del MVP; introduce secretos; reescribe historia git sin orden humana; entrega diff de `src/` sin cumplir ADR-006.

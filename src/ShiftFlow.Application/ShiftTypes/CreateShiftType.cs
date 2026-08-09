@@ -6,6 +6,14 @@ using ShiftFlow.Domain.ShiftTypes;
 
 namespace ShiftFlow.Application.ShiftTypes;
 
+/// <summary>
+/// Comando para dar de alta un tipo de turno en una organización.
+/// </summary>
+/// <param name="OrganizationId">Organización propietaria del tipo de turno.</param>
+/// <param name="Name">Nombre del tipo de turno.</param>
+/// <param name="Code">Código opcional único en la organización.</param>
+/// <param name="DefaultStartTime">Hora de inicio por defecto opcional.</param>
+/// <param name="DefaultEndTime">Hora de fin por defecto opcional.</param>
 public sealed record CreateShiftTypeCommand(
     Guid OrganizationId,
     string Name,
@@ -13,6 +21,16 @@ public sealed record CreateShiftTypeCommand(
     TimeOnly? DefaultStartTime,
     TimeOnly? DefaultEndTime) : IRequest<ShiftTypeDto>;
 
+/// <summary>
+/// DTO de lectura de un tipo de turno.
+/// </summary>
+/// <param name="Id">Identificador del tipo de turno.</param>
+/// <param name="OrganizationId">Organización a la que pertenece.</param>
+/// <param name="Name">Nombre del tipo de turno.</param>
+/// <param name="Code">Código opcional.</param>
+/// <param name="DefaultStartTime">Hora de inicio por defecto opcional.</param>
+/// <param name="DefaultEndTime">Hora de fin por defecto opcional.</param>
+/// <param name="IsActive">Indica si el tipo de turno está activo.</param>
 public sealed record ShiftTypeDto(
     Guid Id,
     Guid OrganizationId,
@@ -22,11 +40,21 @@ public sealed record ShiftTypeDto(
     TimeOnly? DefaultEndTime,
     bool IsActive);
 
+/// <summary>
+/// Handler que crea un tipo de turno validando organización y unicidad de nombre/código.
+/// </summary>
 public sealed class CreateShiftTypeHandler(
     IOrganizationRepository organizations,
     IShiftTypeRepository shiftTypes,
     IUnitOfWork unitOfWork) : IRequestHandler<CreateShiftTypeCommand, ShiftTypeDto>
 {
+    /// <summary>
+    /// Ejecuta el alta del tipo de turno.
+    /// </summary>
+    /// <param name="request">Comando con datos del tipo de turno.</param>
+    /// <param name="cancellationToken">Token de cancelación.</param>
+    /// <returns>DTO del tipo de turno creado.</returns>
+    /// <exception cref="NotFoundException">Si la organización no existe.</exception>
     public async Task<ShiftTypeDto> Handle(
         CreateShiftTypeCommand request,
         CancellationToken cancellationToken)
@@ -55,6 +83,11 @@ public sealed class CreateShiftTypeHandler(
         return ToDto(shiftType);
     }
 
+    /// <summary>
+    /// Mapea el agregado de tipo de turno a su DTO de aplicación.
+    /// </summary>
+    /// <param name="shiftType">Agregado de dominio.</param>
+    /// <returns>DTO equivalente.</returns>
     internal static ShiftTypeDto ToDto(ShiftType shiftType) =>
         new(
             shiftType.Id,
@@ -65,6 +98,15 @@ public sealed class CreateShiftTypeHandler(
             shiftType.DefaultEndTime,
             shiftType.IsActive);
 
+    /// <summary>
+    /// Garantiza unicidad de nombre y, si aplica, de código dentro de la organización.
+    /// </summary>
+    /// <param name="shiftTypes">Repositorio de tipos de turno.</param>
+    /// <param name="organizationId">Organización donde se comprueba la unicidad.</param>
+    /// <param name="name">Nombre candidato.</param>
+    /// <param name="code">Código candidato; se ignora si es nulo o vacío.</param>
+    /// <param name="excludingShiftTypeId">Tipo a excluir (p. ej. en actualización).</param>
+    /// <param name="cancellationToken">Token de cancelación.</param>
     internal static async Task EnsureUniquenessAsync(
         IShiftTypeRepository shiftTypes,
         Guid organizationId,

@@ -17,10 +17,21 @@ using ShiftFlow.Infrastructure.Persistence.Repositories;
 
 namespace ShiftFlow.Infrastructure;
 
+/// <summary>
+/// Registro de servicios de la capa Infrastructure en el contenedor DI.
+/// </summary>
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Registra persistencia EF Core, repositorios, Identity y políticas de autorización.
+    /// </summary>
+    /// <param name="services">Colección de servicios de la aplicación anfitriona.</param>
+    /// <param name="configuration">Configuración (cadena de conexión e Identity).</param>
+    /// <returns>La misma colección para encadenar registros.</returns>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        #region Persistence
+
         var connectionString = configuration.GetConnectionString("shiftflow")
             ?? configuration.GetConnectionString("ShiftFlow")
             ?? "Host=localhost;Port=5432;Database=shiftflow;Username=shiftflow;Password=shiftflow";
@@ -33,6 +44,10 @@ public static class DependencyInjection
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IShiftTypeRepository, ShiftTypeRepository>();
+
+        #endregion
+
+        #region Auth
 
         services
             .AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -68,6 +83,8 @@ public static class DependencyInjection
             options.AddPolicy(AuthRoles.Administrator, policy =>
                 policy.RequireRole(AuthRoles.Administrator));
         });
+
+        #endregion
 
         return services;
     }

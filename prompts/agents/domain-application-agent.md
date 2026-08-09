@@ -3,7 +3,7 @@
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-DOMAPP-001 |
-| Versión | 0.1.0 |
+| Versión | 0.1.1 |
 | Estado | Draft |
 | Agente / rol | Domain+Application |
 | Fecha | 2026-08-06 |
@@ -35,10 +35,11 @@ Resumen de cambios + archivos + handoff Frontend/Testing+Review.
 
 ## Criterios de aceptación
 
-Invariantes en Domain; command/query separados; worklog citado `PROMPT-AGT-DOMAPP-001@0.1.0`.
+Invariantes en Domain; command/query separados; worklog citado `PROMPT-AGT-DOMAPP-001@0.1.1`; cumplimiento **ADR-006** (regiones conceptuales, comentarios de impacto, XML docs; build sin CS1591).
 
 ## Historial
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-09 | ADR-006 legibilidad / XML docs |
 | 0.1.0 | 2026-08-06 | Borrador inicial |

@@ -4,8 +4,15 @@ using ShiftFlow.Domain.Employees;
 
 namespace ShiftFlow.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Mapeo Fluent API de <see cref="Employee"/>.
+/// </summary>
 public sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 {
+    /// <summary>
+    /// Configura tabla, índices y propiedades de empleado.
+    /// </summary>
+    /// <param name="builder">Constructor de la entidad.</param>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
         builder.ToTable("Employees");

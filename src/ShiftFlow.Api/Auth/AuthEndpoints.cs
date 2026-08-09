@@ -6,8 +6,16 @@ using ShiftFlow.Infrastructure.Identity;
 
 namespace ShiftFlow.Api.Auth;
 
+/// <summary>
+/// Endpoints mínimos de autenticación cookie (login, logout y sesión actual).
+/// </summary>
 public static class AuthEndpoints
 {
+    /// <summary>
+    /// Registra el grupo <c>/api/auth</c>.
+    /// </summary>
+    /// <param name="endpoints">Builder de rutas de la aplicación.</param>
+    /// <returns>El mismo <paramref name="endpoints"/> para encadenar.</returns>
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/api/auth").WithTags("Auth");
@@ -76,7 +84,17 @@ public static class AuthEndpoints
         return Results.Ok(new AuthUserResponse(userName, roles));
     }
 
+    /// <summary>
+    /// Cuerpo de solicitud de inicio de sesión.
+    /// </summary>
+    /// <param name="UserName">Nombre de usuario Identity.</param>
+    /// <param name="Password">Contraseña en claro (solo transporte HTTPS).</param>
     public sealed record LoginRequest(string UserName, string Password);
 
+    /// <summary>
+    /// Usuario autenticado expuesto a clientes (nombre y roles).
+    /// </summary>
+    /// <param name="UserName">Nombre de usuario.</param>
+    /// <param name="Roles">Roles asignados al usuario.</param>
     public sealed record AuthUserResponse(string UserName, string[] Roles);
 }

@@ -10,8 +10,18 @@ using ShiftFlow.Domain.Common;
 
 namespace ShiftFlow.Api.Masters;
 
+/// <summary>
+/// Endpoints HTTP de maestros: organizaciones, departamentos, empleados y tipos de turno.
+/// </summary>
 public static class MasterDataEndpoints
 {
+    #region Endpoints
+
+    /// <summary>
+    /// Registra las rutas de maestros bajo <c>/api</c> (rol Administrator).
+    /// </summary>
+    /// <param name="endpoints">Builder de rutas de la aplicación.</param>
+    /// <returns>El mismo <paramref name="endpoints"/> para encadenar.</returns>
     public static IEndpointRouteBuilder MapMasterDataEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var orgs = endpoints.MapGroup("/api/organizations")
@@ -264,17 +274,50 @@ public static class MasterDataEndpoints
         }
     }
 
+    #endregion
+
+    #region Contracts
+
+    /// <summary>
+    /// Cuerpo con un nombre de entidad maestra.
+    /// </summary>
+    /// <param name="Name">Nombre; nulo se trata como vacío en el handler.</param>
     public sealed record NameBody(string? Name);
 
+    /// <summary>
+    /// Cuerpo para activar o desactivar una entidad.
+    /// </summary>
+    /// <param name="IsActive">Nuevo estado de activación.</param>
     public sealed record ActiveBody(bool IsActive);
 
+    /// <summary>
+    /// Cuerpo de alta de empleado.
+    /// </summary>
+    /// <param name="DepartmentId">Departamento destino.</param>
+    /// <param name="DisplayName">Nombre visible.</param>
+    /// <param name="Email">Correo opcional.</param>
     public sealed record CreateEmployeeBody(Guid DepartmentId, string? DisplayName, string? Email);
 
+    /// <summary>
+    /// Cuerpo de actualización de empleado.
+    /// </summary>
+    /// <param name="DepartmentId">Departamento destino.</param>
+    /// <param name="DisplayName">Nombre visible.</param>
+    /// <param name="Email">Correo opcional.</param>
     public sealed record UpdateEmployeeBody(Guid DepartmentId, string? DisplayName, string? Email);
 
+    /// <summary>
+    /// Cuerpo de alta o actualización de tipo de turno.
+    /// </summary>
+    /// <param name="Name">Nombre del tipo.</param>
+    /// <param name="Code">Código opcional.</param>
+    /// <param name="DefaultStartTime">Hora de inicio por defecto.</param>
+    /// <param name="DefaultEndTime">Hora de fin por defecto.</param>
     public sealed record ShiftTypeBody(
         string? Name,
         string? Code,
         TimeOnly? DefaultStartTime,
         TimeOnly? DefaultEndTime);
+
+    #endregion
 }

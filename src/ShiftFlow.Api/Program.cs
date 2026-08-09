@@ -70,4 +70,7 @@ finally
     Log.CloseAndFlush();
 }
 
+/// <summary>
+/// Punto de entrada parcial de la Api (visible para tests de integración).
+/// </summary>
 public partial class Program;

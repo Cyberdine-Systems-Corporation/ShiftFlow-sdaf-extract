@@ -7,6 +7,7 @@
 | [ADR-003](ADR-003-motores-planificacion-mvp.md) | Motores de planificación del MVP | Aceptado |
 | [ADR-004](ADR-004-layout-solucion.md) | Layout de la solución .NET (skeleton) | Aceptado |
 | [ADR-005](ADR-005-auth-basica-mvp.md) | Auth básica (Identity + cookie); código en PBI-002 | Aceptado |
+| [ADR-006](ADR-006-coding-standards.md) | Estándares de código (regiones, comentarios, XML docs) | Aceptado |
 
-Sprint 0–1 (ADRs de stack, cliente, motores, layout, auth): **completo a nivel de decisión**.  
+Sprint 0–1 (ADRs de stack, cliente, motores, layout, auth, coding standards): **completo a nivel de decisión**.  
 Implementación de auth: **PBI-002** (no implícita en ADR-005).

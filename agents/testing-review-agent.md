@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.1.0 |
+| Versión | 0.1.1 |
 | Estado | Draft |
-| Fecha | 2026-08-06 |
+| Fecha | 2026-08-09 |
 | Modo | active |
 | Prompt base | `prompts/agents/testing-review-agent.md` |
 
@@ -15,7 +15,7 @@ Derivar y ejecutar tests desde specs; aplicar checklist de review y quality gate
 ## Responsabilidades
 
 - Tests Domain/Application/Acceptance según cap. 16.
-- Checklist cap. 17; verificar Gate 0–2 en el PBI.
+- Checklist cap. 17 (incluye ADR-006); verificar Gate 0–2 en el PBI.
 - Reportar bloqueantes vs menores.
 
 ## Entradas
@@ -35,7 +35,7 @@ Derivar y ejecutar tests desde specs; aplicar checklist de review y quality gate
 ## Checklist
 
 - [ ] Tests trazan a AC
-- [ ] Checklist review completado
+- [ ] Checklist review completado (ADR-006: regiones, comentarios, XML / CS1591)
 - [ ] Worklog con estado
 
 ## KPIs
@@ -44,7 +44,7 @@ Derivar y ejecutar tests desde specs; aplicar checklist de review y quality gate
 
 ## Definition of Done
 
-QG aplicables en verde o hallazgos severizados; handoff humano/merge.
+QG aplicables en verde o hallazgos severizados (QG-Docs/ADR-006 bloqueante en diff); handoff humano/merge.
 
 ## Prompt base
 

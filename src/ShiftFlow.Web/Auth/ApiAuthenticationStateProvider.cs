@@ -5,9 +5,17 @@ using ShiftFlow.Application.Auth;
 
 namespace ShiftFlow.Web.Auth;
 
+/// <summary>
+/// Proveedor de estado de autenticación basado en <c>/api/auth/me</c> y cookies de la Api.
+/// </summary>
+/// <param name="httpClientFactory">Fábrica del cliente HTTP nombrado <c>api</c>.</param>
 public sealed class ApiAuthenticationStateProvider(IHttpClientFactory httpClientFactory)
     : AuthenticationStateProvider
 {
+    /// <summary>
+    /// Obtiene el estado actual consultando la Api; si falla, devuelve usuario anónimo.
+    /// </summary>
+    /// <returns>Estado de autenticación con claims de nombre y roles, o identidad vacía.</returns>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
@@ -44,8 +52,16 @@ public sealed class ApiAuthenticationStateProvider(IHttpClientFactory httpClient
         }
     }
 
+    /// <summary>
+    /// Notifica a Blazor que el estado de autenticación debe recalcularse.
+    /// </summary>
     public void NotifyChanged() => NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 
+    /// <summary>
+    /// Indica si el usuario del estado pertenece al rol Administrator.
+    /// </summary>
+    /// <param name="state">Estado de autenticación actual.</param>
+    /// <returns><see langword="true"/> si tiene el rol Administrator.</returns>
     public bool IsAdministrator(AuthenticationState state) =>
         state.User.IsInRole(AuthRoles.Administrator);
 

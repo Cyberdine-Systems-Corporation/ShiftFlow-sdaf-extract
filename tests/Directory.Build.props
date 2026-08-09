@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Tests: sin obligación de XML docs (ADR-006 aplica a src/) -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+</Project>

@@ -7,8 +7,16 @@ using ShiftFlow.Infrastructure.Persistence;
 
 namespace ShiftFlow.Infrastructure.Identity;
 
+/// <summary>
+/// Provisiona esquema, rol Administrator y usuario demo en desarrollo.
+/// </summary>
 public static class IdentitySeed
 {
+    /// <summary>
+    /// Asegura la base de datos, el rol Administrator y el usuario demo si no existen.
+    /// </summary>
+    /// <param name="services">Proveedor raíz de servicios (se crea un scope interno).</param>
+    /// <param name="cancellationToken">Token de cancelación.</param>
     public static async Task InitializeAsync(IServiceProvider services, CancellationToken cancellationToken = default)
     {
         await using var scope = services.CreateAsyncScope();

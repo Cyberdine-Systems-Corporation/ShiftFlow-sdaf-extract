@@ -4,8 +4,15 @@ using ShiftFlow.Domain.Departments;
 
 namespace ShiftFlow.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Mapeo Fluent API de <see cref="Department"/>.
+/// </summary>
 public sealed class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 {
+    /// <summary>
+    /// Configura tabla, índices y propiedades de departamento.
+    /// </summary>
+    /// <param name="builder">Constructor de la entidad.</param>
     public void Configure(EntityTypeBuilder<Department> builder)
     {
         builder.ToTable("Departments");

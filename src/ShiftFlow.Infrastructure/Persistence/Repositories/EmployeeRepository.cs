@@ -4,11 +4,18 @@ using ShiftFlow.Infrastructure.Persistence;
 
 namespace ShiftFlow.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// Adaptador EF Core del puerto <see cref="IEmployeeRepository"/>.
+/// </summary>
 public sealed class EmployeeRepository(ShiftFlowDbContext db) : IEmployeeRepository
 {
+    #region Queries
+
+    /// <inheritdoc />
     public Task<Employee?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         db.Employees.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+    /// <inheritdoc />
     public async Task<IReadOnlyList<Employee>> ListByOrganizationAsync(
         Guid organizationId,
         CancellationToken cancellationToken = default) =>
@@ -17,6 +24,7 @@ public sealed class EmployeeRepository(ShiftFlowDbContext db) : IEmployeeReposit
             .OrderBy(x => x.DisplayName)
             .ToListAsync(cancellationToken);
 
+    /// <inheritdoc />
     public async Task<IReadOnlyList<Employee>> ListByDepartmentAsync(
         Guid departmentId,
         CancellationToken cancellationToken = default) =>
@@ -25,6 +33,7 @@ public sealed class EmployeeRepository(ShiftFlowDbContext db) : IEmployeeReposit
             .OrderBy(x => x.DisplayName)
             .ToListAsync(cancellationToken);
 
+    /// <inheritdoc />
     public Task<bool> ExistsWithEmailAsync(
         Guid organizationId,
         string email,
@@ -40,6 +49,13 @@ public sealed class EmployeeRepository(ShiftFlowDbContext db) : IEmployeeReposit
             cancellationToken);
     }
 
+    #endregion
+
+    #region Commands
+
+    /// <inheritdoc />
     public async Task AddAsync(Employee employee, CancellationToken cancellationToken = default) =>
         await db.Employees.AddAsync(employee, cancellationToken);
+
+    #endregion
 }
