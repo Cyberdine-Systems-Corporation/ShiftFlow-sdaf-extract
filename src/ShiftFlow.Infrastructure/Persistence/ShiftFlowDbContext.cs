@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ShiftFlow.Infrastructure.Identity;
 
 namespace ShiftFlow.Infrastructure.Persistence;
 
-/// <summary>
-/// DbContext vacío del skeleton; las entidades de dominio se añaden en Sprint 1+.
-/// </summary>
-public sealed class ShiftFlowDbContext(DbContextOptions<ShiftFlowDbContext> options) : DbContext(options);
+public sealed class ShiftFlowDbContext(DbContextOptions<ShiftFlowDbContext> options)
+    : IdentityDbContext<ApplicationUser>(options);

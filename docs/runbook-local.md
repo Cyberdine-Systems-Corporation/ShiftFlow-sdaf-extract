@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.1.0 |
-| Fecha | 2026-08-07 |
-| Relacionado | PBI-001, ADR-001, ADR-004, C-LOC |
+| Versión | 0.2.0 |
+| Fecha | 2026-08-09 |
+| Relacionado | PBI-001, PBI-002, ADR-001, ADR-004, ADR-005, C-LOC, C-AUTH |
 
 ---
 
@@ -51,6 +51,24 @@ Comprobación rápida:
 - Api: `GET /api/status` → JSON con `"status":"ok"`
 - Web: página de inicio “ShiftFlow” (consulta el status de la Api)
 - Health Aspire (Development): `/health`, `/alive`
+
+### Usuario demo (PBI-002 / ADR-005)
+
+| Campo | Valor |
+|-------|--------|
+| Usuario | `demo.admin` |
+| Rol | `Administrator` |
+| Contraseña (desarrollo) | `ChangeMe!123` si no hay override |
+
+Override recomendado (no commitear secretos):
+
+```powershell
+dotnet user-secrets set "Authentication:DemoUser:Password" "<tu-password>" --project src/ShiftFlow.Api
+```
+
+O variable de entorno: `Authentication__DemoUser__Password`.
+
+Login Web: `/login`. Endpoints Api: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
 
 ---
 
@@ -110,4 +128,4 @@ dotnet test ShiftFlow.sln
 
 ## 8. Usuario demo
 
-Auth y usuarios demo: **fuera de PBI-001** (PBI-002).
+Ver §3 (usuario `demo.admin`, rol `Administrator`, contraseña vía user-secrets/env o default de desarrollo).

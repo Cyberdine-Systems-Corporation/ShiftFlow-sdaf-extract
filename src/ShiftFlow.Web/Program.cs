@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
+using ShiftFlow.Web.Auth;
 using ShiftFlow.Web.Components;
 
 Log.Logger = new LoggerConfiguration()
@@ -20,10 +22,26 @@ try
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
 
+    builder.Services.AddScoped<CookieContainerHolder>();
+    builder.Services.AddScoped<ApiAuthenticationStateProvider>();
+    builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+        sp.GetRequiredService<ApiAuthenticationStateProvider>());
+    builder.Services.AddCascadingAuthenticationState();
+    builder.Services.AddAuthorizationCore();
+
     builder.Services.AddHttpClient("api", client =>
-    {
-        client.BaseAddress = new Uri("https+http://api");
-    });
+        {
+            client.BaseAddress = new Uri("https+http://api");
+        })
+        .ConfigurePrimaryHttpMessageHandler(sp =>
+        {
+            var holder = sp.GetRequiredService<CookieContainerHolder>();
+            return new HttpClientHandler
+            {
+                CookieContainer = holder.Container,
+                UseCookies = true
+            };
+        });
 
     var app = builder.Build();
 

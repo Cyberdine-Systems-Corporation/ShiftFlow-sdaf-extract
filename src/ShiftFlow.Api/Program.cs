@@ -1,11 +1,14 @@
 using Serilog;
+using ShiftFlow.Api.Auth;
 using ShiftFlow.Application;
 using ShiftFlow.Infrastructure;
+using ShiftFlow.Infrastructure.Identity;
 using ShiftFlow.Infrastructure.Persistence;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .CreateBootstrapLogger();
+    .CreateLogger();
+
 
 try
 {
@@ -24,6 +27,8 @@ try
 
     var app = builder.Build();
 
+    await IdentitySeed.InitializeAsync(app.Services);
+
     app.MapDefaultEndpoints();
 
     if (app.Environment.IsDevelopment())
@@ -33,6 +38,8 @@ try
 
     app.UseSerilogRequestLogging();
     app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
     app.MapGet("/api/status", async (ShiftFlowDbContext db, CancellationToken cancellationToken) =>
         {
@@ -44,7 +51,11 @@ try
                 database = canConnect ? "reachable" : "unreachable"
             });
         })
+        .AllowAnonymous()
         .WithName("GetApiStatus");
+
+    app.MapAuthEndpoints();
+    app.MapMasterDataStubEndpoints();
 
     app.Run();
 }

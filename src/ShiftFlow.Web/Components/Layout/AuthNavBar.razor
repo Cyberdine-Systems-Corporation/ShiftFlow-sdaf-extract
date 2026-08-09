@@ -1,0 +1,32 @@
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Authorization
+@using ShiftFlow.Web.Auth
+@inject IHttpClientFactory HttpClientFactory
+@inject ApiAuthenticationStateProvider AuthState
+@inject NavigationManager Navigation
+
+<CascadingAuthenticationState>
+    <nav class="top-nav">
+        <a href="/">ShiftFlow</a>
+        <AuthorizeView>
+            <Authorized>
+                <span>@context.User.Identity?.Name</span>
+                <button type="button" @onclick="LogoutAsync">Salir</button>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/login">Login</a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+</CascadingAuthenticationState>
+
+
+@code {
+    private async Task LogoutAsync()
+    {
+        var client = HttpClientFactory.CreateClient("api");
+        await client.PostAsync("/api/auth/logout", null);
+        AuthState.NotifyChanged();
+        Navigation.NavigateTo("/login");
+    }
+}

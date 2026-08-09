@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ShiftFlow.ServiceDefaults\ShiftFlow.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\ShiftFlow.Application\ShiftFlow.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
