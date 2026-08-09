@@ -55,7 +55,7 @@ Adoptar el siguiente stack para el MVP (`mvp-0.1`):
 
 ### Auth (dirección)
 
-Autenticación/autorización básica sobre ASP.NET Core (p. ej. Identity u opción equivalente). Detalle de proveedor en ADR de auth dedicado si hace falta.
+Autenticación/autorización básica sobre ASP.NET Core. Detalle cerrado en **ADR-005** (Identity + cookie; implementación vía PBI-002).
 
 ### Contingencia de runtime
 

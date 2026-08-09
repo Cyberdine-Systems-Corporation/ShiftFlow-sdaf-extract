@@ -7,7 +7,7 @@
 | Estado | Approved |
 | Fecha | 2026-08-09 |
 | Fuentes | SPEC-DOM-004, SPEC-PRD-001 (C-AUTH), SPEC-PRD-002 precondiciones |
-| ADRs relacionados | ADR-001; ADR auth (si Architecture lo emite) |
+| ADRs relacionados | ADR-001, **ADR-005** |
 | Backlog | PBI-002 |
 | Derivados | SPEC-ACC-001, host Api/Web Identity |
 

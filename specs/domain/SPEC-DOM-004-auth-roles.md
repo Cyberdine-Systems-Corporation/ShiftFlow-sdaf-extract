@@ -7,7 +7,7 @@
 | Estado | Approved |
 | Fecha | 2026-08-09 |
 | Fuentes | SPEC-PRD-001 (C-AUTH), SPEC-PRD-002 (precondiciones), `handbook/03-mvp-definition.md`, `handbook/11-ddd-and-bounded-contexts.md` §2 |
-| ADRs relacionados | ADR-001 (dirección Identity); ADR de auth dedicado si Architecture lo exige |
+| ADRs relacionados | ADR-001, **ADR-005** (Identity + cookie; implementación vía PBI-002) |
 | Backlog | PBI-002 |
 | Derivados | SPEC-APP-002, SPEC-ACC-001 |
 
