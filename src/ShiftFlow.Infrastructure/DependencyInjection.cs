@@ -3,8 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShiftFlow.Application.Auth;
+using ShiftFlow.Domain.Common;
+using ShiftFlow.Domain.Departments;
+using ShiftFlow.Domain.Employees;
+using ShiftFlow.Domain.Organizations;
 using ShiftFlow.Infrastructure.Identity;
 using ShiftFlow.Infrastructure.Persistence;
+using ShiftFlow.Infrastructure.Persistence.Repositories;
 
 // AddIdentity / cookie viven en Microsoft.Extensions.DependencyInjection (FrameworkReference AspNetCore.App).
 
@@ -21,6 +26,11 @@ public static class DependencyInjection
 
         services.AddDbContext<ShiftFlowDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ShiftFlowDbContext>());
+        services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
         services
             .AddIdentity<ApplicationUser, IdentityRole>(options =>

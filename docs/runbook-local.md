@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.2.0 |
+| Versión | 0.3.0 |
 | Fecha | 2026-08-09 |
-| Relacionado | PBI-001, PBI-002, ADR-001, ADR-004, ADR-005, C-LOC, C-AUTH |
+| Relacionado | PBI-001…003, ADR-001, ADR-004, ADR-005, C-LOC, C-AUTH, C-ORG |
 
 ---
 
@@ -69,6 +69,18 @@ dotnet user-secrets set "Authentication:DemoUser:Password" "<tu-password>" --pro
 O variable de entorno: `Authentication__DemoUser__Password`.
 
 Login Web: `/login`. Endpoints Api: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
+
+### Maestros (PBI-003)
+
+API (rol `Administrator`):
+
+- `POST/GET /api/organizations`, `GET /api/organizations/{id}`, `PUT .../name`, `PUT .../active`
+- `POST/GET /api/organizations/{id}/departments`, `PUT /api/departments/{id}/name|active`
+- `POST/GET /api/organizations/{id}/employees`, `GET /api/departments/{id}/employees`, `PUT /api/employees/{id}`, `PUT .../active`
+
+Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (ver `postman/README.md`).
+
+El esquema se crea con `EnsureCreated`. Si ya tenías un volumen Postgres de PBI-002 sin tablas de maestros, **resetea el volumen** (§6) y vuelve a arrancar.
 
 ---
 

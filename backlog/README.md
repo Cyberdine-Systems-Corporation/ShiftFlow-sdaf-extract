@@ -8,8 +8,8 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | Orden | ID | Título | Sprint | Specs | Estado |
 |------:|----|--------|--------|-------|--------|
 | 1 | [PBI-001](PBI-001-skeleton-solucion.md) | Skeleton solución .NET + runtime local | 0 | SPEC-PRD-001 Approved (C-LOC, C-API, C-WEB), ADR-004 | Hecho (mergeado) |
-| 2 | [PBI-002](PBI-002-auth-roles.md) | Auth y roles básicos | 1 | SPEC-DOM-004, SPEC-APP-002, SPEC-ACC-001, ADR-005 Approved | Implementado (rama `feat/pbi-002-auth`; pendiente merge) |
-| 3 | [PBI-003](PBI-003-organization-department-employee.md) | Organization, Department, Employee | 1 | SPEC-DOM-001/002, SPEC-APP-001, SPEC-ACC-001 Approved | Ready (Gate 0) |
+| 2 | [PBI-002](PBI-002-auth-roles.md) | Auth y roles básicos | 1 | SPEC-DOM-004, SPEC-APP-002, SPEC-ACC-001, ADR-005 Approved | Hecho (mergeado) |
+| 3 | [PBI-003](PBI-003-organization-department-employee.md) | Organization, Department, Employee | 1 | SPEC-DOM-001/002, SPEC-APP-001, SPEC-ACC-001 Approved | Implementado (rama `feat/pbi-003-maestros`; pendiente merge) |
 | 4 | [PBI-004](PBI-004-shift-types.md) | Shift types | 1 | SPEC-DOM-003, SPEC-APP-001, SPEC-ACC-001 Approved | Ready (Gate 0) |
 | 5 | [PBI-005](PBI-005-calendar-assign-shift.md) | Calendario y asignación manual | 2 | SPEC-PRD-001/002 Approved | Spec dominio pendiente |
 | 6 | [PBI-006](PBI-006-rule-engine-v1.md) | Rule Engine v1 (3 hard rules) | 2 | SPEC-PRD-001/002 Approved, ADR-003 | Spec dominio pendiente |

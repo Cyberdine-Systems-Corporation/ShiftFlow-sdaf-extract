@@ -1,0 +1,274 @@
+{
+  "info": {
+    "_postman_id": "shiftflow-pbi-003-auth-masters",
+    "name": "ShiftFlow — Auth + Maestros (PBI-003)",
+    "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee (scripts guardan IDs en variables de colección).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:7xxx" },
+    { "key": "organizationId", "value": "" },
+    { "key": "departmentId", "value": "" },
+    { "key": "employeeId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Status",
+      "item": [
+        {
+          "name": "GET status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"demo.admin\",\n  \"password\": \"ChangeMe!123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "GET me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "POST logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Organizations",
+      "item": [
+        {
+          "name": "POST create organization",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const j = pm.response.json();",
+                  "  pm.collectionVariables.set('organizationId', j.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hospital Norte\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations"
+          }
+        },
+        {
+          "name": "GET list organizations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/organizations"
+          }
+        },
+        {
+          "name": "GET organization by id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}"
+          }
+        },
+        {
+          "name": "PUT rename organization",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hospital Norte Renombrado\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/name"
+          }
+        },
+        {
+          "name": "PUT set organization active",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/active"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "POST create department",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const j = pm.response.json();",
+                  "  pm.collectionVariables.set('departmentId', j.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Urgencias\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/departments"
+          }
+        },
+        {
+          "name": "GET list departments by org",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/departments"
+          }
+        },
+        {
+          "name": "PUT rename department",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Urgencias Norte\"\n}"
+            },
+            "url": "{{baseUrl}}/api/departments/{{departmentId}}/name"
+          }
+        },
+        {
+          "name": "PUT set department active",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/departments/{{departmentId}}/active"
+          }
+        },
+        {
+          "name": "POST department duplicate (expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"urgencias\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/departments"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "POST create employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const j = pm.response.json();",
+                  "  pm.collectionVariables.set('employeeId', j.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"departmentId\": \"{{departmentId}}\",\n  \"displayName\": \"Ana Pérez\",\n  \"email\": \"ana@norte.local\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/employees"
+          }
+        },
+        {
+          "name": "GET list employees by org",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/employees"
+          }
+        },
+        {
+          "name": "GET list employees by department",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/departments/{{departmentId}}/employees"
+          }
+        },
+        {
+          "name": "PUT update employee",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"departmentId\": \"{{departmentId}}\",\n  \"displayName\": \"Ana P. Actualizada\",\n  \"email\": \"ana@norte.local\"\n}"
+            },
+            "url": "{{baseUrl}}/api/employees/{{employeeId}}"
+          }
+        },
+        {
+          "name": "PUT set employee active",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/employees/{{employeeId}}/active"
+          }
+        }
+      ]
+    }
+  ]
+}

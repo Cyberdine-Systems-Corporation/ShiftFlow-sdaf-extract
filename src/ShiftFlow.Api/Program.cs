@@ -1,5 +1,6 @@
 using Serilog;
 using ShiftFlow.Api.Auth;
+using ShiftFlow.Api.Masters;
 using ShiftFlow.Application;
 using ShiftFlow.Infrastructure;
 using ShiftFlow.Infrastructure.Identity;
@@ -55,7 +56,7 @@ try
         .WithName("GetApiStatus");
 
     app.MapAuthEndpoints();
-    app.MapMasterDataStubEndpoints();
+    app.MapMasterDataEndpoints();
 
     app.Run();
 }
