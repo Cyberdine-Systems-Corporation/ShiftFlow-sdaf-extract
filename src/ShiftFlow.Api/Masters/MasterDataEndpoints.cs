@@ -5,6 +5,7 @@ using ShiftFlow.Application.Common;
 using ShiftFlow.Application.Departments;
 using ShiftFlow.Application.Employees;
 using ShiftFlow.Application.Organizations;
+using ShiftFlow.Application.ShiftTypes;
 using ShiftFlow.Domain.Common;
 
 namespace ShiftFlow.Api.Masters;
@@ -37,6 +38,13 @@ public static class MasterDataEndpoints
             .WithName("ListEmployeesByOrganization")
             .WithTags("Employees");
 
+        orgs.MapPost("/{organizationId:guid}/shift-types", CreateShiftTypeAsync)
+            .WithName("CreateShiftType")
+            .WithTags("ShiftTypes");
+        orgs.MapGet("/{organizationId:guid}/shift-types", ListShiftTypesAsync)
+            .WithName("ListShiftTypesByOrganization")
+            .WithTags("ShiftTypes");
+
         var departments = endpoints.MapGroup("/api/departments")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Departments");
@@ -53,6 +61,13 @@ public static class MasterDataEndpoints
 
         employees.MapPut("/{id:guid}", UpdateEmployeeAsync).WithName("UpdateEmployee");
         employees.MapPut("/{id:guid}/active", SetEmployeeActiveAsync).WithName("SetEmployeeActive");
+
+        var shiftTypes = endpoints.MapGroup("/api/shift-types")
+            .RequireAuthorization(AuthRoles.Administrator)
+            .WithTags("ShiftTypes");
+
+        shiftTypes.MapPut("/{id:guid}", UpdateShiftTypeAsync).WithName("UpdateShiftType");
+        shiftTypes.MapPut("/{id:guid}/active", SetShiftTypeActiveAsync).WithName("SetShiftTypeActive");
 
         return endpoints;
     }
@@ -183,6 +198,55 @@ public static class MasterDataEndpoints
             () => mediator.Send(new SetEmployeeActiveCommand(id, body.IsActive), cancellationToken),
             Results.Ok);
 
+    private static Task<IResult> CreateShiftTypeAsync(
+        Guid organizationId,
+        [FromBody] ShiftTypeBody body,
+        IMediator mediator,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            () => mediator.Send(
+                new CreateShiftTypeCommand(
+                    organizationId,
+                    body.Name ?? string.Empty,
+                    body.Code,
+                    body.DefaultStartTime,
+                    body.DefaultEndTime),
+                cancellationToken),
+            dto => Results.Created($"/api/shift-types/{dto.Id}", dto));
+
+    private static Task<IResult> ListShiftTypesAsync(
+        Guid organizationId,
+        IMediator mediator,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            () => mediator.Send(new ListShiftTypesByOrganizationQuery(organizationId), cancellationToken),
+            Results.Ok);
+
+    private static Task<IResult> UpdateShiftTypeAsync(
+        Guid id,
+        [FromBody] ShiftTypeBody body,
+        IMediator mediator,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            () => mediator.Send(
+                new UpdateShiftTypeCommand(
+                    id,
+                    body.Name ?? string.Empty,
+                    body.Code,
+                    body.DefaultStartTime,
+                    body.DefaultEndTime),
+                cancellationToken),
+            Results.Ok);
+
+    private static Task<IResult> SetShiftTypeActiveAsync(
+        Guid id,
+        [FromBody] ActiveBody body,
+        IMediator mediator,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            () => mediator.Send(new SetShiftTypeActiveCommand(id, body.IsActive), cancellationToken),
+            Results.Ok);
+
     private static async Task<IResult> ExecuteAsync<T>(Func<Task<T>> action, Func<T, IResult> onSuccess)
     {
         try
@@ -207,4 +271,10 @@ public static class MasterDataEndpoints
     public sealed record CreateEmployeeBody(Guid DepartmentId, string? DisplayName, string? Email);
 
     public sealed record UpdateEmployeeBody(Guid DepartmentId, string? DisplayName, string? Email);
+
+    public sealed record ShiftTypeBody(
+        string? Name,
+        string? Code,
+        TimeOnly? DefaultStartTime,
+        TimeOnly? DefaultEndTime);
 }

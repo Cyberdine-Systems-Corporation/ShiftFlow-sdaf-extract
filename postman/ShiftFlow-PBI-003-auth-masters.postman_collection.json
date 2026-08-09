@@ -1,15 +1,16 @@
 {
   "info": {
     "_postman_id": "shiftflow-pbi-003-auth-masters",
-    "name": "ShiftFlow — Auth + Maestros (PBI-003)",
-    "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee (scripts guardan IDs en variables de colección).",
+    "name": "ShiftFlow — Auth + Maestros (PBI-003/004)",
+    "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee → ShiftType (scripts guardan IDs).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl", "value": "https://localhost:7xxx" },
     { "key": "organizationId", "value": "" },
     { "key": "departmentId", "value": "" },
-    { "key": "employeeId", "value": "" }
+    { "key": "employeeId", "value": "" },
+    { "key": "shiftTypeId", "value": "" }
   ],
   "item": [
     {
@@ -266,6 +267,80 @@
               "raw": "{\n  \"isActive\": true\n}"
             },
             "url": "{{baseUrl}}/api/employees/{{employeeId}}/active"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ShiftTypes",
+      "item": [
+        {
+          "name": "POST create shift type",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const j = pm.response.json();",
+                  "  pm.collectionVariables.set('shiftTypeId', j.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mañana\",\n  \"code\": \"MAN\",\n  \"defaultStartTime\": \"08:00:00\",\n  \"defaultEndTime\": \"15:00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/shift-types"
+          }
+        },
+        {
+          "name": "GET list shift types by org",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/shift-types"
+          }
+        },
+        {
+          "name": "PUT update shift type",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mañana ampliada\",\n  \"code\": \"MAN\",\n  \"defaultStartTime\": \"07:00:00\",\n  \"defaultEndTime\": \"15:00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/shift-types/{{shiftTypeId}}"
+          }
+        },
+        {
+          "name": "PUT set shift type active",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/shift-types/{{shiftTypeId}}/active"
+          }
+        },
+        {
+          "name": "POST overnight window (expect 400 INV-STT-04)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Noche\",\n  \"code\": \"NOC\",\n  \"defaultStartTime\": \"22:00:00\",\n  \"defaultEndTime\": \"06:00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/shift-types"
           }
         }
       ]

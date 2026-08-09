@@ -4,6 +4,7 @@ using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Departments;
 using ShiftFlow.Domain.Employees;
 using ShiftFlow.Domain.Organizations;
+using ShiftFlow.Domain.ShiftTypes;
 using ShiftFlow.Infrastructure.Identity;
 
 namespace ShiftFlow.Infrastructure.Persistence;
@@ -16,6 +17,8 @@ public sealed class ShiftFlowDbContext(DbContextOptions<ShiftFlowDbContext> opti
     public DbSet<Department> Departments => Set<Department>();
 
     public DbSet<Employee> Employees => Set<Employee>();
+
+    public DbSet<ShiftType> ShiftTypes => Set<ShiftType>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -7,6 +7,7 @@ using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Departments;
 using ShiftFlow.Domain.Employees;
 using ShiftFlow.Domain.Organizations;
+using ShiftFlow.Domain.ShiftTypes;
 using ShiftFlow.Infrastructure.Identity;
 using ShiftFlow.Infrastructure.Persistence;
 using ShiftFlow.Infrastructure.Persistence.Repositories;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IShiftTypeRepository, ShiftTypeRepository>();
 
         services
             .AddIdentity<ApplicationUser, IdentityRole>(options =>

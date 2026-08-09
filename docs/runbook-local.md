@@ -70,17 +70,18 @@ O variable de entorno: `Authentication__DemoUser__Password`.
 
 Login Web: `/login`. Endpoints Api: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
 
-### Maestros (PBI-003)
+### Maestros (PBI-003 / PBI-004)
 
 API (rol `Administrator`):
 
 - `POST/GET /api/organizations`, `GET /api/organizations/{id}`, `PUT .../name`, `PUT .../active`
 - `POST/GET /api/organizations/{id}/departments`, `PUT /api/departments/{id}/name|active`
 - `POST/GET /api/organizations/{id}/employees`, `GET /api/departments/{id}/employees`, `PUT /api/employees/{id}`, `PUT .../active`
+- `POST/GET /api/organizations/{id}/shift-types`, `PUT /api/shift-types/{id}`, `PUT .../active`
 
 Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (ver `postman/README.md`).
 
-El esquema se crea con `EnsureCreated`. Si ya tenías un volumen Postgres de PBI-002 sin tablas de maestros, **resetea el volumen** (§6) y vuelve a arrancar.
+El esquema se crea con `EnsureCreated`. Si ya tenías un volumen Postgres sin tablas nuevas, **resetea el volumen** (§6) y vuelve a arrancar.
 
 ---
 

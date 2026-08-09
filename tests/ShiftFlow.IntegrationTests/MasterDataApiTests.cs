@@ -22,13 +22,20 @@ public class MasterDataApiTests
     }
 
     [Fact]
-    public async Task ACC_S1_03_alta_Organization_Department_Employee()
+    public async Task ACC_S1_03_alta_Organization_Department_Employee_ShiftType()
     {
         var client = await CreateAuthenticatedClientAsync();
 
         var org = await CreateOrganizationAsync(client, "Hospital Norte");
         var dept = await CreateDepartmentAsync(client, org.Id, "Urgencias");
         var emp = await CreateEmployeeAsync(client, org.Id, dept.Id, "Ana Pérez", "ana@norte.local");
+        var shiftType = await CreateShiftTypeAsync(
+            client,
+            org.Id,
+            "Mañana",
+            "MAN",
+            "08:00:00",
+            "15:00:00");
 
         var orgs = await client.GetFromJsonAsync<List<OrganizationResponse>>("/api/organizations", JsonOptions);
         orgs.Should().Contain(o => o.Id == org.Id && o.Name == "Hospital Norte");
@@ -42,6 +49,11 @@ public class MasterDataApiTests
             $"/api/organizations/{org.Id}/employees",
             JsonOptions);
         emps.Should().Contain(e => e.Id == emp.Id && e.DisplayName == "Ana Pérez");
+
+        var shiftTypes = await client.GetFromJsonAsync<List<ShiftTypeResponse>>(
+            $"/api/organizations/{org.Id}/shift-types",
+            JsonOptions);
+        shiftTypes.Should().Contain(s => s.Id == shiftType.Id && s.Name == "Mañana" && s.Code == "MAN");
     }
 
     [Fact]
@@ -85,6 +97,27 @@ public class MasterDataApiTests
         moveCross.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var moveBody = await moveCross.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         moveBody!.Code.Should().Be("INV-EMP-01");
+    }
+
+    [Fact]
+    public async Task ACC_S1_06_ShiftType_horario_overnight_rechazado()
+    {
+        var client = await CreateAuthenticatedClientAsync();
+        var org = await CreateOrganizationAsync(client, "Hospital Overnight");
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/organizations/{org.Id}/shift-types",
+            new
+            {
+                name = "Noche",
+                code = "NOC",
+                defaultStartTime = "22:00:00",
+                defaultEndTime = "06:00:00"
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        body!.Code.Should().Be("INV-STT-04");
     }
 
     private async Task<HttpClient> CreateAuthenticatedClientAsync()
@@ -138,6 +171,23 @@ public class MasterDataApiTests
         return body!;
     }
 
+    private static async Task<ShiftTypeResponse> CreateShiftTypeAsync(
+        HttpClient client,
+        Guid organizationId,
+        string name,
+        string? code,
+        string? defaultStartTime,
+        string? defaultEndTime)
+    {
+        var response = await client.PostAsJsonAsync(
+            $"/api/organizations/{organizationId}/shift-types",
+            new { name, code, defaultStartTime, defaultEndTime });
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var body = await response.Content.ReadFromJsonAsync<ShiftTypeResponse>(JsonOptions);
+        body.Should().NotBeNull();
+        return body!;
+    }
+
     private sealed record OrganizationResponse(Guid Id, string Name, bool IsActive);
 
     private sealed record DepartmentResponse(Guid Id, Guid OrganizationId, string Name, bool IsActive);
@@ -148,6 +198,15 @@ public class MasterDataApiTests
         Guid DepartmentId,
         string DisplayName,
         string? Email,
+        bool IsActive);
+
+    private sealed record ShiftTypeResponse(
+        Guid Id,
+        Guid OrganizationId,
+        string Name,
+        string? Code,
+        TimeOnly? DefaultStartTime,
+        TimeOnly? DefaultEndTime,
         bool IsActive);
 
     private sealed record ErrorBody(string Error, string Code);
