@@ -48,7 +48,7 @@ No depurar solo `ShiftFlow.Web` o `ShiftFlow.Api` como arranque principal: el We
 
 Aspire levantará:
 
-1. Contenedor **PostgreSQL** (`postgres` → DB `shiftflow`)
+1. Contenedor **PostgreSQL** (`postgres` → DB `shiftflow`, host port **5433** fijo)
 2. **ShiftFlow.Api**
 3. **ShiftFlow.Web**
 
@@ -106,7 +106,7 @@ dotnet run --project src/ShiftFlow.Web
 Connection string por defecto (también en `src/ShiftFlow.Api/appsettings.json`):
 
 ```text
-Host=localhost;Port=5432;Database=shiftflow;Username=shiftflow;Password=shiftflow
+Host=localhost;Port=5433;Database=shiftflow;Username=shiftflow;Password=shiftflow
 ```
 
 > Credenciales solo para desarrollo local. No usar en ningún entorno compartido.
@@ -138,7 +138,9 @@ dotnet test ShiftFlow.sln
 | Síntoma | Qué revisar |
 |---------|-------------|
 | AppHost no arranca Postgres | Docker Desktop en ejecución; WSL2/backend activo |
-| Puerto 5432 ocupado | Detener otro Postgres local o cambiar el mapeo en Compose |
+| Puerto 5433 ocupado / AppHost cancela al arrancar | Liberar 5433 o cambiar `WithHostPort`; **no** uses 5432 si tienes `postgresql-x64-*` de Windows |
+| pgAdmin estable | Host=`localhost`, Port=`5433`, DB/user/pass=`shiftflow` (Aspire: `WithHostPort(5433)`) |
+| TaskCanceledException al crear Postgres | Suele ser puerto host ya ocupado (p. ej. intento de mapear 5432 con el servicio Windows activo) |
 | `docker` no reconocido | Instalar Docker Desktop y reiniciar la terminal |
 | Api `database: unreachable` | Postgres aún no listo; esperar healthcheck o `docker compose ps` |
 | Web no ve la Api | Arrancar vía AppHost (inyecta service discovery) o configurar base address manualmente |

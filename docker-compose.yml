@@ -1,7 +1,8 @@
 # Contingencia local (ADR-001 / ADR-004): PostgreSQL sin AppHost.
 # Uso: docker compose up -d
 # Connection string canónica del skeleton:
-# Host=localhost;Port=5432;Database=shiftflow;Username=shiftflow;Password=shiftflow
+# Host=localhost;Port=5433;Database=shiftflow;Username=shiftflow;Password=shiftflow
+# (5433 en host: evita colisión con PostgreSQL instalado en Windows en 5432)
 
 services:
   postgres:
@@ -12,7 +13,7 @@ services:
       POSTGRES_PASSWORD: shiftflow
       POSTGRES_DB: shiftflow
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - shiftflow_pgdata:/var/lib/postgresql/data
     healthcheck:

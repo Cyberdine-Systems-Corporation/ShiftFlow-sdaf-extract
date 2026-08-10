@@ -34,7 +34,7 @@ public static class DependencyInjection
 
         var connectionString = configuration.GetConnectionString("shiftflow")
             ?? configuration.GetConnectionString("ShiftFlow")
-            ?? "Host=localhost;Port=5432;Database=shiftflow;Username=shiftflow;Password=shiftflow";
+            ?? "Host=localhost;Port=5433;Database=shiftflow;Username=shiftflow;Password=shiftflow";
 
         services.AddDbContext<ShiftFlowDbContext>(options =>
             options.UseNpgsql(connectionString));
