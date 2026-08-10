@@ -6,33 +6,44 @@
 
 <PageTitle>ShiftFlow</PageTitle>
 
-<h1>ShiftFlow</h1>
-<p>Planificación de turnos — runtime local. Journey demo: maestros en UI (AC-01), calendario en Sprint 2.</p>
+<section class="sf-hero">
+    <p class="sf-hero-brand" aria-hidden="true">ShiftFlow</p>
+    <h1>Planificación de turnos con reglas visibles y demo local.</h1>
+    <p class="sf-lede">
+        Configura el núcleo (organización, departamentos, empleados y tipos de turno)
+        y prepárate para el calendario del Sprint 2.
+    </p>
 
-@if (_apiStatus is null && _error is null)
-{
-    <p>Comprobando API…</p>
-}
-else if (_error is not null)
-{
-    <p class="auth-error">API: no disponible (@_error)</p>
-}
-else
-{
-    <p>API: ok</p>
-}
+    <div class="sf-status-row" aria-live="polite">
+        @if (_apiStatus is null && _error is null)
+        {
+            <span class="sf-badge sf-badge-muted">Comprobando API…</span>
+        }
+        else if (_error is not null)
+        {
+            <span class="sf-badge sf-badge-danger">API no disponible</span>
+            <span class="sf-hint">@_error</span>
+        }
+        else
+        {
+            <span class="sf-badge">API lista</span>
+        }
+    </div>
 
-<AuthorizeView Roles="@AuthRoles.Administrator">
-    <Authorized>
-        <ul>
-            <li><a href="/organizations">Organizaciones y maestros</a></li>
-            <li><a href="/calendar">Calendario (próximamente)</a></li>
-        </ul>
-    </Authorized>
-    <NotAuthorized>
-        <p><a href="/login">Iniciar sesión</a> para administrar maestros.</p>
-    </NotAuthorized>
-</AuthorizeView>
+    <AuthorizeView Roles="@AuthRoles.Administrator">
+        <Authorized>
+            <div class="sf-cta-row">
+                <a class="sf-btn sf-btn-primary" href="/organizations">Ir a organizaciones</a>
+                <a class="sf-btn sf-btn-secondary" href="/calendar">Calendario</a>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <div class="sf-cta-row">
+                <a class="sf-btn sf-btn-primary" href="/login">Iniciar sesión</a>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</section>
 
 @code {
     private string? _apiStatus;

@@ -6,7 +6,7 @@
 | Prioridad | 8 |
 | Specs | SPEC-PRD-002 (AC-01), SPEC-APP-001 |
 | DoD | Nav + pantallas para org/dept/employee/shift type/calendario |
-| Estado | Implementado en rama `feat/pbi-008-blazor-crud` (pendiente merge) |
+| Estado | Hecho (mergeado #13) |
 
 ## Descripción
 

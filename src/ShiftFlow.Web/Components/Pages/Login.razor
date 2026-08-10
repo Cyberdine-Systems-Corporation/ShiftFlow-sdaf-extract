@@ -9,27 +9,37 @@
 @inject CookieContainerHolder CookieJar
 @inject NavigationManager Navigation
 
-<PageTitle>Login — ShiftFlow</PageTitle>
+<PageTitle>Entrar — ShiftFlow</PageTitle>
 
-<h1>Iniciar sesión</h1>
-<p>Usuario demo: <code>@DemoCredentials.UserName</code> (ver runbook para la contraseña).</p>
+<div class="sf-auth">
+    <div class="sf-auth-card">
+        <h1 class="sf-auth-brand">ShiftFlow</h1>
+        <p class="sf-lede">Planifica turnos con reglas claras. Entra para administrar el núcleo del demo.</p>
 
-@if (!string.IsNullOrEmpty(_error))
-{
-    <p class="auth-error">@_error</p>
-}
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <p class="sf-alert" role="alert">@_error</p>
+        }
 
-<EditForm Model="_model" OnSubmit="OnLoginAsync">
-    <div class="auth-field">
-        <label>Usuario</label>
-        <InputText @bind-Value="_model.UserName" />
+        <EditForm Model="_model" OnSubmit="OnLoginAsync">
+            <div class="sf-field">
+                <label for="login-user">Usuario</label>
+                <InputText id="login-user" @bind-Value="_model.UserName" autocomplete="username" />
+            </div>
+            <div class="sf-field">
+                <label for="login-pass">Contraseña</label>
+                <InputText id="login-pass" type="password" @bind-Value="_model.Password" autocomplete="current-password" />
+            </div>
+            <button type="submit" class="sf-btn sf-btn-primary" disabled="@_busy">
+                @(_busy ? "Entrando…" : "Entrar")
+            </button>
+        </EditForm>
+
+        <p class="sf-hint" style="margin-top:1.25rem;margin-bottom:0">
+            Demo: <code>@DemoCredentials.UserName</code> — ver runbook para la contraseña.
+        </p>
     </div>
-    <div class="auth-field">
-        <label>Contraseña</label>
-        <InputText type="password" @bind-Value="_model.Password" />
-    </div>
-    <button type="submit" disabled="@_busy">Entrar</button>
-</EditForm>
+</div>
 
 @code {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
@@ -58,14 +68,14 @@
 
             if (!response.IsSuccessStatusCode)
             {
-                _error = $"Credenciales inválidas (HTTP {(int)response.StatusCode}).";
+                _error = $"No se pudo iniciar sesión (HTTP {(int)response.StatusCode}). Revisa usuario y contraseña.";
                 return;
             }
 
             var payload = await response.Content.ReadFromJsonAsync<LoginResponse>(JsonOptions);
             if (payload is null)
             {
-                _error = "Login OK pero respuesta vacía.";
+                _error = "La Api respondió vacía tras el login.";
                 return;
             }
 
@@ -85,11 +95,10 @@
 
             if (string.IsNullOrWhiteSpace(CookieJar.AccessToken) && CookieJar.Count == 0)
             {
-                _error = "Login OK pero sin accessToken ni cookie de sesión.";
+                _error = "Login correcto, pero no hay credencial de sesión para el Web.";
                 return;
             }
 
-            // Claims locales: el GET HTTP a páginas [Authorize] usa PassThrough (HttpContext), no solo el AuthState Blazor.
             CookieJar.SetSession(
                 payload.UserName,
                 payload.Roles ?? [],
@@ -99,13 +108,13 @@
             var state = await AuthState.GetAuthenticationStateAsync();
             if (state.User.Identity?.IsAuthenticated != true)
             {
-                _error = "Credenciales de sesión guardadas pero /api/auth/me anónimo.";
+                _error = "Sesión guardada, pero /api/auth/me sigue anónimo.";
                 return;
             }
 
             if (!state.User.IsInRole(AuthRoles.Administrator))
             {
-                _error = "Sesión OK pero sin rol Administrator.";
+                _error = "Sesión OK, pero falta el rol Administrator.";
                 return;
             }
 

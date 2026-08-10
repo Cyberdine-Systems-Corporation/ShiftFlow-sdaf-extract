@@ -10,40 +10,54 @@
 
 <PageTitle>Organizaciones — ShiftFlow</PageTitle>
 
-<h1>Organizaciones</h1>
-<p>Maestros del núcleo (AC-01). Selecciona una organización para departamentos, empleados y tipos de turno.</p>
+<h1 class="sf-page-title">Organizaciones</h1>
+<p class="sf-lede">Maestros del núcleo (AC-01). Abre una organización para departamentos, empleados y tipos de turno.</p>
 
 @if (!string.IsNullOrEmpty(_error))
 {
-    <p class="auth-error">@_error</p>
+    <p class="sf-alert" role="alert">@_error</p>
 }
 
-<section class="panel">
+<section class="sf-section">
     <h2>Nueva organización</h2>
-    <div class="auth-field">
-        <label>Nombre</label>
-        <InputText @bind-Value="_newName" />
+    <div class="sf-field">
+        <label for="org-name">Nombre</label>
+        <InputText id="org-name" @bind-Value="_newName" />
     </div>
-    <button type="button" disabled="@_busy" @onclick="CreateAsync">Crear</button>
+    <div class="sf-actions">
+        <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateAsync">
+            @(_busy ? "Creando…" : "Crear organización")
+        </button>
+    </div>
 </section>
 
-<section class="panel">
-    <h2>Listado</h2>
+<section class="sf-section">
+    <div class="sf-section-head">
+        <h2>Listado</h2>
+        @if (_items is not null)
+        {
+            <span class="sf-badge sf-badge-muted">@_items.Count</span>
+        }
+    </div>
+
     @if (_items is null)
     {
-        <p>Cargando…</p>
+        <p class="sf-hint">Cargando organizaciones…</p>
     }
     else if (_items.Count == 0)
     {
-        <p>No hay organizaciones. Crea la primera.</p>
+        <div class="sf-empty">
+            <strong>Aún no hay organizaciones</strong>
+            Crea la primera con el formulario de arriba para empezar el journey demo.
+        </div>
     }
     else
     {
-        <table class="data-table">
+        <table class="sf-table">
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Activa</th>
+                    <th>Estado</th>
                     <th></th>
                 </tr>
             </thead>
@@ -52,8 +66,19 @@
                 {
                     <tr>
                         <td>@org.Name</td>
-                        <td>@(org.IsActive ? "Sí" : "No")</td>
-                        <td><a href="@($"/organizations/{org.Id}")">Abrir</a></td>
+                        <td>
+                            @if (org.IsActive)
+                            {
+                                <span class="sf-badge">Activa</span>
+                            }
+                            else
+                            {
+                                <span class="sf-badge sf-badge-muted">Inactiva</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="sf-btn sf-btn-ghost sf-btn-sm" href="@($"/organizations/{org.Id}")">Abrir</a>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -79,9 +104,9 @@
         catch (Exception ex)
         {
             var authHint = string.IsNullOrWhiteSpace(Session.AccessToken)
-                ? "sin Bearer"
-                : "con Bearer";
-            _error = $"{ex.Message} ({authHint}, cookies={Session.Count})";
+                ? "sin sesión Bearer"
+                : "con sesión Bearer";
+            _error = $"No se pudo cargar el listado: {ex.Message} ({authHint}).";
             _items = [];
         }
     }

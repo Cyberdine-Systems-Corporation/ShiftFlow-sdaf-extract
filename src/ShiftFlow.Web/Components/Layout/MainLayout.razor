@@ -1,11 +1,14 @@
 ﻿@inherits LayoutComponentBase
 
-<AuthNavBar />
-
-@Body
+<div class="sf-app">
+    <AuthNavBar />
+    <main class="sf-shell sf-page">
+        @Body
+    </main>
+</div>
 
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
+    Ha ocurrido un error no controlado.
+    <a href="." class="reload">Recargar</a>
+    <span class="dismiss" title="Cerrar">×</span>
 </div>
