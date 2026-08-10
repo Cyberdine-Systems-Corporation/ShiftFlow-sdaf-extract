@@ -8,5 +8,7 @@ Norma: `handbook/08-specification-standard.md`, `handbook/11-ddd-and-bounded-con
 | [SPEC-DOM-002](SPEC-DOM-002-organization-department-employee.md) | Organization, Department, Employee | Approved |
 | [SPEC-DOM-003](SPEC-DOM-003-shift-type.md) | ShiftType | Approved |
 | [SPEC-DOM-004](SPEC-DOM-004-auth-roles.md) | Auth y roles básicos | Approved |
+| [SPEC-DOM-005](SPEC-DOM-005-shift-assignment-calendar.md) | ShiftAssignment y calendario mensual | Draft |
+| [SPEC-DOM-006](SPEC-DOM-006-rule-engine-v1.md) | Rule Engine v1 (hard rules) | Draft |
 
 Solo specs **Approved** autorizan implementación de producto (Gate 0).

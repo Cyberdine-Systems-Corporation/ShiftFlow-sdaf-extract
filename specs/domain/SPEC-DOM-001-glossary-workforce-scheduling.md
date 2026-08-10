@@ -3,9 +3,9 @@
 | Campo | Valor |
 |--------|--------|
 | ID | SPEC-DOM-001 |
-| Versión | 0.1.1 |
+| Versión | 0.1.2 |
 | Estado | Approved |
-| Fecha | 2026-08-09 |
+| Fecha | 2026-08-10 |
 | Fuentes | `handbook/11-ddd-and-bounded-contexts.md`, `handbook/03-mvp-definition.md`, SPEC-PRD-001, `knowledge/raw/Domain-Specs-V1.docx` (semántica sectorial filtrada) |
 | ADRs relacionados | ADR-001, ADR-002, ADR-004 |
 | Backlog | PBI-002, PBI-003, PBI-004 |
@@ -49,7 +49,8 @@ User *──* Role   (asignación de roles a usuarios)
 
 ## 4. Fuera de alcance de este glossary
 
-- Schedule, Shift, Leave, Rule Engine → Sprint 2 (nuevas entradas o enmienda).
+- **ShiftAssignment**, **CalendarMonth**, **RuleViolation** → [SPEC-DOM-005](SPEC-DOM-005-shift-assignment-calendar.md) (Sprint 2).
+- Leave y detalle Rule Engine → [SPEC-DOM-006](SPEC-DOM-006-rule-engine-v1.md) / PBI-007.
 - Roles granulares por departamento, SSO, multitenancy SaaS.
 
 ---
@@ -58,5 +59,6 @@ User *──* Role   (asignación de roles a usuarios)
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-10 | Cross-ref glossary Sprint 2 → SPEC-DOM-005/006 (editorial) |
 | 0.1.1 | 2026-08-09 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-09 | Draft Sprint 1 (Specification Agent) |

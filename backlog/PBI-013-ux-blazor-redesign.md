@@ -6,7 +6,7 @@
 | Prioridad | 13 |
 | Specs | [SPEC-PRD-003](../specs/product/SPEC-PRD-003-ui-demo-nfr.md) Approved |
 | DoD | AC-UX-01…05; worklog ATF; sin kit UI externo |
-| Estado | En curso (`feat/ux-blazor-redesign`) |
+| Estado | Hecho (mergeado) |
 
 ## Descripción
 
