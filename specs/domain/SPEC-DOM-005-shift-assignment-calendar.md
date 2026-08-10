@@ -3,8 +3,8 @@
 | Campo | Valor |
 |--------|--------|
 | ID | SPEC-DOM-005 |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Fecha | 2026-08-10 |
 | Fuentes | SPEC-PRD-001 (C-CAL, C-ASN), SPEC-PRD-002 AC-02/AC-03, SPEC-DOM-001…003, `handbook/03-mvp-definition.md` §7, `handbook/11-ddd-and-bounded-contexts.md`, `handbook/12-cqrs-vertical-slices.md`, ADR-003 |
 | ADRs relacionados | ADR-001, ADR-003, ADR-004 |
@@ -105,4 +105,5 @@ Criterio de producto (C-CAL): la vista permite iniciar una asignación manual (C
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-10 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-10 | Draft PBI-005 (Specification Agent) |

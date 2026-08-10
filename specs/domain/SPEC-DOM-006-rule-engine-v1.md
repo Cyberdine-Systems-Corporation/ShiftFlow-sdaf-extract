@@ -3,8 +3,8 @@
 | Campo | Valor |
 |--------|--------|
 | ID | SPEC-DOM-006 |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Fecha | 2026-08-10 |
 | Fuentes | SPEC-PRD-001 §2.2 (C-RUL), SPEC-PRD-002 AC-03/AC-04, ADR-003, SPEC-DOM-005, `handbook/03-mvp-definition.md`, `knowledge/raw/Domain-Specs-V1.docx` (filtrado Out) |
 | ADRs relacionados | ADR-003 |
@@ -83,4 +83,5 @@ Etiqueta **Implementación: diferida (DOCX / Out MVP)**:
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-10 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-10 | Draft (HR-01…03); HR-01 acoplado a PBI-005 AssignShift |

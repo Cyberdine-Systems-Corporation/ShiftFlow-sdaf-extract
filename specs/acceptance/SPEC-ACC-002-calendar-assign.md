@@ -3,8 +3,8 @@
 | Campo | Valor |
 |--------|--------|
 | ID | SPEC-ACC-002 |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Fecha | 2026-08-10 |
 | Fuentes | SPEC-PRD-002 AC-02/AC-03, SPEC-DOM-005, SPEC-DOM-006 (HR-01), SPEC-APP-003 |
 | ADRs relacionados | ADR-003, ADR-004 |
@@ -109,4 +109,5 @@ Entonces la operación se rechaza y no se crea asignación
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-10 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-10 | Draft PBI-005 (Specification Agent) |
