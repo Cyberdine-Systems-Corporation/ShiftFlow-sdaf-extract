@@ -3,9 +3,9 @@
 | Campo | Valor |
 |--------|--------|
 | ID | SPEC-APP-003 |
-| Versión | 0.1.1 |
+| Versión | 0.1.2 |
 | Estado | Approved |
-| Fecha | 2026-08-10 |
+| Fecha | 2026-08-12 |
 | Fuentes | SPEC-DOM-005, SPEC-DOM-006, SPEC-PRD-001 (C-CAL, C-ASN, C-RUL), SPEC-PRD-002 AC-02/AC-03, `handbook/12-cqrs-vertical-slices.md` |
 | ADRs relacionados | ADR-003, ADR-004 |
 | Backlog | PBI-005 (calendario + AssignShift); PBI-006 (completar Rule Engine) |
@@ -80,8 +80,8 @@ Consultas de planificación requieren autenticación (mismo rol MVP).
 
 ## 6. Fuera de alcance
 
-- `RegisterLeave` / listado de leaves (PBI-007).  
-- HR-02/HR-03 completos (PBI-006; HR-02 necesita Leave).  
+- `RegisterLeave` / `CancelLeave` / `ListLeaves` → [SPEC-APP-004](SPEC-APP-004-leave-use-cases.md) (PBI-007).  
+- HR-02 completo tras Leave → PBI-006 + PBI-007; HR-03 → PBI-006.  
 - Drag-and-drop, edición in-place masiva, notificaciones SignalR.  
 - Paginación avanzada del mes (MVP: mes completo razonable para demo).
 
@@ -91,5 +91,6 @@ Consultas de planificación requieren autenticación (mismo rol MVP).
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-12 | Out → cross-ref SPEC-APP-004 (editorial) |
 | 0.1.1 | 2026-08-10 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-10 | Draft PBI-005 (Specification Agent) |

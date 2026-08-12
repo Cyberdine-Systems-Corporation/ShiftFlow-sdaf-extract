@@ -4,9 +4,9 @@
 |--------|--------|
 | Sprint | 2 |
 | Prioridad | 6 |
-| Specs | [SPEC-DOM-006](../specs/domain/SPEC-DOM-006-rule-engine-v1.md) **Approved**; SPEC-PRD-001/002 (C-RUL), ADR-003 |
+| Specs | [SPEC-DOM-006](../specs/domain/SPEC-DOM-006-rule-engine-v1.md) **Approved**; Leave [SPEC-DOM-007](../specs/domain/SPEC-DOM-007-leave.md) **Approved**; SPEC-PRD-001/002 (C-RUL), ADR-003 |
 | DoD | Tres hard rules con tests; rechazo observable en API/UI |
-| Estado | Ready parcial (SPEC-DOM-006 Approved; HR-02 requiere Leave / PBI-007) |
+| Estado | Ready (HR-01 hecho; HR-02/03 implementables — Leave Gate 0 OK) |
 
 ## Descripción
 
@@ -15,5 +15,5 @@ HR-01 (solape) se ejercita ya en PBI-005; este PBI completa el motor (HR-02/HR-0
 
 ## Notas
 
-- Depende de modelo Leave (PBI-007) para HR-02 completo.
-- Dominio de reglas Approved; implementación de HR-02/03 tras spec/modelo Leave.
+- Modelo Leave Approved (PBI-007): HR-02 puede implementarse junto con RegisterLeave.
+- HR-03: umbral configurable por Organization; puede ir en el mismo slice de Domain o en PR aparte.

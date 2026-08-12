@@ -3,9 +3,9 @@
 | Campo | Valor |
 |--------|--------|
 | ID | SPEC-DOM-006 |
-| Versión | 0.1.1 |
+| Versión | 0.1.2 |
 | Estado | Approved |
-| Fecha | 2026-08-10 |
+| Fecha | 2026-08-12 |
 | Fuentes | SPEC-PRD-001 §2.2 (C-RUL), SPEC-PRD-002 AC-03/AC-04, ADR-003, SPEC-DOM-005, `handbook/03-mvp-definition.md`, `knowledge/raw/Domain-Specs-V1.docx` (filtrado Out) |
 | ADRs relacionados | ADR-003 |
 | Backlog | PBI-006 (completo); **HR-01** requerido por AssignShift en PBI-005 |
@@ -44,8 +44,8 @@ Evaluate(candidate ShiftAssignment, contexto de plan) → ok | RuleViolation[]
 
 ### 2.2 Leave (HR-02)
 
-- Depende del aggregate Leave (PBI-007). Hasta entonces el motor puede exponer el hook y devolver vacío para HR-02.
-- Criterio de producto: AC-04 de SPEC-PRD-002.
+- Depende del aggregate Leave ([SPEC-DOM-007](SPEC-DOM-007-leave.md), PBI-007). Hasta que exista el modelo Approved e implementado, el motor puede exponer el hook y devolver vacío para HR-02.
+- Criterio de producto: AC-04 de SPEC-PRD-002; aceptación ACC-S2-L* en SPEC-ACC-003.
 
 ### 2.3 Descanso mínimo (HR-03)
 
@@ -83,5 +83,6 @@ Etiqueta **Implementación: diferida (DOCX / Out MVP)**:
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-12 | Cross-ref HR-02 → SPEC-DOM-007 / SPEC-ACC-003 (editorial) |
 | 0.1.1 | 2026-08-10 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-10 | Draft (HR-01…03); HR-01 acoplado a PBI-005 AssignShift |

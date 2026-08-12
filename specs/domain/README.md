@@ -10,5 +10,6 @@ Norma: `handbook/08-specification-standard.md`, `handbook/11-ddd-and-bounded-con
 | [SPEC-DOM-004](SPEC-DOM-004-auth-roles.md) | Auth y roles básicos | Approved |
 | [SPEC-DOM-005](SPEC-DOM-005-shift-assignment-calendar.md) | ShiftAssignment y calendario mensual | Approved |
 | [SPEC-DOM-006](SPEC-DOM-006-rule-engine-v1.md) | Rule Engine v1 (hard rules) | Approved |
+| [SPEC-DOM-007](SPEC-DOM-007-leave.md) | Leave (ausencias / vacaciones) | Approved |
 
 Solo specs **Approved** autorizan implementación de producto (Gate 0).
