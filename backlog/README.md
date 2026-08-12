@@ -11,7 +11,7 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | 2 | [PBI-002](PBI-002-auth-roles.md) | Auth y roles básicos | 1 | SPEC-DOM-004, SPEC-APP-002, SPEC-ACC-001, ADR-005 Approved | Hecho (mergeado) |
 | 3 | [PBI-003](PBI-003-organization-department-employee.md) | Organization, Department, Employee | 1 | SPEC-DOM-001/002, SPEC-APP-001, SPEC-ACC-001 Approved | Hecho (mergeado) |
 | 4 | [PBI-004](PBI-004-shift-types.md) | Shift types | 1 | SPEC-DOM-003, SPEC-APP-001, SPEC-ACC-001 Approved | Hecho (mergeado) |
-| 5 | [PBI-005](PBI-005-calendar-assign-shift.md) | Calendario y asignación manual | 2 | SPEC-DOM-005/006, SPEC-APP-003, SPEC-ACC-002 Approved | Ready (Gate 0) |
+| 5 | [PBI-005](PBI-005-calendar-assign-shift.md) | Calendario y asignación manual | 2 | SPEC-DOM-005/006, SPEC-APP-003, SPEC-ACC-002 Approved | En curso (API lista; UI pendiente) |
 | 6 | [PBI-006](PBI-006-rule-engine-v1.md) | Rule Engine v1 (3 hard rules) | 2 | SPEC-DOM-006 Approved, ADR-003 | Ready parcial (HR-02 + Leave) |
 | 7 | [PBI-007](PBI-007-leaves.md) | Leaves / ausencias | 2 | SPEC-PRD-001/002 Approved (C-LEA) | Spec dominio pendiente |
 | 8 | [PBI-008](PBI-008-blazor-shell-crud.md) | Blazor shell + CRUD maestros | 1–2 | SPEC-PRD-002 | Hecho (mergeado #13) |

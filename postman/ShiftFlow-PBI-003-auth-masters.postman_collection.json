@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "shiftflow-pbi-003-auth-masters",
-    "name": "ShiftFlow — Auth + Maestros (PBI-003/004)",
-    "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee → ShiftType (scripts guardan IDs).",
+    "name": "ShiftFlow — Auth + Maestros + Calendario (PBI-003…005)",
+    "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee → ShiftType (scripts guardan IDs).\n5. Calendario / Assignments (PBI-005): GetMonthCalendar → AssignShift → solape HR-01 → adyacente → CancelShift.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -10,7 +10,10 @@
     { "key": "organizationId", "value": "" },
     { "key": "departmentId", "value": "" },
     { "key": "employeeId", "value": "" },
-    { "key": "shiftTypeId", "value": "" }
+    { "key": "shiftTypeId", "value": "" },
+    { "key": "assignmentId", "value": "" },
+    { "key": "calendarYear", "value": "2026" },
+    { "key": "calendarMonth", "value": "8" }
   ],
   "item": [
     {
@@ -341,6 +344,121 @@
               "raw": "{\n  \"name\": \"Noche\",\n  \"code\": \"NOC\",\n  \"defaultStartTime\": \"22:00:00\",\n  \"defaultEndTime\": \"06:00:00\"\n}"
             },
             "url": "{{baseUrl}}/api/organizations/{{organizationId}}/shift-types"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calendar & Assignments (PBI-005)",
+      "item": [
+        {
+          "name": "GET month calendar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/organizations/{{organizationId}}/calendar?year={{calendarYear}}&month={{calendarMonth}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "organizations", "{{organizationId}}", "calendar"],
+              "query": [
+                { "key": "year", "value": "{{calendarYear}}" },
+                { "key": "month", "value": "{{calendarMonth}}" }
+              ]
+            },
+            "description": "ACC-S2-01: proyección mensual (lista vacía permitida). Requiere organizationId de un alta previa."
+          }
+        },
+        {
+          "name": "POST assign shift (valid)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const j = pm.response.json();",
+                  "  pm.collectionVariables.set('assignmentId', j.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"shiftTypeId\": \"{{shiftTypeId}}\",\n  \"startAt\": \"2026-08-10T08:00:00+00:00\",\n  \"endAt\": \"2026-08-10T12:00:00+00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/assignments",
+            "description": "ACC-S2-02: asignación válida [08:00, 12:00). Guarda assignmentId."
+          }
+        },
+        {
+          "name": "GET month calendar (after assign)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/calendar?year={{calendarYear}}&month={{calendarMonth}}",
+            "description": "Debe incluir la asignación creada (Assigned)."
+          }
+        },
+        {
+          "name": "POST assign overlap (expect 400 HR-01)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"shiftTypeId\": \"{{shiftTypeId}}\",\n  \"startAt\": \"2026-08-10T10:00:00+00:00\",\n  \"endAt\": \"2026-08-10T14:00:00+00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/assignments",
+            "description": "ACC-S2-03: solapa con [08:00, 12:00) → BadRequest code HR-01."
+          }
+        },
+        {
+          "name": "POST assign adjacent (ok)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"shiftTypeId\": \"{{shiftTypeId}}\",\n  \"startAt\": \"2026-08-10T12:00:00+00:00\",\n  \"endAt\": \"2026-08-10T16:00:00+00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/assignments",
+            "description": "ACC-S2-04: borde exacto 12:00 no solapa; debe aceptar."
+          }
+        },
+        {
+          "name": "POST cancel assignment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/assignments/{{assignmentId}}/cancel",
+            "description": "ACC-S2-06: cancela la primera asignación (assignmentId del assign válido)."
+          }
+        },
+        {
+          "name": "GET month calendar (after cancel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/calendar?year={{calendarYear}}&month={{calendarMonth}}",
+            "description": "La asignación cancelada no debe aparecer; puede quedar la adyacente si se ejecutó antes."
+          }
+        },
+        {
+          "name": "POST assign without auth (expect 401)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"shiftTypeId\": \"{{shiftTypeId}}\",\n  \"startAt\": \"2026-08-11T08:00:00+00:00\",\n  \"endAt\": \"2026-08-11T12:00:00+00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/assignments",
+            "description": "ACC-S2-07: ejecutar tras Logout (o en pestaña sin cookie) → 401."
           }
         }
       ]

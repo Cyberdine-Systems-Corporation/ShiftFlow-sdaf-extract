@@ -4,6 +4,7 @@ using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Departments;
 using ShiftFlow.Domain.Employees;
 using ShiftFlow.Domain.Organizations;
+using ShiftFlow.Domain.ShiftAssignments;
 using ShiftFlow.Domain.ShiftTypes;
 using ShiftFlow.Infrastructure.Identity;
 
@@ -36,6 +37,11 @@ public sealed class ShiftFlowDbContext(DbContextOptions<ShiftFlowDbContext> opti
     /// Conjunto de tipos de turno.
     /// </summary>
     public DbSet<ShiftType> ShiftTypes => Set<ShiftType>();
+
+    /// <summary>
+    /// Conjunto de asignaciones de turno.
+    /// </summary>
+    public DbSet<ShiftAssignment> ShiftAssignments => Set<ShiftAssignment>();
 
     #endregion
 

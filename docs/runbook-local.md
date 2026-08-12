@@ -87,7 +87,13 @@ API (rol `Administrator`):
 - `POST/GET /api/organizations/{id}/employees`, `GET /api/departments/{id}/employees`, `PUT /api/employees/{id}`, `PUT .../active`
 - `POST/GET /api/organizations/{id}/shift-types`, `PUT /api/shift-types/{id}`, `PUT .../active`
 
-Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (ver `postman/README.md`).
+### Calendario / asignación (PBI-005)
+
+- `GET /api/organizations/{id}/calendar?year=&month=`
+- `POST /api/organizations/{id}/assignments`
+- `POST /api/assignments/{id}/cancel`
+
+Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (auth + maestros + calendario; ver `postman/README.md`).
 
 El esquema se crea con `EnsureCreated`. Si ya tenías un volumen Postgres sin tablas nuevas, **resetea el volumen** (§6) y vuelve a arrancar.
 

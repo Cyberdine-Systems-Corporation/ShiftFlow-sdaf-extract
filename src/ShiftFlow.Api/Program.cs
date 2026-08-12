@@ -1,6 +1,7 @@
 using Serilog;
 using ShiftFlow.Api.Auth;
 using ShiftFlow.Api.Masters;
+using ShiftFlow.Api.Scheduling;
 using ShiftFlow.Application;
 using ShiftFlow.Infrastructure;
 using ShiftFlow.Infrastructure.Identity;
@@ -58,6 +59,7 @@ try
 
     app.MapAuthEndpoints();
     app.MapMasterDataEndpoints();
+    app.MapSchedulingEndpoints();
 
     app.Run();
 }
