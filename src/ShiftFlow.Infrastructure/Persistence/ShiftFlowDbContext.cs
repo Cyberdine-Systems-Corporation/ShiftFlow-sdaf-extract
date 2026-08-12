@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Departments;
 using ShiftFlow.Domain.Employees;
+using ShiftFlow.Domain.Leaves;
 using ShiftFlow.Domain.Organizations;
 using ShiftFlow.Domain.ShiftAssignments;
 using ShiftFlow.Domain.ShiftTypes;
@@ -42,6 +43,11 @@ public sealed class ShiftFlowDbContext(DbContextOptions<ShiftFlowDbContext> opti
     /// Conjunto de asignaciones de turno.
     /// </summary>
     public DbSet<ShiftAssignment> ShiftAssignments => Set<ShiftAssignment>();
+
+    /// <summary>
+    /// Conjunto de ausencias (Leave).
+    /// </summary>
+    public DbSet<Leave> Leaves => Set<Leave>();
 
     #endregion
 

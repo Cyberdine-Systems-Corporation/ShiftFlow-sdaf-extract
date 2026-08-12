@@ -6,6 +6,7 @@ using ShiftFlow.Application.Auth;
 using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Departments;
 using ShiftFlow.Domain.Employees;
+using ShiftFlow.Domain.Leaves;
 using ShiftFlow.Domain.Organizations;
 using ShiftFlow.Domain.ShiftAssignments;
 using ShiftFlow.Domain.ShiftTypes;
@@ -46,6 +47,7 @@ public static class DependencyInjection
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IShiftTypeRepository, ShiftTypeRepository>();
         services.AddScoped<IShiftAssignmentRepository, ShiftAssignmentRepository>();
+        services.AddScoped<ILeaveRepository, LeaveRepository>();
 
         #endregion
 

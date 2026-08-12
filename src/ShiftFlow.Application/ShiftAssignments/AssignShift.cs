@@ -2,6 +2,7 @@ using MediatR;
 using ShiftFlow.Application.Common;
 using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Employees;
+using ShiftFlow.Domain.Leaves;
 using ShiftFlow.Domain.Organizations;
 using ShiftFlow.Domain.Rules;
 using ShiftFlow.Domain.ShiftAssignments;
@@ -44,13 +45,14 @@ public sealed record ShiftAssignmentDto(
     string Status);
 
 /// <summary>
-/// Handler que crea la asignación tras invariantes estructurales y Rule Engine (HR-01).
+/// Handler que crea la asignación tras invariantes estructurales y Rule Engine (HR-01/HR-02).
 /// </summary>
 public sealed class AssignShiftHandler(
     IOrganizationRepository organizations,
     IEmployeeRepository employees,
     IShiftTypeRepository shiftTypes,
     IShiftAssignmentRepository assignments,
+    ILeaveRepository leaves,
     IUnitOfWork unitOfWork) : IRequestHandler<AssignShiftCommand, ShiftAssignmentDto>
 {
     private readonly RuleEngine _ruleEngine = new();
@@ -87,9 +89,10 @@ public sealed class AssignShiftHandler(
             request.StartAt,
             request.EndAt);
 
-        // ADR-003: Evaluate antes de persistir.
+        // ADR-003: Evaluate antes de persistir (HR-01 solape + HR-02 leave).
         var existing = await assignments.ListAssignedByEmployeeAsync(employee.Id, cancellationToken);
-        var violations = _ruleEngine.Evaluate(candidate, existing);
+        var activeLeaves = await leaves.ListActiveByEmployeeAsync(employee.Id, cancellationToken);
+        var violations = _ruleEngine.Evaluate(candidate, existing, activeLeaves);
         if (violations.Count > 0)
         {
             var first = violations[0];
