@@ -528,7 +528,111 @@ code {
     margin-top: 1.5rem;
 }
 
-/* Calendar placeholder */
+/* Calendar mensual */
+
+.sf-cal-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.sf-cal-month-label {
+    font-family: var(--sf-font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin: 0;
+    text-transform: capitalize;
+    color: var(--sf-ink);
+}
+
+.sf-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--sf-line);
+    border: 1px solid var(--sf-line);
+    border-radius: var(--sf-radius);
+    overflow: hidden;
+    margin-top: 0.75rem;
+}
+
+.sf-cal-weekday {
+    background: var(--sf-surface);
+    padding: 0.45rem 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--sf-ink-muted);
+    letter-spacing: 0.02em;
+}
+
+.sf-cal-day {
+    background: var(--sf-surface);
+    min-height: 5.5rem;
+    padding: 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sf-cal-day-out {
+    background: color-mix(in srgb, var(--sf-surface) 70%, transparent);
+    opacity: 0.55;
+}
+
+.sf-cal-day-num {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--sf-ink-muted);
+}
+
+.sf-cal-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.3rem 0.35rem;
+    border-radius: calc(var(--sf-radius) - 2px);
+    background: var(--sf-accent-soft);
+    border: 1px solid color-mix(in srgb, var(--sf-accent) 25%, transparent);
+}
+
+.sf-cal-item-text {
+    font-size: 0.7rem;
+    line-height: 1.25;
+    color: var(--sf-ink);
+}
+
+.sf-cal-item-time {
+    display: block;
+    color: var(--sf-ink-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.sf-cal-item .sf-btn {
+    align-self: flex-start;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.65rem;
+}
+
+.sf-cal-list {
+    display: none;
+    margin-top: 1rem;
+}
+
+@media (max-width: 720px) {
+    .sf-cal-grid {
+        display: none;
+    }
+
+    .sf-cal-list {
+        display: block;
+    }
+}
+
+/* Placeholder legacy (por si queda alguna página) */
 
 .sf-placeholder {
     text-align: left;

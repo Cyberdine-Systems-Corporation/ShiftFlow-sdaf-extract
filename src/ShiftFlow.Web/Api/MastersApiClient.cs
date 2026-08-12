@@ -3,12 +3,13 @@ using System.Text.Json;
 using ShiftFlow.Application.Departments;
 using ShiftFlow.Application.Employees;
 using ShiftFlow.Application.Organizations;
+using ShiftFlow.Application.ShiftAssignments;
 using ShiftFlow.Application.ShiftTypes;
 
 namespace ShiftFlow.Web.Api;
 
 /// <summary>
-/// Cliente HTTP tipado para maestros (org/dept/employee/shift type) vía la Api.
+/// Cliente HTTP tipado para maestros y planificación (calendario / AssignShift) vía la Api.
 /// </summary>
 public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
 {
@@ -131,6 +132,37 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
     /// <summary>Activa o desactiva un tipo de turno.</summary>
     public Task<ApiResult<ShiftTypeDto>> SetShiftTypeActiveAsync(Guid id, bool isActive, CancellationToken ct = default) =>
         PutAsync<ShiftTypeDto>($"/api/shift-types/{id}/active", new { isActive }, ct);
+
+    #endregion
+
+    #region Calendar & Assignments
+
+    /// <summary>Obtiene las asignaciones Assigned del mes civil.</summary>
+    public Task<IReadOnlyList<CalendarAssignmentDto>> GetMonthCalendarAsync(
+        Guid organizationId,
+        int year,
+        int month,
+        CancellationToken ct = default) =>
+        GetListAsync<CalendarAssignmentDto>(
+            $"/api/organizations/{organizationId}/calendar?year={year}&month={month}",
+            ct);
+
+    /// <summary>Asigna un turno (invoca Rule Engine en la Api antes de persistir).</summary>
+    public Task<ApiResult<ShiftAssignmentDto>> AssignShiftAsync(
+        Guid organizationId,
+        Guid employeeId,
+        Guid shiftTypeId,
+        DateTimeOffset startAt,
+        DateTimeOffset endAt,
+        CancellationToken ct = default) =>
+        PostAsync<ShiftAssignmentDto>(
+            $"/api/organizations/{organizationId}/assignments",
+            new { employeeId, shiftTypeId, startAt, endAt },
+            ct);
+
+    /// <summary>Cancela una asignación Assigned.</summary>
+    public Task<ApiResult<ShiftAssignmentDto>> CancelShiftAsync(Guid assignmentId, CancellationToken ct = default) =>
+        PostAsync<ShiftAssignmentDto>($"/api/assignments/{assignmentId}/cancel", new { }, ct);
 
     #endregion
 
