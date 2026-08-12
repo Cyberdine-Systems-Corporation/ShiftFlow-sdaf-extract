@@ -34,6 +34,14 @@ public class LeaveApiTests
             $"/api/organizations/{org.Id}/leaves",
             JsonOptions);
         list.Should().ContainSingle(x => x.Id == leave.Id && x.EmployeeId == emp.Id);
+
+        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
+            $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
+            JsonOptions);
+        calendar!.Leaves.Should().ContainSingle(x =>
+            x.Id == leave.Id
+            && x.EmployeeId == emp.Id
+            && x.StartOn == leave.StartOn);
     }
 
     [Fact]
@@ -316,6 +324,27 @@ public class LeaveApiTests
         string Status,
         string? Kind,
         string? Reason);
+
+    private sealed record MonthCalendarResponse(
+        List<CalendarAssignmentItem> Assignments,
+        List<CalendarLeaveItem> Leaves);
+
+    private sealed record CalendarAssignmentItem(
+        Guid Id,
+        Guid EmployeeId,
+        string EmployeeDisplayName,
+        Guid ShiftTypeId,
+        string ShiftTypeName,
+        DateTimeOffset StartAt,
+        DateTimeOffset EndAt);
+
+    private sealed record CalendarLeaveItem(
+        Guid Id,
+        Guid EmployeeId,
+        string EmployeeDisplayName,
+        DateOnly StartOn,
+        DateOnly EndOn,
+        string? Kind);
 
     private sealed record ErrorBody(string Error, string Code);
 }

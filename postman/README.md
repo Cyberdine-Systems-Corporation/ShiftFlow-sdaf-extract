@@ -23,7 +23,7 @@ Variables útiles de calendario: `calendarYear` / `calendarMonth` (por defecto `
 
 | Request | Ruta |
 |---------|------|
-| GET month calendar | `GET /api/organizations/{id}/calendar?year=&month=` |
+| GET month calendar | `GET /api/organizations/{id}/calendar?year=&month=` → `{ assignments, leaves }` |
 | Assign shift | `POST /api/organizations/{id}/assignments` |
 | Cancel shift | `POST /api/assignments/{id}/cancel` |
 | Register leave | `POST /api/organizations/{id}/leaves` |

@@ -366,7 +366,7 @@
                 { "key": "month", "value": "{{calendarMonth}}" }
               ]
             },
-            "description": "ACC-S2-01: proyección mensual (lista vacía permitida). Requiere organizationId de un alta previa."
+            "description": "ACC-S2-01: proyección mensual `{ assignments, leaves }` (listas vacías permitidas). Requiere organizationId de un alta previa."
           }
         },
         {
