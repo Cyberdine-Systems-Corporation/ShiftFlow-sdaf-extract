@@ -13,7 +13,10 @@
 <PageTitle>Calendario — ShiftFlow</PageTitle>
 
 <h1 class="sf-page-title">Calendario</h1>
-<p class="sf-lede">Vista mensual y asignación manual de turnos. Los rechazos de regla (p. ej. solape) se muestran sin mutar el cuadrante.</p>
+<p class="sf-lede">
+    Vista mensual con turnos y ausencias. Los rechazos de regla (solape HR-01, ausencia HR-02)
+    se muestran sin mutar el cuadrante.
+</p>
 
 @if (!string.IsNullOrEmpty(_error))
 {
@@ -96,6 +99,7 @@ else
             <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="AssignAsync">
                 @(_busy ? "Asignando…" : "Asignar turno")
             </button>
+            <a class="sf-btn sf-btn-secondary" href="/leaves">Gestionar ausencias</a>
         </div>
         @if (_employees.Count == 0 || _shiftTypes.Count == 0)
         {
@@ -109,13 +113,14 @@ else
     <section class="sf-section">
         <div class="sf-section-head">
             <h2>Mes</h2>
-            @if (_assignments is not null)
+            @if (_calendar is not null)
             {
-                <span class="sf-badge sf-badge-muted">@_assignments.Count turnos</span>
+                <span class="sf-badge sf-badge-muted">@_calendar.Assignments.Count turnos</span>
+                <span class="sf-badge sf-badge-danger">@_calendar.Leaves.Count ausencias</span>
             }
         </div>
 
-        @if (_assignments is null)
+        @if (_calendar is null)
         {
             <p class="sf-hint">Cargando calendario…</p>
         }
@@ -132,6 +137,15 @@ else
                         <div class="sf-cal-day-num">@cell.Day.Day</div>
                         @if (cell.IsInMonth)
                         {
+                            @foreach (var leave in LeavesOn(cell.Day))
+                            {
+                                <div class="sf-cal-item sf-cal-leave" title="Ausencia">
+                                    <span class="sf-cal-item-text">
+                                        @leave.EmployeeDisplayName · ausencia
+                                        <span class="sf-cal-item-time">@FormatLeaveRange(leave)</span>
+                                    </span>
+                                </div>
+                            }
                             @foreach (var a in AssignmentsOn(cell.Day))
                             {
                                 <div class="sf-cal-item">
@@ -153,41 +167,68 @@ else
                 }
             </div>
 
-            @if (_assignments.Count == 0)
+            @if (_calendar.Assignments.Count == 0 && _calendar.Leaves.Count == 0)
             {
                 <div class="sf-empty">
-                    <strong>Sin turnos este mes</strong>
-                    Asigna un turno con el formulario de arriba.
+                    <strong>Sin turnos ni ausencias este mes</strong>
+                    Asigna un turno o <a href="/leaves">registra una ausencia</a>.
                 </div>
             }
             else
             {
                 <div class="sf-cal-list" aria-label="Listado del mes">
-                    <table class="sf-table">
-                        <thead>
-                            <tr>
-                                <th>Empleado</th>
-                                <th>Tipo</th>
-                                <th>Intervalo</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var a in _assignments)
-                            {
+                    @if (_calendar.Leaves.Count > 0)
+                    {
+                        <h3 class="sf-cal-list-title">Ausencias</h3>
+                        <table class="sf-table">
+                            <thead>
                                 <tr>
-                                    <td>@a.EmployeeDisplayName</td>
-                                    <td>@a.ShiftTypeName</td>
-                                    <td>@a.StartAt.UtcDateTime.ToString("g", Es) – @a.EndAt.UtcDateTime.ToString("HH:mm", Es)</td>
-                                    <td>
-                                        <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => CancelAsync(a.Id)">
-                                            Cancelar
-                                        </button>
-                                    </td>
+                                    <th>Empleado</th>
+                                    <th>Rango</th>
+                                    <th>Tipo</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var leave in _calendar.Leaves)
+                                {
+                                    <tr>
+                                        <td>@leave.EmployeeDisplayName</td>
+                                        <td>@FormatLeaveRange(leave)</td>
+                                        <td>@(leave.Kind ?? "—")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    @if (_calendar.Assignments.Count > 0)
+                    {
+                        <h3 class="sf-cal-list-title">Turnos</h3>
+                        <table class="sf-table">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Tipo</th>
+                                    <th>Intervalo</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var a in _calendar.Assignments)
+                                {
+                                    <tr>
+                                        <td>@a.EmployeeDisplayName</td>
+                                        <td>@a.ShiftTypeName</td>
+                                        <td>@a.StartAt.UtcDateTime.ToString("g", Es) – @a.EndAt.UtcDateTime.ToString("HH:mm", Es)</td>
+                                        <td>
+                                            <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => CancelAsync(a.Id)">
+                                                Cancelar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
                 </div>
             }
         }
@@ -201,7 +242,7 @@ else
     private IReadOnlyList<OrganizationDto>? _organizations;
     private List<EmployeeDto> _employees = [];
     private List<ShiftTypeDto> _shiftTypes = [];
-    private IReadOnlyList<CalendarAssignmentDto>? _assignments;
+    private MonthCalendarDto? _calendar;
     private List<CalendarCell> _cells = [];
 
     private Guid _selectedOrganizationId;
@@ -351,12 +392,12 @@ else
     {
         if (_selectedOrganizationId == Guid.Empty)
         {
-            _assignments = [];
+            _calendar = new MonthCalendarDto([], []);
             _cells = [];
             return;
         }
 
-        _assignments = await Api.GetMonthCalendarAsync(_selectedOrganizationId, _year, _month);
+        _calendar = await Api.GetMonthCalendarAsync(_selectedOrganizationId, _year, _month);
         _cells = BuildMonthCells(_year, _month);
     }
 
@@ -381,10 +422,18 @@ else
         _monthLabel = new DateTime(_year, _month, 1).ToString("MMMM yyyy", Es);
 
     private IEnumerable<CalendarAssignmentDto> AssignmentsOn(DateOnly day) =>
-        (_assignments ?? []).Where(a => DateOnly.FromDateTime(a.StartAt.UtcDateTime) == day);
+        (_calendar?.Assignments ?? []).Where(a => DateOnly.FromDateTime(a.StartAt.UtcDateTime) == day);
+
+    private IEnumerable<CalendarLeaveDto> LeavesOn(DateOnly day) =>
+        (_calendar?.Leaves ?? []).Where(l => l.StartOn <= day && day <= l.EndOn);
 
     private static string FormatInterval(CalendarAssignmentDto a) =>
         $"{a.StartAt.UtcDateTime:HH:mm}–{a.EndAt.UtcDateTime:HH:mm}";
+
+    private static string FormatLeaveRange(CalendarLeaveDto leave) =>
+        leave.StartOn == leave.EndOn
+            ? leave.StartOn.ToString("dd/MM")
+            : $"{leave.StartOn:dd/MM}–{leave.EndOn:dd/MM}";
 
     /// <summary>
     /// Construye celdas de la grilla (lunes–domingo) incluyendo días fuera del mes.
@@ -392,7 +441,6 @@ else
     private static List<CalendarCell> BuildMonthCells(int year, int month)
     {
         var first = new DateOnly(year, month, 1);
-        // DayOfWeek: Sunday=0 … Saturday=6 → lunes=0
         var offset = ((int)first.DayOfWeek + 6) % 7;
         var start = first.AddDays(-offset);
         var cells = new List<CalendarCell>(42);

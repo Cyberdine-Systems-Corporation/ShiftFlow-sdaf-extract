@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using ShiftFlow.Application.Departments;
 using ShiftFlow.Application.Employees;
+using ShiftFlow.Application.Leaves;
 using ShiftFlow.Application.Organizations;
 using ShiftFlow.Application.ShiftAssignments;
 using ShiftFlow.Application.ShiftTypes;
@@ -9,7 +10,7 @@ using ShiftFlow.Application.ShiftTypes;
 namespace ShiftFlow.Web.Api;
 
 /// <summary>
-/// Cliente HTTP tipado para maestros y planificación (calendario / AssignShift) vía la Api.
+/// Cliente HTTP tipado para maestros, planificación y leaves vía la Api.
 /// </summary>
 public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
 {
@@ -137,13 +138,13 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
 
     #region Calendar & Assignments
 
-    /// <summary>Obtiene las asignaciones Assigned del mes civil.</summary>
-    public Task<IReadOnlyList<CalendarAssignmentDto>> GetMonthCalendarAsync(
+    /// <summary>Obtiene la proyección mensual (asignaciones Assigned + leaves Active).</summary>
+    public Task<MonthCalendarDto> GetMonthCalendarAsync(
         Guid organizationId,
         int year,
         int month,
         CancellationToken ct = default) =>
-        GetListAsync<CalendarAssignmentDto>(
+        GetAsyncRequired<MonthCalendarDto>(
             $"/api/organizations/{organizationId}/calendar?year={year}&month={month}",
             ct);
 
@@ -166,7 +167,68 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
 
     #endregion
 
+    #region Leaves
+
+    /// <summary>Lista leaves de una organización.</summary>
+    public Task<IReadOnlyList<LeaveDto>> ListLeavesAsync(
+        Guid organizationId,
+        Guid? employeeId = null,
+        int? year = null,
+        int? month = null,
+        bool activeOnly = true,
+        CancellationToken ct = default)
+    {
+        var qs = new List<string> { $"activeOnly={activeOnly}" };
+        if (employeeId.HasValue)
+        {
+            qs.Add($"employeeId={employeeId}");
+        }
+
+        if (year.HasValue && month.HasValue)
+        {
+            qs.Add($"year={year}");
+            qs.Add($"month={month}");
+        }
+
+        return GetListAsync<LeaveDto>(
+            $"/api/organizations/{organizationId}/leaves?{string.Join('&', qs)}",
+            ct);
+    }
+
+    /// <summary>Registra un leave Active.</summary>
+    public Task<ApiResult<LeaveDto>> RegisterLeaveAsync(
+        Guid organizationId,
+        Guid employeeId,
+        DateOnly startOn,
+        DateOnly endOn,
+        string? kind,
+        string? reason,
+        CancellationToken ct = default) =>
+        PostAsync<LeaveDto>(
+            $"/api/organizations/{organizationId}/leaves",
+            new { employeeId, startOn, endOn, kind, reason },
+            ct);
+
+    /// <summary>Cancela un leave Active.</summary>
+    public Task<ApiResult<LeaveDto>> CancelLeaveAsync(Guid leaveId, CancellationToken ct = default) =>
+        PostAsync<LeaveDto>($"/api/leaves/{leaveId}/cancel", new { }, ct);
+
+    #endregion
+
     #region HTTP helpers
+
+    private async Task<T> GetAsyncRequired<T>(string url, CancellationToken ct)
+    {
+        using var response = await Client.GetAsync(url, ct);
+        if (!response.IsSuccessStatusCode)
+        {
+            var message = await ReadErrorAsync(response, ct);
+            throw new HttpRequestException(message, null, response.StatusCode);
+        }
+
+        var value = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct);
+        return value ?? throw new HttpRequestException("Respuesta vacía de la Api.");
+    }
 
     private async Task<IReadOnlyList<T>> GetListAsync<T>(string url, CancellationToken ct)
     {

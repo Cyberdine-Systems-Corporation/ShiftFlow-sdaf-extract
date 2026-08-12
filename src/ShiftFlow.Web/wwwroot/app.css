@@ -599,6 +599,11 @@ code {
     border: 1px solid color-mix(in srgb, var(--sf-accent) 25%, transparent);
 }
 
+.sf-cal-leave {
+    background: color-mix(in srgb, var(--sf-danger, #b42318) 12%, var(--sf-surface));
+    border-color: color-mix(in srgb, var(--sf-danger, #b42318) 35%, transparent);
+}
+
 .sf-cal-item-text {
     font-size: 0.7rem;
     line-height: 1.25;
@@ -620,6 +625,13 @@ code {
 .sf-cal-list {
     display: none;
     margin-top: 1rem;
+}
+
+.sf-cal-list-title {
+    font-family: var(--sf-font-display);
+    font-size: 1.05rem;
+    margin: 1rem 0 0.5rem;
+    color: var(--sf-ink);
 }
 
 @media (max-width: 720px) {

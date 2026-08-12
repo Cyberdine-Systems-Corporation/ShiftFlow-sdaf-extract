@@ -29,8 +29,10 @@ public class CalendarAssignApiTests
 
         var response = await client.GetAsync($"/api/organizations/{org.Id}/calendar?year=2026&month=8");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var items = await response.Content.ReadFromJsonAsync<List<CalendarItem>>(JsonOptions);
-        items.Should().NotBeNull().And.BeEmpty();
+        var calendar = await response.Content.ReadFromJsonAsync<MonthCalendarResponse>(JsonOptions);
+        calendar.Should().NotBeNull();
+        calendar!.Assignments.Should().BeEmpty();
+        calendar.Leaves.Should().BeEmpty();
     }
 
     [Fact]
@@ -45,11 +47,11 @@ public class CalendarAssignApiTests
 
         assign.Status.Should().Be("Assigned");
 
-        var calendar = await client.GetFromJsonAsync<List<CalendarItem>>(
+        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
 
-        calendar.Should().ContainSingle(x =>
+        calendar!.Assignments.Should().ContainSingle(x =>
             x.Id == assign.Id
             && x.EmployeeId == emp.Id
             && x.ShiftTypeId == shiftType.Id);
@@ -78,10 +80,10 @@ public class CalendarAssignApiTests
         var body = await overlap.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("HR-01");
 
-        var calendar = await client.GetFromJsonAsync<List<CalendarItem>>(
+        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
-        calendar.Should().ContainSingle();
+        calendar!.Assignments.Should().ContainSingle();
     }
 
     [Fact]
@@ -102,10 +104,10 @@ public class CalendarAssignApiTests
 
         second.Status.Should().Be("Assigned");
 
-        var calendar = await client.GetFromJsonAsync<List<CalendarItem>>(
+        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
-        calendar.Should().HaveCount(2);
+        calendar!.Assignments.Should().HaveCount(2);
     }
 
     [Fact]
@@ -147,10 +149,10 @@ public class CalendarAssignApiTests
         var cancel = await client.PostAsync($"/api/assignments/{assign.Id}/cancel", null);
         cancel.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var calendar = await client.GetFromJsonAsync<List<CalendarItem>>(
+        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
-        calendar.Should().BeEmpty();
+        calendar!.Assignments.Should().BeEmpty();
     }
 
     [Fact]
@@ -286,6 +288,10 @@ public class CalendarAssignApiTests
         DateTimeOffset EndAt,
         string Status);
 
+    private sealed record MonthCalendarResponse(
+        List<CalendarItem> Assignments,
+        List<CalendarLeaveItem> Leaves);
+
     private sealed record CalendarItem(
         Guid Id,
         Guid EmployeeId,
@@ -294,6 +300,14 @@ public class CalendarAssignApiTests
         string ShiftTypeName,
         DateTimeOffset StartAt,
         DateTimeOffset EndAt);
+
+    private sealed record CalendarLeaveItem(
+        Guid Id,
+        Guid EmployeeId,
+        string EmployeeDisplayName,
+        DateOnly StartOn,
+        DateOnly EndOn,
+        string? Kind);
 
     private sealed record ErrorBody(string Error, string Code);
 }

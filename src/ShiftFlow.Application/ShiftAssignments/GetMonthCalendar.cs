@@ -1,6 +1,7 @@
 using MediatR;
 using ShiftFlow.Application.Common;
 using ShiftFlow.Domain.Employees;
+using ShiftFlow.Domain.Leaves;
 using ShiftFlow.Domain.Organizations;
 using ShiftFlow.Domain.ShiftAssignments;
 using ShiftFlow.Domain.ShiftTypes;
@@ -14,7 +15,16 @@ namespace ShiftFlow.Application.ShiftAssignments;
 /// <param name="Year">Año (gregoriano).</param>
 /// <param name="Month">Mes (1–12).</param>
 public sealed record GetMonthCalendarQuery(Guid OrganizationId, int Year, int Month)
-    : IRequest<IReadOnlyList<CalendarAssignmentDto>>;
+    : IRequest<MonthCalendarDto>;
+
+/// <summary>
+/// Proyección mensual: asignaciones Assigned y leaves Active (SPEC-DOM-005/007).
+/// </summary>
+/// <param name="Assignments">Turnos Assigned que intersectan el mes.</param>
+/// <param name="Leaves">Ausencias Active que intersectan el mes.</param>
+public sealed record MonthCalendarDto(
+    IReadOnlyList<CalendarAssignmentDto> Assignments,
+    IReadOnlyList<CalendarLeaveDto> Leaves);
 
 /// <summary>
 /// Entrada de calendario con metadatos mínimos de empleado y tipo.
@@ -36,24 +46,42 @@ public sealed record CalendarAssignmentDto(
     DateTimeOffset EndAt);
 
 /// <summary>
-/// Handler de proyección de calendario mensual (solo Status Assigned).
+/// Ausencia proyectada en el calendario mensual.
+/// </summary>
+/// <param name="Id">Identificador del leave.</param>
+/// <param name="EmployeeId">Empleado.</param>
+/// <param name="EmployeeDisplayName">Nombre visible del empleado.</param>
+/// <param name="StartOn">Inicio inclusive.</param>
+/// <param name="EndOn">Fin inclusive.</param>
+/// <param name="Kind">Tipo opcional.</param>
+public sealed record CalendarLeaveDto(
+    Guid Id,
+    Guid EmployeeId,
+    string EmployeeDisplayName,
+    DateOnly StartOn,
+    DateOnly EndOn,
+    string? Kind);
+
+/// <summary>
+/// Handler de proyección de calendario mensual (asignaciones + leaves).
 /// </summary>
 public sealed class GetMonthCalendarHandler(
     IOrganizationRepository organizations,
     IShiftAssignmentRepository assignments,
+    ILeaveRepository leaves,
     IEmployeeRepository employees,
     IShiftTypeRepository shiftTypes)
-    : IRequestHandler<GetMonthCalendarQuery, IReadOnlyList<CalendarAssignmentDto>>
+    : IRequestHandler<GetMonthCalendarQuery, MonthCalendarDto>
 {
     /// <summary>
-    /// Obtiene las asignaciones Assigned que intersectan el mes.
+    /// Obtiene asignaciones Assigned y leaves Active que intersectan el mes.
     /// </summary>
     /// <param name="request">Consulta de calendario.</param>
     /// <param name="cancellationToken">Token de cancelación.</param>
-    /// <returns>Lista ordenada por inicio.</returns>
+    /// <returns>Proyección mensual.</returns>
     /// <exception cref="NotFoundException">Si la organización no existe.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Si el mes no está entre 1 y 12.</exception>
-    public async Task<IReadOnlyList<CalendarAssignmentDto>> Handle(
+    public async Task<MonthCalendarDto> Handle(
         GetMonthCalendarQuery request,
         CancellationToken cancellationToken)
     {
@@ -71,26 +99,48 @@ public sealed class GetMonthCalendarHandler(
             request.Month,
             cancellationToken);
 
-        if (monthAssignments.Count == 0)
-        {
-            return Array.Empty<CalendarAssignmentDto>();
-        }
+        var monthLeaves = await leaves.ListAsync(
+            request.OrganizationId,
+            employeeId: null,
+            request.Year,
+            request.Month,
+            activeOnly: true,
+            cancellationToken);
 
         var orgEmployees = await employees.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
-        var orgShiftTypes = await shiftTypes.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
-
         var employeeNames = orgEmployees.ToDictionary(e => e.Id, e => e.DisplayName);
-        var shiftTypeNames = orgShiftTypes.ToDictionary(s => s.Id, s => s.Name);
 
-        return monthAssignments
-            .Select(a => new CalendarAssignmentDto(
-                a.Id,
-                a.EmployeeId,
-                employeeNames.GetValueOrDefault(a.EmployeeId, string.Empty),
-                a.ShiftTypeId,
-                shiftTypeNames.GetValueOrDefault(a.ShiftTypeId, string.Empty),
-                a.StartAt,
-                a.EndAt))
+        IReadOnlyList<CalendarAssignmentDto> assignmentsDto;
+        if (monthAssignments.Count == 0)
+        {
+            assignmentsDto = Array.Empty<CalendarAssignmentDto>();
+        }
+        else
+        {
+            var orgShiftTypes = await shiftTypes.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
+            var shiftTypeNames = orgShiftTypes.ToDictionary(s => s.Id, s => s.Name);
+            assignmentsDto = monthAssignments
+                .Select(a => new CalendarAssignmentDto(
+                    a.Id,
+                    a.EmployeeId,
+                    employeeNames.GetValueOrDefault(a.EmployeeId, string.Empty),
+                    a.ShiftTypeId,
+                    shiftTypeNames.GetValueOrDefault(a.ShiftTypeId, string.Empty),
+                    a.StartAt,
+                    a.EndAt))
+                .ToList();
+        }
+
+        var leavesDto = monthLeaves
+            .Select(l => new CalendarLeaveDto(
+                l.Id,
+                l.EmployeeId,
+                employeeNames.GetValueOrDefault(l.EmployeeId, string.Empty),
+                l.StartOn,
+                l.EndOn,
+                l.Kind))
             .ToList();
+
+        return new MonthCalendarDto(assignmentsDto, leavesDto);
     }
 }
