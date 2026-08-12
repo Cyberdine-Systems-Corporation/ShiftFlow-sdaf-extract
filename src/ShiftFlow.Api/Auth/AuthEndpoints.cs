@@ -18,7 +18,7 @@ public static class AuthEndpoints
     /// <returns>El mismo <paramref name="endpoints"/> para encadenar.</returns>
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/auth").WithTags("Auth");
+        RouteGroupBuilder? group = endpoints.MapGroup("/api/auth").WithTags("Auth");
 
         group.MapPost("/login", LoginAsync)
             .AllowAnonymous()
@@ -47,13 +47,13 @@ public static class AuthEndpoints
             return Results.BadRequest(new { error = "UserName y Password son obligatorios." });
         }
 
-        var user = await userManager.FindByNameAsync(request.UserName);
+        ApplicationUser? user = await userManager.FindByNameAsync(request.UserName);
         if (user is null)
         {
             return Results.Unauthorized();
         }
 
-        var result = await signInManager.PasswordSignInAsync(
+        Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.PasswordSignInAsync(
             user,
             request.Password,
             isPersistent: true,
@@ -64,10 +64,10 @@ public static class AuthEndpoints
             return Results.Unauthorized();
         }
 
-        var roles = await userManager.GetRolesAsync(user);
-        var accessToken = accessTokens.Issue(user.UserName!, roles.ToArray());
+        IList<string>? roles = await userManager.GetRolesAsync(user);
+        string accessToken = accessTokens.Issue(user.UserName!, roles.ToArray());
         // sessionCookies: compat BFF / diagnóstico; el Web usa accessToken (Bearer).
-        var sessionCookies = ExtractSessionCookiePairs(httpContext.Response.Headers.SetCookie);
+        string[] sessionCookies = ExtractSessionCookiePairs(httpContext.Response.Headers.SetCookie);
         return Results.Ok(new AuthUserResponse(user.UserName!, roles.ToArray(), accessToken, sessionCookies));
     }
 
@@ -78,15 +78,15 @@ public static class AuthEndpoints
             return [];
         }
 
-        var pairs = new List<string>(setCookieHeaders.Count);
-        foreach (var header in setCookieHeaders)
+        List<string> pairs = new List<string>(setCookieHeaders.Count);
+        foreach (string? header in setCookieHeaders)
         {
             if (string.IsNullOrWhiteSpace(header))
             {
                 continue;
             }
 
-            var firstSegment = header.Split(';', 2)[0].Trim();
+            string firstSegment = header.Split(';', 2)[0].Trim();
             if (firstSegment.Contains('=', StringComparison.Ordinal))
             {
                 pairs.Add(firstSegment);
@@ -104,13 +104,13 @@ public static class AuthEndpoints
 
     private static IResult Me(ClaimsPrincipal principal)
     {
-        var userName = principal.Identity?.Name;
+        string? userName = principal.Identity?.Name;
         if (string.IsNullOrEmpty(userName))
         {
             return Results.Unauthorized();
         }
 
-        var roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray();
+        string[] roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray();
         return Results.Ok(new AuthUserResponse(userName, roles));
     }
 

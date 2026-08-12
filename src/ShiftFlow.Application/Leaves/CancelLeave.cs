@@ -28,7 +28,7 @@ public sealed class CancelLeaveHandler(
     /// <exception cref="DomainException">Si no está en estado Active.</exception>
     public async Task<LeaveDto> Handle(CancelLeaveCommand request, CancellationToken cancellationToken)
     {
-        var leave = await leaves.GetByIdAsync(request.LeaveId, cancellationToken)
+        Leave? leave = await leaves.GetByIdAsync(request.LeaveId, cancellationToken)
             ?? throw new NotFoundException($"Ausencia {request.LeaveId} no encontrada.");
 
         leave.Cancel();

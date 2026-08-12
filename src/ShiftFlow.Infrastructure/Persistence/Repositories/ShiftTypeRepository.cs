@@ -31,7 +31,7 @@ public sealed class ShiftTypeRepository(ShiftFlowDbContext db) : IShiftTypeRepos
         Guid? excludingShiftTypeId = null,
         CancellationToken cancellationToken = default)
     {
-        var normalized = name.Trim().ToLowerInvariant();
+        string normalized = name.Trim().ToLowerInvariant();
         return db.ShiftTypes.AnyAsync(
             x => x.OrganizationId == organizationId
                  && x.Name.ToLower() == normalized
@@ -46,7 +46,7 @@ public sealed class ShiftTypeRepository(ShiftFlowDbContext db) : IShiftTypeRepos
         Guid? excludingShiftTypeId = null,
         CancellationToken cancellationToken = default)
     {
-        var normalized = code.Trim().ToLowerInvariant();
+        string normalized = code.Trim().ToLowerInvariant();
         return db.ShiftTypes.AnyAsync(
             x => x.OrganizationId == organizationId
                  && x.Code != null

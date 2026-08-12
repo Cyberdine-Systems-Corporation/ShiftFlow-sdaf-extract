@@ -26,7 +26,7 @@ public sealed class ListDepartmentsByOrganizationHandler(IDepartmentRepository d
         ListDepartmentsByOrganizationQuery request,
         CancellationToken cancellationToken)
     {
-        var list = await departments.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
+        IReadOnlyList<Department>? list = await departments.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
         return list.Select(CreateDepartmentHandler.ToDto).ToList();
     }
 }

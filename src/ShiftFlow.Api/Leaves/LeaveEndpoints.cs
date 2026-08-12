@@ -21,7 +21,7 @@ public static class LeaveEndpoints
     /// <returns>El mismo <paramref name="endpoints"/> para encadenar.</returns>
     public static IEndpointRouteBuilder MapLeaveEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var orgs = endpoints.MapGroup("/api/organizations")
+        RouteGroupBuilder? orgs = endpoints.MapGroup("/api/organizations")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Leaves");
 
@@ -31,7 +31,7 @@ public static class LeaveEndpoints
         orgs.MapPost("/{organizationId:guid}/leaves", RegisterLeaveAsync)
             .WithName("RegisterLeave");
 
-        var leaves = endpoints.MapGroup("/api/leaves")
+        RouteGroupBuilder? leaves = endpoints.MapGroup("/api/leaves")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Leaves");
 
@@ -89,7 +89,7 @@ public static class LeaveEndpoints
     {
         try
         {
-            var result = await action();
+            T? result = await action();
             return onSuccess(result);
         }
         catch (ArgumentOutOfRangeException ex)

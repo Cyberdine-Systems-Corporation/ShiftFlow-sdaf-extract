@@ -72,13 +72,13 @@ public sealed class AssignShiftHandler(
         _ = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
-        var employee = await employees.GetByIdAsync(request.EmployeeId, cancellationToken)
+        Employee? employee = await employees.GetByIdAsync(request.EmployeeId, cancellationToken)
             ?? throw new NotFoundException($"Empleado {request.EmployeeId} no encontrado.");
 
-        var shiftType = await shiftTypes.GetByIdAsync(request.ShiftTypeId, cancellationToken)
+        ShiftType? shiftType = await shiftTypes.GetByIdAsync(request.ShiftTypeId, cancellationToken)
             ?? throw new NotFoundException($"Tipo de turno {request.ShiftTypeId} no encontrado.");
 
-        var candidate = ShiftAssignment.Create(
+        ShiftAssignment candidate = ShiftAssignment.Create(
             request.OrganizationId,
             employee.Id,
             employee.OrganizationId,
@@ -90,12 +90,12 @@ public sealed class AssignShiftHandler(
             request.EndAt);
 
         // ADR-003: Evaluate antes de persistir (HR-01 solape + HR-02 leave).
-        var existing = await assignments.ListAssignedByEmployeeAsync(employee.Id, cancellationToken);
-        var activeLeaves = await leaves.ListActiveByEmployeeAsync(employee.Id, cancellationToken);
-        var violations = _ruleEngine.Evaluate(candidate, existing, activeLeaves);
+        IReadOnlyList<ShiftAssignment>? existing = await assignments.ListAssignedByEmployeeAsync(employee.Id, cancellationToken);
+        IReadOnlyList<Leave>? activeLeaves = await leaves.ListActiveByEmployeeAsync(employee.Id, cancellationToken);
+        IReadOnlyList<RuleViolation>? violations = _ruleEngine.Evaluate(candidate, existing, activeLeaves);
         if (violations.Count > 0)
         {
-            var first = violations[0];
+            RuleViolation? first = violations[0];
             throw new DomainException(first.Code, first.Message);
         }
 

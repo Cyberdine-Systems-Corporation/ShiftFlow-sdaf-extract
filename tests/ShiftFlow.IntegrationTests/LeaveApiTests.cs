@@ -24,18 +24,18 @@ public class LeaveApiTests
     [Fact]
     public async Task ACC_S2_L01_registrar_leave()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, _) = await SeedOrgAsync(client, "Org Leave Register");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse _) = await SeedOrgAsync(client, "Org Leave Register");
 
-        var leave = await RegisterLeaveAsync(client, org.Id, emp.Id, new DateOnly(2026, 8, 15), new DateOnly(2026, 8, 15));
+        LeaveResponse? leave = await RegisterLeaveAsync(client, org.Id, emp.Id, new DateOnly(2026, 8, 15), new DateOnly(2026, 8, 15));
         leave.Status.Should().Be("Active");
 
-        var list = await client.GetFromJsonAsync<List<LeaveResponse>>(
+        List<LeaveResponse>? list = await client.GetFromJsonAsync<List<LeaveResponse>>(
             $"/api/organizations/{org.Id}/leaves",
             JsonOptions);
         list.Should().ContainSingle(x => x.Id == leave.Id && x.EmployeeId == emp.Id);
 
-        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
+        MonthCalendarResponse? calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
         calendar!.Leaves.Should().ContainSingle(x =>
@@ -47,13 +47,13 @@ public class LeaveApiTests
     [Fact]
     public async Task ACC_S2_L02_leave_bloquea_asignacion_HR02()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Leave Block");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Leave Block");
 
         await RegisterLeaveAsync(client, org.Id, emp.Id, new DateOnly(2026, 8, 15), new DateOnly(2026, 8, 15));
 
-        var day = new DateTimeOffset(2026, 8, 15, 0, 0, 0, TimeSpan.Zero);
-        var response = await client.PostAsJsonAsync(
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 15, 0, 0, 0, TimeSpan.Zero);
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/assignments",
             new
             {
@@ -64,51 +64,51 @@ public class LeaveApiTests
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("HR-02");
     }
 
     [Fact]
     public async Task ACC_S2_L03_asignacion_fuera_del_leave_permitida()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Leave Outside");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Leave Outside");
 
         await RegisterLeaveAsync(client, org.Id, emp.Id, new DateOnly(2026, 8, 15), new DateOnly(2026, 8, 15));
 
-        var day = new DateTimeOffset(2026, 8, 16, 10, 0, 0, TimeSpan.Zero);
-        var assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day, day.AddHours(4));
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 16, 10, 0, 0, TimeSpan.Zero);
+        ShiftAssignmentResponse? assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day, day.AddHours(4));
         assign.Status.Should().Be("Assigned");
     }
 
     [Fact]
     public async Task ACC_S2_L04_cancelar_leave_desbloquea()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Leave Cancel");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Leave Cancel");
 
-        var leave = await RegisterLeaveAsync(
+        LeaveResponse? leave = await RegisterLeaveAsync(
             client,
             org.Id,
             emp.Id,
             new DateOnly(2026, 8, 15),
             new DateOnly(2026, 8, 15));
 
-        var cancel = await client.PostAsync($"/api/leaves/{leave.Id}/cancel", null);
+        HttpResponseMessage? cancel = await client.PostAsync($"/api/leaves/{leave.Id}/cancel", null);
         cancel.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var day = new DateTimeOffset(2026, 8, 15, 10, 0, 0, TimeSpan.Zero);
-        var assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day, day.AddHours(4));
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 15, 10, 0, 0, TimeSpan.Zero);
+        ShiftAssignmentResponse? assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day, day.AddHours(4));
         assign.Status.Should().Be("Assigned");
     }
 
     [Fact]
     public async Task ACC_S2_L05_rechazo_EndOn_anterior()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, _) = await SeedOrgAsync(client, "Org Leave Invalid Range");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse _) = await SeedOrgAsync(client, "Org Leave Invalid Range");
 
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/leaves",
             new
             {
@@ -120,15 +120,15 @@ public class LeaveApiTests
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("INV-LEA-03");
     }
 
     [Fact]
     public async Task ACC_S2_L06_escritura_anonima_rechazada()
     {
-        var client = _factory.CreateClient();
-        var response = await client.PostAsJsonAsync(
+        HttpClient? client = _factory.CreateClient();
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{Guid.NewGuid()}/leaves",
             new
             {
@@ -145,13 +145,13 @@ public class LeaveApiTests
     [Fact]
     public async Task ACC_S2_L07_HR01_y_HR02_distinguibles()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Codes Distinct");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Codes Distinct");
 
-        var day10 = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset day10 = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
         await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day10.AddHours(10), day10.AddHours(14));
 
-        var overlap = await client.PostAsJsonAsync(
+        HttpResponseMessage? overlap = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/assignments",
             new
             {
@@ -164,8 +164,8 @@ public class LeaveApiTests
         (await overlap.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions))!.Code.Should().Be("HR-01");
 
         await RegisterLeaveAsync(client, org.Id, emp.Id, new DateOnly(2026, 8, 15), new DateOnly(2026, 8, 15));
-        var day15 = new DateTimeOffset(2026, 8, 15, 0, 0, 0, TimeSpan.Zero);
-        var underLeave = await client.PostAsJsonAsync(
+        DateTimeOffset day15 = new DateTimeOffset(2026, 8, 15, 0, 0, 0, TimeSpan.Zero);
+        HttpResponseMessage? underLeave = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/assignments",
             new
             {
@@ -180,8 +180,8 @@ public class LeaveApiTests
 
     private async Task<HttpClient> CreateAuthenticatedClientAsync()
     {
-        var client = _factory.CreateClient(new() { HandleCookies = true });
-        var login = await client.PostAsJsonAsync("/api/auth/login", new
+        HttpClient? client = _factory.CreateClient(new() { HandleCookies = true });
+        HttpResponseMessage? login = await client.PostAsJsonAsync("/api/auth/login", new
         {
             userName = DemoCredentials.UserName,
             password = DemoCredentials.DefaultDevelopmentPassword
@@ -194,10 +194,10 @@ public class LeaveApiTests
         HttpClient client,
         string orgName)
     {
-        var org = await CreateOrganizationAsync(client, orgName);
-        var dept = await CreateDepartmentAsync(client, org.Id, "Dept");
-        var emp = await CreateEmployeeAsync(client, org.Id, dept.Id, "Ana", null);
-        var shiftType = await CreateShiftTypeAsync(client, org.Id, "Mañana", "MAN");
+        OrganizationResponse? org = await CreateOrganizationAsync(client, orgName);
+        DepartmentResponse? dept = await CreateDepartmentAsync(client, org.Id, "Dept");
+        EmployeeResponse? emp = await CreateEmployeeAsync(client, org.Id, dept.Id, "Ana", null);
+        ShiftTypeResponse? shiftType = await CreateShiftTypeAsync(client, org.Id, "Mañana", "MAN");
         return (org, emp, shiftType);
     }
 
@@ -208,7 +208,7 @@ public class LeaveApiTests
         DateOnly startOn,
         DateOnly endOn)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/leaves",
             new
             {
@@ -219,7 +219,7 @@ public class LeaveApiTests
                 reason = "Demo"
             });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var body = await response.Content.ReadFromJsonAsync<LeaveResponse>(JsonOptions);
+        LeaveResponse? body = await response.Content.ReadFromJsonAsync<LeaveResponse>(JsonOptions);
         body.Should().NotBeNull();
         return body!;
     }
@@ -232,7 +232,7 @@ public class LeaveApiTests
         DateTimeOffset startAt,
         DateTimeOffset endAt)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/assignments",
             new { employeeId, shiftTypeId, startAt, endAt });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -241,7 +241,7 @@ public class LeaveApiTests
 
     private static async Task<OrganizationResponse> CreateOrganizationAsync(HttpClient client, string name)
     {
-        var response = await client.PostAsJsonAsync("/api/organizations", new { name });
+        HttpResponseMessage? response = await client.PostAsJsonAsync("/api/organizations", new { name });
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<OrganizationResponse>(JsonOptions))!;
     }
@@ -251,7 +251,7 @@ public class LeaveApiTests
         Guid organizationId,
         string name)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/departments",
             new { name });
         response.EnsureSuccessStatusCode();
@@ -265,7 +265,7 @@ public class LeaveApiTests
         string displayName,
         string? email)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/employees",
             new { departmentId, displayName, email });
         response.EnsureSuccessStatusCode();
@@ -278,7 +278,7 @@ public class LeaveApiTests
         string name,
         string? code)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/shift-types",
             new { name, code, defaultStartTime = (string?)null, defaultEndTime = (string?)null });
         response.EnsureSuccessStatusCode();

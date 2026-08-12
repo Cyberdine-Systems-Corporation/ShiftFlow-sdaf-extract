@@ -29,24 +29,24 @@ public sealed class PassThroughAuthenticationHandler : AuthenticationHandler<Aut
     /// <inheritdoc />
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var session = Context.RequestServices.GetRequiredService<CookieContainerHolder>();
+        CookieContainerHolder? session = Context.RequestServices.GetRequiredService<CookieContainerHolder>();
         if (!session.HasWebSession || string.IsNullOrWhiteSpace(session.UserName))
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
-        var claims = new List<Claim>
+        List<Claim> claims = new List<Claim>
         {
             new(ClaimTypes.Name, session.UserName),
             new(ClaimTypes.NameIdentifier, session.UserName)
         };
-        foreach (var role in session.Roles)
+        foreach (string role in session.Roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
-        var identity = new ClaimsIdentity(claims, authenticationType: Scheme.Name);
-        var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), Scheme.Name);
+        ClaimsIdentity identity = new ClaimsIdentity(claims, authenticationType: Scheme.Name);
+        AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), Scheme.Name);
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 

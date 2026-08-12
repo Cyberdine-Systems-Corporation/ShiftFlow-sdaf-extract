@@ -22,14 +22,14 @@ public static class AccessTokenMiddleware
         {
             if (context.User.Identity?.IsAuthenticated != true)
             {
-                var header = context.Request.Headers.Authorization.ToString();
+                string header = context.Request.Headers.Authorization.ToString();
                 if (header.StartsWith(BearerPrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    var token = header[BearerPrefix.Length..].Trim();
+                    string token = header[BearerPrefix.Length..].Trim();
                     if (token.Length > 0)
                     {
-                        var tokens = context.RequestServices.GetRequiredService<AccessTokenService>();
-                        var principal = tokens.TryValidate(token);
+                        AccessTokenService? tokens = context.RequestServices.GetRequiredService<AccessTokenService>();
+                        System.Security.Claims.ClaimsPrincipal? principal = tokens.TryValidate(token);
                         if (principal is not null)
                         {
                             context.User = principal;

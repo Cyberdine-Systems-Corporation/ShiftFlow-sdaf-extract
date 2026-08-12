@@ -1,13 +1,13 @@
-var builder = DistributedApplication.CreateBuilder(args);
+IDistributedApplicationBuilder? builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder
+IResourceBuilder<PostgresDatabaseResource>? postgres = builder
     .AddPostgres("postgres")
     .WithDataVolume()
     // 5433 fijo (pgAdmin): evita colisión con PostgreSQL Windows en 5432
     .WithHostPort(5433)
     .AddDatabase("shiftflow");
 
-var api = builder
+IResourceBuilder<ProjectResource>? api = builder
     .AddProject<Projects.ShiftFlow_Api>("api")
     .WithReference(postgres)
     .WaitFor(postgres)

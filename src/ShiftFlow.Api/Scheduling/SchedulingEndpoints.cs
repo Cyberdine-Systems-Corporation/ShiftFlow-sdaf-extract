@@ -21,7 +21,7 @@ public static class SchedulingEndpoints
     /// <returns>El mismo <paramref name="endpoints"/> para encadenar.</returns>
     public static IEndpointRouteBuilder MapSchedulingEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var orgs = endpoints.MapGroup("/api/organizations")
+        RouteGroupBuilder? orgs = endpoints.MapGroup("/api/organizations")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Calendar");
 
@@ -32,7 +32,7 @@ public static class SchedulingEndpoints
             .WithName("AssignShift")
             .WithTags("Assignments");
 
-        var assignments = endpoints.MapGroup("/api/assignments")
+        RouteGroupBuilder? assignments = endpoints.MapGroup("/api/assignments")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Assignments");
 
@@ -80,7 +80,7 @@ public static class SchedulingEndpoints
     {
         try
         {
-            var result = await action();
+            T? result = await action();
             return onSuccess(result);
         }
         catch (ArgumentOutOfRangeException ex)

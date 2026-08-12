@@ -40,7 +40,7 @@ public sealed class UpdateShiftTypeHandler(
         UpdateShiftTypeCommand request,
         CancellationToken cancellationToken)
     {
-        var shiftType = await shiftTypes.GetByIdAsync(request.Id, cancellationToken)
+        ShiftType? shiftType = await shiftTypes.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Tipo de turno {request.Id} no encontrado.");
 
         await CreateShiftTypeHandler.EnsureUniquenessAsync(
@@ -86,7 +86,7 @@ public sealed class SetShiftTypeActiveHandler(
         SetShiftTypeActiveCommand request,
         CancellationToken cancellationToken)
     {
-        var shiftType = await shiftTypes.GetByIdAsync(request.Id, cancellationToken)
+        ShiftType? shiftType = await shiftTypes.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Tipo de turno {request.Id} no encontrado.");
 
         shiftType.SetActive(request.IsActive);

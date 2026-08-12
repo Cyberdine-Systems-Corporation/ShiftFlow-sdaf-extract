@@ -30,7 +30,7 @@ public sealed class RenameOrganizationHandler(
         RenameOrganizationCommand request,
         CancellationToken cancellationToken)
     {
-        var organization = await organizations.GetByIdAsync(request.Id, cancellationToken)
+        Organization? organization = await organizations.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.Id} no encontrada.");
 
         organization.Rename(request.Name);

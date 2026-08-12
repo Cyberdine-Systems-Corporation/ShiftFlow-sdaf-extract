@@ -14,8 +14,8 @@ public class ShiftAssignmentAndRulesTests
     [Fact]
     public void ShiftAssignment_rechaza_tipo_inactivo()
     {
-        var day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
-        var act = () => ShiftAssignment.Create(
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
+        Func<ShiftAssignment>? act = () => ShiftAssignment.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -32,8 +32,8 @@ public class ShiftAssignmentAndRulesTests
     [Fact]
     public void ShiftAssignment_rechaza_intervalo_invalido()
     {
-        var day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
-        var act = () => ShiftAssignment.Create(
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
+        Func<ShiftAssignment>? act = () => ShiftAssignment.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -50,9 +50,9 @@ public class ShiftAssignmentAndRulesTests
     [Fact]
     public void ShiftAssignment_rechaza_empleado_de_otra_organization()
     {
-        var otherOrg = Guid.NewGuid();
-        var day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
-        var act = () => ShiftAssignment.Create(
+        Guid otherOrg = Guid.NewGuid();
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
+        Func<ShiftAssignment>? act = () => ShiftAssignment.Create(
             OrgId,
             EmployeeId,
             otherOrg,
@@ -69,22 +69,22 @@ public class ShiftAssignmentAndRulesTests
     [Fact]
     public void Cancel_solo_sobre_Assigned()
     {
-        var assignment = CreateAssigned(8, 12);
+        ShiftAssignment? assignment = CreateAssigned(8, 12);
         assignment.Cancel();
         assignment.Status.Should().Be(ShiftAssignmentStatus.Cancelled);
 
-        var act = () => assignment.Cancel();
+        Action? act = () => assignment.Cancel();
         act.Should().Throw<DomainException>().Which.Code.Should().Be("INV-ASN-06");
     }
 
     [Fact]
     public void HR01_rechaza_solape()
     {
-        var existing = CreateAssigned(10, 14);
-        var candidate = CreateAssigned(12, 16);
-        var engine = new RuleEngine();
+        ShiftAssignment? existing = CreateAssigned(10, 14);
+        ShiftAssignment? candidate = CreateAssigned(12, 16);
+        RuleEngine engine = new RuleEngine();
 
-        var violations = engine.Evaluate(candidate, [existing]);
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(candidate, [existing]);
 
         violations.Should().ContainSingle(v => v.Code == "HR-01");
     }
@@ -92,11 +92,11 @@ public class ShiftAssignmentAndRulesTests
     [Fact]
     public void HR01_permite_turnos_adyacentes()
     {
-        var existing = CreateAssigned(10, 14);
-        var candidate = CreateAssigned(14, 18);
-        var engine = new RuleEngine();
+        ShiftAssignment? existing = CreateAssigned(10, 14);
+        ShiftAssignment? candidate = CreateAssigned(14, 18);
+        RuleEngine engine = new RuleEngine();
 
-        var violations = engine.Evaluate(candidate, [existing]);
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(candidate, [existing]);
 
         violations.Should().BeEmpty();
     }

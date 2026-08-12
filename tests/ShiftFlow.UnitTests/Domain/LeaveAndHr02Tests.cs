@@ -15,7 +15,7 @@ public class LeaveAndHr02Tests
     [Fact]
     public void Leave_rechaza_EndOn_anterior_a_StartOn()
     {
-        var act = () => Leave.Create(
+        Func<Leave>? act = () => Leave.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -29,7 +29,7 @@ public class LeaveAndHr02Tests
     [Fact]
     public void Leave_rechaza_empleado_inactivo()
     {
-        var act = () => Leave.Create(
+        Func<Leave>? act = () => Leave.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -43,7 +43,7 @@ public class LeaveAndHr02Tests
     [Fact]
     public void Cancel_solo_sobre_Active()
     {
-        var leave = Leave.Create(
+        Leave leave = Leave.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -54,14 +54,14 @@ public class LeaveAndHr02Tests
         leave.Cancel();
         leave.Status.Should().Be(LeaveStatus.Cancelled);
 
-        var act = () => leave.Cancel();
+        Action? act = () => leave.Cancel();
         act.Should().Throw<DomainException>().Which.Code.Should().Be("INV-LEA-05");
     }
 
     [Fact]
     public void HR02_rechaza_asignacion_bajo_leave()
     {
-        var leave = Leave.Create(
+        Leave leave = Leave.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -69,10 +69,10 @@ public class LeaveAndHr02Tests
             new DateOnly(2026, 8, 15),
             new DateOnly(2026, 8, 15));
 
-        var candidate = CreateAssigned(2026, 8, 15, 10, 14);
-        var engine = new RuleEngine();
+        ShiftAssignment? candidate = CreateAssigned(2026, 8, 15, 10, 14);
+        RuleEngine engine = new RuleEngine();
 
-        var violations = engine.Evaluate(candidate, [], [leave]);
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(candidate, [], [leave]);
 
         violations.Should().ContainSingle(v => v.Code == "HR-02");
     }
@@ -80,7 +80,7 @@ public class LeaveAndHr02Tests
     [Fact]
     public void HR02_permite_asignacion_fuera_del_leave()
     {
-        var leave = Leave.Create(
+        Leave leave = Leave.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -88,10 +88,10 @@ public class LeaveAndHr02Tests
             new DateOnly(2026, 8, 15),
             new DateOnly(2026, 8, 15));
 
-        var candidate = CreateAssigned(2026, 8, 16, 10, 14);
-        var engine = new RuleEngine();
+        ShiftAssignment? candidate = CreateAssigned(2026, 8, 16, 10, 14);
+        RuleEngine engine = new RuleEngine();
 
-        var violations = engine.Evaluate(candidate, [], [leave]);
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(candidate, [], [leave]);
 
         violations.Should().BeEmpty();
     }
@@ -99,7 +99,7 @@ public class LeaveAndHr02Tests
     [Fact]
     public void HR02_no_aplica_si_leave_cancelado()
     {
-        var leave = Leave.Create(
+        Leave leave = Leave.Create(
             OrgId,
             EmployeeId,
             OrgId,
@@ -108,10 +108,10 @@ public class LeaveAndHr02Tests
             new DateOnly(2026, 8, 15));
         leave.Cancel();
 
-        var candidate = CreateAssigned(2026, 8, 15, 10, 14);
-        var engine = new RuleEngine();
+        ShiftAssignment? candidate = CreateAssigned(2026, 8, 15, 10, 14);
+        RuleEngine engine = new RuleEngine();
 
-        var violations = engine.Evaluate(candidate, [], [leave]);
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(candidate, [], [leave]);
 
         violations.Should().BeEmpty();
     }
@@ -119,17 +119,17 @@ public class LeaveAndHr02Tests
     [Fact]
     public void HR01_y_HR02_son_distinguibles()
     {
-        var engine = new RuleEngine();
-        var existing = CreateAssigned(2026, 8, 10, 10, 14);
-        var overlapCandidate = CreateAssigned(2026, 8, 10, 12, 16);
-        var leave = Leave.Create(
+        RuleEngine engine = new RuleEngine();
+        ShiftAssignment? existing = CreateAssigned(2026, 8, 10, 10, 14);
+        ShiftAssignment? overlapCandidate = CreateAssigned(2026, 8, 10, 12, 16);
+        Leave leave = Leave.Create(
             OrgId,
             EmployeeId,
             OrgId,
             employeeIsActive: true,
             new DateOnly(2026, 8, 15),
             new DateOnly(2026, 8, 15));
-        var leaveCandidate = CreateAssigned(2026, 8, 15, 10, 14);
+        ShiftAssignment? leaveCandidate = CreateAssigned(2026, 8, 15, 10, 14);
 
         engine.Evaluate(overlapCandidate, [existing], []).Should().ContainSingle(v => v.Code == "HR-01");
         engine.Evaluate(leaveCandidate, [], [leave]).Should().ContainSingle(v => v.Code == "HR-02");

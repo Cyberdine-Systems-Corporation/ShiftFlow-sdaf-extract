@@ -35,7 +35,7 @@ public sealed class CreateOrganizationHandler(
         CreateOrganizationCommand request,
         CancellationToken cancellationToken)
     {
-        var organization = Organization.Create(request.Name);
+        Organization organization = Organization.Create(request.Name);
         await organizations.AddAsync(organization, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return ToDto(organization);

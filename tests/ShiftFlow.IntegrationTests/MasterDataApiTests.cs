@@ -24,12 +24,12 @@ public class MasterDataApiTests
     [Fact]
     public async Task ACC_S1_03_alta_Organization_Department_Employee_ShiftType()
     {
-        var client = await CreateAuthenticatedClientAsync();
+        HttpClient? client = await CreateAuthenticatedClientAsync();
 
-        var org = await CreateOrganizationAsync(client, "Hospital Norte");
-        var dept = await CreateDepartmentAsync(client, org.Id, "Urgencias");
-        var emp = await CreateEmployeeAsync(client, org.Id, dept.Id, "Ana Pérez", "ana@norte.local");
-        var shiftType = await CreateShiftTypeAsync(
+        OrganizationResponse? org = await CreateOrganizationAsync(client, "Hospital Norte");
+        DepartmentResponse? dept = await CreateDepartmentAsync(client, org.Id, "Urgencias");
+        EmployeeResponse? emp = await CreateEmployeeAsync(client, org.Id, dept.Id, "Ana Pérez", "ana@norte.local");
+        ShiftTypeResponse? shiftType = await CreateShiftTypeAsync(
             client,
             org.Id,
             "Mañana",
@@ -37,20 +37,20 @@ public class MasterDataApiTests
             "08:00:00",
             "15:00:00");
 
-        var orgs = await client.GetFromJsonAsync<List<OrganizationResponse>>("/api/organizations", JsonOptions);
+        List<OrganizationResponse>? orgs = await client.GetFromJsonAsync<List<OrganizationResponse>>("/api/organizations", JsonOptions);
         orgs.Should().Contain(o => o.Id == org.Id && o.Name == "Hospital Norte");
 
-        var depts = await client.GetFromJsonAsync<List<DepartmentResponse>>(
+        List<DepartmentResponse>? depts = await client.GetFromJsonAsync<List<DepartmentResponse>>(
             $"/api/organizations/{org.Id}/departments",
             JsonOptions);
         depts.Should().Contain(d => d.Id == dept.Id && d.Name == "Urgencias");
 
-        var emps = await client.GetFromJsonAsync<List<EmployeeResponse>>(
+        List<EmployeeResponse>? emps = await client.GetFromJsonAsync<List<EmployeeResponse>>(
             $"/api/organizations/{org.Id}/employees",
             JsonOptions);
         emps.Should().Contain(e => e.Id == emp.Id && e.DisplayName == "Ana Pérez");
 
-        var shiftTypes = await client.GetFromJsonAsync<List<ShiftTypeResponse>>(
+        List<ShiftTypeResponse>? shiftTypes = await client.GetFromJsonAsync<List<ShiftTypeResponse>>(
             $"/api/organizations/{org.Id}/shift-types",
             JsonOptions);
         shiftTypes.Should().Contain(s => s.Id == shiftType.Id && s.Name == "Mañana" && s.Code == "MAN");
@@ -59,53 +59,53 @@ public class MasterDataApiTests
     [Fact]
     public async Task ACC_S1_04_unicidad_departamento_case_insensitive()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var org = await CreateOrganizationAsync(client, "Hospital Unicidad");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        OrganizationResponse? org = await CreateOrganizationAsync(client, "Hospital Unicidad");
         await CreateDepartmentAsync(client, org.Id, "Urgencias");
 
-        var duplicate = await client.PostAsJsonAsync(
+        HttpResponseMessage? duplicate = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/departments",
             new { name = "urgencias" });
 
         duplicate.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var body = await duplicate.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? body = await duplicate.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("INV-DEP-02");
     }
 
     [Fact]
     public async Task ACC_S1_05_employee_no_cruza_organizations()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var orgA = await CreateOrganizationAsync(client, "Org A");
-        var orgB = await CreateOrganizationAsync(client, "Org B");
-        var deptA = await CreateDepartmentAsync(client, orgA.Id, "Dept A");
-        var deptB = await CreateDepartmentAsync(client, orgB.Id, "Dept B");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        OrganizationResponse? orgA = await CreateOrganizationAsync(client, "Org A");
+        OrganizationResponse? orgB = await CreateOrganizationAsync(client, "Org B");
+        DepartmentResponse? deptA = await CreateDepartmentAsync(client, orgA.Id, "Dept A");
+        DepartmentResponse? deptB = await CreateDepartmentAsync(client, orgB.Id, "Dept B");
 
-        var createCross = await client.PostAsJsonAsync(
+        HttpResponseMessage? createCross = await client.PostAsJsonAsync(
             $"/api/organizations/{orgA.Id}/employees",
             new { departmentId = deptB.Id, displayName = "Cruzado", email = (string?)null });
 
         createCross.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var createBody = await createCross.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? createBody = await createCross.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         createBody!.Code.Should().Be("INV-EMP-01");
 
-        var employee = await CreateEmployeeAsync(client, orgA.Id, deptA.Id, "Valido", null);
-        var moveCross = await client.PutAsJsonAsync(
+        EmployeeResponse? employee = await CreateEmployeeAsync(client, orgA.Id, deptA.Id, "Valido", null);
+        HttpResponseMessage? moveCross = await client.PutAsJsonAsync(
             $"/api/employees/{employee.Id}",
             new { departmentId = deptB.Id, displayName = "Valido", email = (string?)null });
 
         moveCross.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var moveBody = await moveCross.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? moveBody = await moveCross.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         moveBody!.Code.Should().Be("INV-EMP-01");
     }
 
     [Fact]
     public async Task ACC_S1_06_ShiftType_horario_overnight_rechazado()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var org = await CreateOrganizationAsync(client, "Hospital Overnight");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        OrganizationResponse? org = await CreateOrganizationAsync(client, "Hospital Overnight");
 
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/shift-types",
             new
             {
@@ -116,14 +116,14 @@ public class MasterDataApiTests
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("INV-STT-04");
     }
 
     private async Task<HttpClient> CreateAuthenticatedClientAsync()
     {
-        var client = _factory.CreateClient(new() { HandleCookies = true });
-        var login = await client.PostAsJsonAsync("/api/auth/login", new
+        HttpClient? client = _factory.CreateClient(new() { HandleCookies = true });
+        HttpResponseMessage? login = await client.PostAsJsonAsync("/api/auth/login", new
         {
             userName = DemoCredentials.UserName,
             password = DemoCredentials.DefaultDevelopmentPassword
@@ -134,9 +134,9 @@ public class MasterDataApiTests
 
     private static async Task<OrganizationResponse> CreateOrganizationAsync(HttpClient client, string name)
     {
-        var response = await client.PostAsJsonAsync("/api/organizations", new { name });
+        HttpResponseMessage? response = await client.PostAsJsonAsync("/api/organizations", new { name });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var body = await response.Content.ReadFromJsonAsync<OrganizationResponse>(JsonOptions);
+        OrganizationResponse? body = await response.Content.ReadFromJsonAsync<OrganizationResponse>(JsonOptions);
         body.Should().NotBeNull();
         return body!;
     }
@@ -146,11 +146,11 @@ public class MasterDataApiTests
         Guid organizationId,
         string name)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/departments",
             new { name });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var body = await response.Content.ReadFromJsonAsync<DepartmentResponse>(JsonOptions);
+        DepartmentResponse? body = await response.Content.ReadFromJsonAsync<DepartmentResponse>(JsonOptions);
         body.Should().NotBeNull();
         return body!;
     }
@@ -162,11 +162,11 @@ public class MasterDataApiTests
         string displayName,
         string? email)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/employees",
             new { departmentId, displayName, email });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var body = await response.Content.ReadFromJsonAsync<EmployeeResponse>(JsonOptions);
+        EmployeeResponse? body = await response.Content.ReadFromJsonAsync<EmployeeResponse>(JsonOptions);
         body.Should().NotBeNull();
         return body!;
     }
@@ -179,11 +179,11 @@ public class MasterDataApiTests
         string? defaultStartTime,
         string? defaultEndTime)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/shift-types",
             new { name, code, defaultStartTime, defaultEndTime });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var body = await response.Content.ReadFromJsonAsync<ShiftTypeResponse>(JsonOptions);
+        ShiftTypeResponse? body = await response.Content.ReadFromJsonAsync<ShiftTypeResponse>(JsonOptions);
         body.Should().NotBeNull();
         return body!;
     }

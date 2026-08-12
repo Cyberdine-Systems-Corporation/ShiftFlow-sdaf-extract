@@ -67,10 +67,10 @@ public sealed class RegisterLeaveHandler(
         _ = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
-        var employee = await employees.GetByIdAsync(request.EmployeeId, cancellationToken)
+        Employee? employee = await employees.GetByIdAsync(request.EmployeeId, cancellationToken)
             ?? throw new NotFoundException($"Empleado {request.EmployeeId} no encontrado.");
 
-        var leave = Leave.Create(
+        Leave leave = Leave.Create(
             request.OrganizationId,
             employee.Id,
             employee.OrganizationId,

@@ -19,16 +19,16 @@ public sealed class PropagateAllCookiesHandler(CookieContainerHolder holder) : D
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", holder.AccessToken);
         }
 
-        var cookieHeader = holder.CookieHeader;
+        string? cookieHeader = holder.CookieHeader;
         if (!string.IsNullOrWhiteSpace(cookieHeader))
         {
             request.Headers.Remove("Cookie");
             request.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
         }
 
-        var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        HttpResponseMessage? response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
-        var setCookies = ReadSetCookieHeaders(response.Headers);
+        List<string>? setCookies = ReadSetCookieHeaders(response.Headers);
         if (setCookies.Count > 0)
         {
             holder.AbsorbSetCookieHeaders(
@@ -41,16 +41,16 @@ public sealed class PropagateAllCookiesHandler(CookieContainerHolder holder) : D
 
     private static List<string> ReadSetCookieHeaders(HttpResponseHeaders headers)
     {
-        var list = new List<string>();
+        List<string> list = new List<string>();
 
-        if (headers.TryGetValues("Set-Cookie", out var validated))
+        if (headers.TryGetValues("Set-Cookie", out IEnumerable<string>? validated))
         {
             list.AddRange(validated);
         }
 
-        if (headers.NonValidated.TryGetValues("Set-Cookie", out var raw))
+        if (headers.NonValidated.TryGetValues("Set-Cookie", out HeaderStringValues raw))
         {
-            foreach (var value in raw)
+            foreach (string value in raw)
             {
                 if (!list.Contains(value, StringComparer.Ordinal))
                 {

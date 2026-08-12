@@ -41,7 +41,7 @@ public sealed class CreateDepartmentHandler(
         CreateDepartmentCommand request,
         CancellationToken cancellationToken)
     {
-        var organization = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
+        Organization? organization = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
         if (await departments.ExistsWithNameAsync(request.OrganizationId, request.Name, null, cancellationToken))
@@ -51,7 +51,7 @@ public sealed class CreateDepartmentHandler(
                 "Ya existe un departamento con ese nombre en la organización.");
         }
 
-        var department = Department.Create(organization.Id, request.Name, organization.IsActive);
+        Department department = Department.Create(organization.Id, request.Name, organization.IsActive);
         await departments.AddAsync(department, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return ToDto(department);

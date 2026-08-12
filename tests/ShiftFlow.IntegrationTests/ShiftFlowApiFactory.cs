@@ -38,7 +38,7 @@ public sealed class ShiftFlowApiFactory : WebApplicationFactory<Program>
 
     private static void RemoveDbContextRegistrations(IServiceCollection services)
     {
-        var toRemove = services
+        List<ServiceDescriptor> toRemove = services
             .Where(d =>
                 d.ServiceType == typeof(ShiftFlowDbContext) ||
                 d.ServiceType == typeof(DbContextOptions<ShiftFlowDbContext>) ||
@@ -48,7 +48,7 @@ public sealed class ShiftFlowApiFactory : WebApplicationFactory<Program>
                  d.ServiceType.GenericTypeArguments[0] == typeof(ShiftFlowDbContext)))
             .ToList();
 
-        foreach (var descriptor in toRemove)
+        foreach (ServiceDescriptor descriptor in toRemove)
         {
             services.Remove(descriptor);
         }

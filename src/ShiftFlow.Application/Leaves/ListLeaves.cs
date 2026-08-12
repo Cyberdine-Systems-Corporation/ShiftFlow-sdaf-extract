@@ -54,7 +54,7 @@ public sealed class ListLeavesHandler(
         _ = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
-        var items = await leaves.ListAsync(
+        IReadOnlyList<Leave>? items = await leaves.ListAsync(
             request.OrganizationId,
             request.EmployeeId,
             request.Year,

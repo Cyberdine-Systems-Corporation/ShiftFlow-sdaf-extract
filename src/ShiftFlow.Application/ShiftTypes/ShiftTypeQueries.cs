@@ -26,7 +26,7 @@ public sealed class ListShiftTypesByOrganizationHandler(IShiftTypeRepository shi
         ListShiftTypesByOrganizationQuery request,
         CancellationToken cancellationToken)
     {
-        var list = await shiftTypes.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
+        IReadOnlyList<ShiftType>? list = await shiftTypes.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
         return list.Select(CreateShiftTypeHandler.ToDto).ToList();
     }
 }

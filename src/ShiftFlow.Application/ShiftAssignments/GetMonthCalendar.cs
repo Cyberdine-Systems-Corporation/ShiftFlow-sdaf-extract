@@ -93,13 +93,13 @@ public sealed class GetMonthCalendarHandler(
         _ = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
-        var monthAssignments = await assignments.ListAssignedIntersectingMonthAsync(
+        IReadOnlyList<ShiftAssignment>? monthAssignments = await assignments.ListAssignedIntersectingMonthAsync(
             request.OrganizationId,
             request.Year,
             request.Month,
             cancellationToken);
 
-        var monthLeaves = await leaves.ListAsync(
+        IReadOnlyList<Leave>? monthLeaves = await leaves.ListAsync(
             request.OrganizationId,
             employeeId: null,
             request.Year,
@@ -107,8 +107,8 @@ public sealed class GetMonthCalendarHandler(
             activeOnly: true,
             cancellationToken);
 
-        var orgEmployees = await employees.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
-        var employeeNames = orgEmployees.ToDictionary(e => e.Id, e => e.DisplayName);
+        IReadOnlyList<Employee>? orgEmployees = await employees.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
+        Dictionary<Guid, string> employeeNames = orgEmployees.ToDictionary(e => e.Id, e => e.DisplayName);
 
         IReadOnlyList<CalendarAssignmentDto> assignmentsDto;
         if (monthAssignments.Count == 0)
@@ -117,8 +117,8 @@ public sealed class GetMonthCalendarHandler(
         }
         else
         {
-            var orgShiftTypes = await shiftTypes.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
-            var shiftTypeNames = orgShiftTypes.ToDictionary(s => s.Id, s => s.Name);
+            IReadOnlyList<ShiftType>? orgShiftTypes = await shiftTypes.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
+            Dictionary<Guid, string> shiftTypeNames = orgShiftTypes.ToDictionary(s => s.Id, s => s.Name);
             assignmentsDto = monthAssignments
                 .Select(a => new CalendarAssignmentDto(
                     a.Id,
@@ -131,7 +131,7 @@ public sealed class GetMonthCalendarHandler(
                 .ToList();
         }
 
-        var leavesDto = monthLeaves
+        List<CalendarLeaveDto> leavesDto = monthLeaves
             .Select(l => new CalendarLeaveDto(
                 l.Id,
                 l.EmployeeId,

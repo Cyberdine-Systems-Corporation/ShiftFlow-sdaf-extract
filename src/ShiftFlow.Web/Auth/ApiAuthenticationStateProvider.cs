@@ -20,30 +20,30 @@ public sealed class ApiAuthenticationStateProvider(IHttpClientFactory httpClient
     {
         try
         {
-            var client = httpClientFactory.CreateClient("api");
-            using var response = await client.GetAsync("/api/auth/me");
+            HttpClient? client = httpClientFactory.CreateClient("api");
+            using HttpResponseMessage? response = await client.GetAsync("/api/auth/me");
             if (!response.IsSuccessStatusCode)
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            var me = await response.Content.ReadFromJsonAsync<MeResponse>();
+            MeResponse? me = await response.Content.ReadFromJsonAsync<MeResponse>();
             if (me is null || string.IsNullOrWhiteSpace(me.UserName))
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            var claims = new List<Claim>
+            List<Claim> claims = new List<Claim>
             {
                 new(ClaimTypes.Name, me.UserName),
                 new(ClaimTypes.NameIdentifier, me.UserName)
             };
-            foreach (var role in me.Roles ?? [])
+            foreach (string role in me.Roles ?? [])
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var identity = new ClaimsIdentity(claims, authenticationType: "ApiCookie");
+            ClaimsIdentity identity = new ClaimsIdentity(claims, authenticationType: "ApiCookie");
             return new AuthenticationState(new ClaimsPrincipal(identity));
         }
         catch

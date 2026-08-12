@@ -60,12 +60,12 @@ public sealed class CreateEmployeeHandler(
         _ = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
-        var department = await departments.GetByIdAsync(request.DepartmentId, cancellationToken)
+        Department? department = await departments.GetByIdAsync(request.DepartmentId, cancellationToken)
             ?? throw new NotFoundException($"Departamento {request.DepartmentId} no encontrado.");
 
         await EnsureEmailUniqueAsync(request.OrganizationId, request.Email, null, cancellationToken);
 
-        var employee = Employee.Create(
+        Employee employee = Employee.Create(
             request.OrganizationId,
             department.Id,
             department.OrganizationId,

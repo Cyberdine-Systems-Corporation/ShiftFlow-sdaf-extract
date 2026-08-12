@@ -24,29 +24,29 @@ public class AuthApiTests
     [Fact]
     public async Task ACC_S1_01_Login_demo_con_rol_Administrator()
     {
-        var client = _factory.CreateClient(new() { HandleCookies = true });
+        HttpClient? client = _factory.CreateClient(new() { HandleCookies = true });
 
-        var login = await client.PostAsJsonAsync("/api/auth/login", new
+        HttpResponseMessage? login = await client.PostAsJsonAsync("/api/auth/login", new
         {
             userName = DemoCredentials.UserName,
             password = DemoCredentials.DefaultDevelopmentPassword
         });
 
         login.StatusCode.Should().Be(HttpStatusCode.OK);
-        var body = await login.Content.ReadFromJsonAsync<AuthUserResponse>(JsonOptions);
+        AuthUserResponse? body = await login.Content.ReadFromJsonAsync<AuthUserResponse>(JsonOptions);
         body.Should().NotBeNull();
         body!.UserName.Should().Be(DemoCredentials.UserName);
         body.Roles.Should().Contain(AuthRoles.Administrator);
 
-        var me = await client.GetAsync("/api/auth/me");
+        HttpResponseMessage? me = await client.GetAsync("/api/auth/me");
         me.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
     public async Task ACC_S1_02_anonimo_no_puede_CreateOrganization()
     {
-        var anonymous = _factory.CreateClient();
-        var response = await anonymous.PostAsJsonAsync("/api/organizations", new { name = "Org X" });
+        HttpClient? anonymous = _factory.CreateClient();
+        HttpResponseMessage? response = await anonymous.PostAsJsonAsync("/api/organizations", new { name = "Org X" });
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -54,27 +54,27 @@ public class AuthApiTests
     [Fact]
     public async Task ACC_S1_07_Logout_invalida_sesion()
     {
-        var client = _factory.CreateClient(new() { HandleCookies = true });
+        HttpClient? client = _factory.CreateClient(new() { HandleCookies = true });
 
-        var login = await client.PostAsJsonAsync("/api/auth/login", new
+        HttpResponseMessage? login = await client.PostAsJsonAsync("/api/auth/login", new
         {
             userName = DemoCredentials.UserName,
             password = DemoCredentials.DefaultDevelopmentPassword
         });
         login.EnsureSuccessStatusCode();
 
-        var logout = await client.PostAsync("/api/auth/logout", null);
+        HttpResponseMessage? logout = await client.PostAsync("/api/auth/logout", null);
         logout.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var protectedCall = await client.PostAsJsonAsync("/api/organizations", new { name = "Tras logout" });
+        HttpResponseMessage? protectedCall = await client.PostAsJsonAsync("/api/organizations", new { name = "Tras logout" });
         protectedCall.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
     public async Task Login_invalido_no_autentica()
     {
-        var client = _factory.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/auth/login", new
+        HttpClient? client = _factory.CreateClient();
+        HttpResponseMessage? response = await client.PostAsJsonAsync("/api/auth/login", new
         {
             userName = DemoCredentials.UserName,
             password = "WrongPassword!1"

@@ -28,7 +28,7 @@ public sealed class ListEmployeesByOrganizationHandler(IEmployeeRepository emplo
         ListEmployeesByOrganizationQuery request,
         CancellationToken cancellationToken)
     {
-        var list = await employees.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
+        IReadOnlyList<Employee>? list = await employees.ListByOrganizationAsync(request.OrganizationId, cancellationToken);
         return list.Select(CreateEmployeeHandler.ToDto).ToList();
     }
 }
@@ -60,7 +60,7 @@ public sealed class ListEmployeesByDepartmentHandler(IEmployeeRepository employe
         ListEmployeesByDepartmentQuery request,
         CancellationToken cancellationToken)
     {
-        var list = await employees.ListByDepartmentAsync(request.DepartmentId, cancellationToken);
+        IReadOnlyList<Employee>? list = await employees.ListByDepartmentAsync(request.DepartmentId, cancellationToken);
         return list.Select(CreateEmployeeHandler.ToDto).ToList();
     }
 }

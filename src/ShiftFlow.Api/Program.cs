@@ -15,7 +15,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
+    WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
@@ -28,7 +28,7 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddOpenApi();
 
-    var app = builder.Build();
+    WebApplication? app = builder.Build();
 
     await IdentitySeed.InitializeAsync(app.Services);
 
@@ -47,7 +47,7 @@ try
 
     app.MapGet("/api/status", async (ShiftFlowDbContext db, CancellationToken cancellationToken) =>
         {
-            var canConnect = await db.Database.CanConnectAsync(cancellationToken);
+            bool canConnect = await db.Database.CanConnectAsync(cancellationToken);
             return Results.Ok(new
             {
                 service = "ShiftFlow.Api",

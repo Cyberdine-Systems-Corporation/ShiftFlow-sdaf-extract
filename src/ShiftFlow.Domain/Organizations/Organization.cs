@@ -75,7 +75,7 @@ public sealed class Organization
             throw new DomainException("INV-ORG-01", "El nombre de la organización es obligatorio.");
         }
 
-        var trimmed = name.Trim();
+        string trimmed = name.Trim();
         if (trimmed.Length > NameMaxLength)
         {
             throw new DomainException(

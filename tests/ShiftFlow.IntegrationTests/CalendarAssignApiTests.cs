@@ -24,12 +24,12 @@ public class CalendarAssignApiTests
     [Fact]
     public async Task ACC_S2_01_abrir_calendario_mensual_vacio()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var org = await CreateOrganizationAsync(client, "Org Calendario");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        OrganizationResponse? org = await CreateOrganizationAsync(client, "Org Calendario");
 
-        var response = await client.GetAsync($"/api/organizations/{org.Id}/calendar?year=2026&month=8");
+        HttpResponseMessage? response = await client.GetAsync($"/api/organizations/{org.Id}/calendar?year=2026&month=8");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calendar = await response.Content.ReadFromJsonAsync<MonthCalendarResponse>(JsonOptions);
+        MonthCalendarResponse? calendar = await response.Content.ReadFromJsonAsync<MonthCalendarResponse>(JsonOptions);
         calendar.Should().NotBeNull();
         calendar!.Assignments.Should().BeEmpty();
         calendar.Leaves.Should().BeEmpty();
@@ -38,16 +38,16 @@ public class CalendarAssignApiTests
     [Fact]
     public async Task ACC_S2_02_asignacion_valida_visible_en_calendario()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Assign OK");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Assign OK");
 
-        var start = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
-        var end = start.AddHours(4);
-        var assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, start, end);
+        DateTimeOffset start = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
+        DateTimeOffset end = start.AddHours(4);
+        ShiftAssignmentResponse? assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, start, end);
 
         assign.Status.Should().Be("Assigned");
 
-        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
+        MonthCalendarResponse? calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
 
@@ -60,13 +60,13 @@ public class CalendarAssignApiTests
     [Fact]
     public async Task ACC_S2_03_rechazo_por_solape_HR01()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Solape");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Solape");
 
-        var day = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
         await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day.AddHours(10), day.AddHours(14));
 
-        var overlap = await client.PostAsJsonAsync(
+        HttpResponseMessage? overlap = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/assignments",
             new
             {
@@ -77,10 +77,10 @@ public class CalendarAssignApiTests
             });
 
         overlap.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var body = await overlap.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? body = await overlap.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("HR-01");
 
-        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
+        MonthCalendarResponse? calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
         calendar!.Assignments.Should().ContainSingle();
@@ -89,12 +89,12 @@ public class CalendarAssignApiTests
     [Fact]
     public async Task ACC_S2_04_turnos_adyacentes_permitidos()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Adyacentes");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Adyacentes");
 
-        var day = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
         await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day.AddHours(10), day.AddHours(14));
-        var second = await AssignAsync(
+        ShiftAssignmentResponse? second = await AssignAsync(
             client,
             org.Id,
             emp.Id,
@@ -104,7 +104,7 @@ public class CalendarAssignApiTests
 
         second.Status.Should().Be("Assigned");
 
-        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
+        MonthCalendarResponse? calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
         calendar!.Assignments.Should().HaveCount(2);
@@ -113,16 +113,16 @@ public class CalendarAssignApiTests
     [Fact]
     public async Task ACC_S2_05_rechazo_shift_type_inactivo()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Tipo Inactivo");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Tipo Inactivo");
 
-        var deactivate = await client.PutAsJsonAsync(
+        HttpResponseMessage? deactivate = await client.PutAsJsonAsync(
             $"/api/shift-types/{shiftType.Id}/active",
             new { isActive = false });
         deactivate.EnsureSuccessStatusCode();
 
-        var day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
-        var response = await client.PostAsJsonAsync(
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{org.Id}/assignments",
             new
             {
@@ -133,23 +133,23 @@ public class CalendarAssignApiTests
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        ErrorBody? body = await response.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("INV-ASN-03");
     }
 
     [Fact]
     public async Task ACC_S2_06_cancelar_asignacion()
     {
-        var client = await CreateAuthenticatedClientAsync();
-        var (org, emp, shiftType) = await SeedOrgAsync(client, "Org Cancel");
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Cancel");
 
-        var day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
-        var assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day, day.AddHours(4));
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 8, 0, 0, TimeSpan.Zero);
+        ShiftAssignmentResponse? assign = await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day, day.AddHours(4));
 
-        var cancel = await client.PostAsync($"/api/assignments/{assign.Id}/cancel", null);
+        HttpResponseMessage? cancel = await client.PostAsync($"/api/assignments/{assign.Id}/cancel", null);
         cancel.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
+        MonthCalendarResponse? calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
             $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
             JsonOptions);
         calendar!.Assignments.Should().BeEmpty();
@@ -158,8 +158,8 @@ public class CalendarAssignApiTests
     [Fact]
     public async Task ACC_S2_07_escritura_anonima_rechazada()
     {
-        var client = _factory.CreateClient();
-        var response = await client.PostAsJsonAsync(
+        HttpClient? client = _factory.CreateClient();
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{Guid.NewGuid()}/assignments",
             new
             {
@@ -174,8 +174,8 @@ public class CalendarAssignApiTests
 
     private async Task<HttpClient> CreateAuthenticatedClientAsync()
     {
-        var client = _factory.CreateClient(new() { HandleCookies = true });
-        var login = await client.PostAsJsonAsync("/api/auth/login", new
+        HttpClient? client = _factory.CreateClient(new() { HandleCookies = true });
+        HttpResponseMessage? login = await client.PostAsJsonAsync("/api/auth/login", new
         {
             userName = DemoCredentials.UserName,
             password = DemoCredentials.DefaultDevelopmentPassword
@@ -188,10 +188,10 @@ public class CalendarAssignApiTests
         HttpClient client,
         string orgName)
     {
-        var org = await CreateOrganizationAsync(client, orgName);
-        var dept = await CreateDepartmentAsync(client, org.Id, "Dept");
-        var emp = await CreateEmployeeAsync(client, org.Id, dept.Id, "Ana", null);
-        var shiftType = await CreateShiftTypeAsync(client, org.Id, "Mañana", "MAN");
+        OrganizationResponse? org = await CreateOrganizationAsync(client, orgName);
+        DepartmentResponse? dept = await CreateDepartmentAsync(client, org.Id, "Dept");
+        EmployeeResponse? emp = await CreateEmployeeAsync(client, org.Id, dept.Id, "Ana", null);
+        ShiftTypeResponse? shiftType = await CreateShiftTypeAsync(client, org.Id, "Mañana", "MAN");
         return (org, emp, shiftType);
     }
 
@@ -203,18 +203,18 @@ public class CalendarAssignApiTests
         DateTimeOffset startAt,
         DateTimeOffset endAt)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/assignments",
             new { employeeId, shiftTypeId, startAt, endAt });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var body = await response.Content.ReadFromJsonAsync<ShiftAssignmentResponse>(JsonOptions);
+        ShiftAssignmentResponse? body = await response.Content.ReadFromJsonAsync<ShiftAssignmentResponse>(JsonOptions);
         body.Should().NotBeNull();
         return body!;
     }
 
     private static async Task<OrganizationResponse> CreateOrganizationAsync(HttpClient client, string name)
     {
-        var response = await client.PostAsJsonAsync("/api/organizations", new { name });
+        HttpResponseMessage? response = await client.PostAsJsonAsync("/api/organizations", new { name });
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<OrganizationResponse>(JsonOptions))!;
     }
@@ -224,7 +224,7 @@ public class CalendarAssignApiTests
         Guid organizationId,
         string name)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/departments",
             new { name });
         response.EnsureSuccessStatusCode();
@@ -238,7 +238,7 @@ public class CalendarAssignApiTests
         string displayName,
         string? email)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/employees",
             new { departmentId, displayName, email });
         response.EnsureSuccessStatusCode();
@@ -251,7 +251,7 @@ public class CalendarAssignApiTests
         string name,
         string? code)
     {
-        var response = await client.PostAsJsonAsync(
+        HttpResponseMessage? response = await client.PostAsJsonAsync(
             $"/api/organizations/{organizationId}/shift-types",
             new { name, code, defaultStartTime = (string?)null, defaultEndTime = (string?)null });
         response.EnsureSuccessStatusCode();
