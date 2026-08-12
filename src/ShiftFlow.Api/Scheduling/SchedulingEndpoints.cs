@@ -89,7 +89,7 @@ public static class SchedulingEndpoints
         }
         catch (DomainException ex)
         {
-            // INV-ASN-* estructurales y HR-01… se distinguen por el código en el cuerpo.
+            // INV-ASN-* estructurales y HR-01/HR-02… se distinguen por el código en el cuerpo.
             return Results.BadRequest(new { error = ex.Message, code = ex.Code });
         }
         catch (NotFoundException ex)

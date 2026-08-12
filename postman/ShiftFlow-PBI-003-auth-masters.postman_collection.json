@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "shiftflow-pbi-003-auth-masters",
-    "name": "ShiftFlow — Auth + Maestros + Calendario (PBI-003…005)",
-    "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee → ShiftType (scripts guardan IDs).\n5. Calendario / Assignments (PBI-005): GetMonthCalendar → AssignShift → solape HR-01 → adyacente → CancelShift.",
+    "name": "ShiftFlow — Auth + Maestros + Calendario + Leaves (PBI-003…007)",
+    "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee → ShiftType (scripts guardan IDs).\n5. Calendario / Assignments (PBI-005): GetMonthCalendar → AssignShift → solape HR-01 → adyacente → CancelShift.\n6. Leaves (PBI-007): RegisterLeave → ListLeaves → Assign bajo leave (HR-02) → CancelLeave.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,6 +12,7 @@
     { "key": "employeeId", "value": "" },
     { "key": "shiftTypeId", "value": "" },
     { "key": "assignmentId", "value": "" },
+    { "key": "leaveId", "value": "" },
     { "key": "calendarYear", "value": "2026" },
     { "key": "calendarMonth", "value": "8" }
   ],
@@ -459,6 +460,82 @@
             },
             "url": "{{baseUrl}}/api/organizations/{{organizationId}}/assignments",
             "description": "ACC-S2-07: ejecutar tras Logout (o en pestaña sin cookie) → 401."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leaves (PBI-007)",
+      "item": [
+        {
+          "name": "POST register leave",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const j = pm.response.json();",
+                  "  pm.collectionVariables.set('leaveId', j.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"startOn\": \"2026-08-15\",\n  \"endOn\": \"2026-08-15\",\n  \"kind\": \"Vacation\",\n  \"reason\": \"Demo\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/leaves",
+            "description": "ACC-S2-L01: registra Leave Active. Guarda leaveId."
+          }
+        },
+        {
+          "name": "GET list leaves",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/leaves",
+            "description": "Lista leaves Active de la organización."
+          }
+        },
+        {
+          "name": "POST assign under leave (expect 400 HR-02)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"shiftTypeId\": \"{{shiftTypeId}}\",\n  \"startAt\": \"2026-08-15T10:00:00+00:00\",\n  \"endAt\": \"2026-08-15T14:00:00+00:00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/assignments",
+            "description": "ACC-S2-L02: turno bajo leave → BadRequest code HR-02."
+          }
+        },
+        {
+          "name": "POST cancel leave",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/leaves/{{leaveId}}/cancel",
+            "description": "ACC-S2-L04: cancela leave; AssignShift en esa fecha debería aceptar después."
+          }
+        },
+        {
+          "name": "POST register leave invalid range (expect 400 INV-LEA-03)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"startOn\": \"2026-08-16\",\n  \"endOn\": \"2026-08-15\",\n  \"kind\": null,\n  \"reason\": null\n}"
+            },
+            "url": "{{baseUrl}}/api/organizations/{{organizationId}}/leaves",
+            "description": "ACC-S2-L05: EndOn < StartOn → INV-LEA-03."
           }
         }
       ]

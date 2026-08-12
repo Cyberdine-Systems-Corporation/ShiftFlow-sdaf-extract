@@ -2,7 +2,7 @@
 
 | Colección | Contenido |
 |-----------|-----------|
-| [ShiftFlow-PBI-003-auth-masters.postman_collection.json](ShiftFlow-PBI-003-auth-masters.postman_collection.json) | Auth cookie + maestros Org/Dept/Employee/ShiftType (PBI-002…004) + calendario/asignación (PBI-005) |
+| [ShiftFlow-PBI-003-auth-masters.postman_collection.json](ShiftFlow-PBI-003-auth-masters.postman_collection.json) | Auth cookie + maestros (PBI-002…004) + calendario/asignación (PBI-005) + Leaves/HR-02 (PBI-007) |
 
 ## Uso
 
@@ -13,15 +13,19 @@
    1. **Login**
    2. Create organization → department → employee → shift type
    3. **Calendar & Assignments**: Get month calendar → Assign shift → overlap (HR-01) → adjacent → Cancel
+   4. **Leaves**: Register leave → List → Assign under leave (HR-02) → Cancel leave
 
-La cookie `ShiftFlow.Auth` la gestiona Postman tras el login. Los scripts de test guardan `organizationId`, `departmentId`, `employeeId`, `shiftTypeId` y `assignmentId`.
+La cookie `ShiftFlow.Auth` la gestiona Postman tras el login. Los scripts de test guardan `organizationId`, `departmentId`, `employeeId`, `shiftTypeId`, `assignmentId` y `leaveId`.
 
-Variables útiles de calendario: `calendarYear` / `calendarMonth` (por defecto `2026` / `8`, alineadas a los cuerpos de ejemplo de AssignShift).
+Variables útiles de calendario: `calendarYear` / `calendarMonth` (por defecto `2026` / `8`).
 
-## Endpoints PBI-005 cubiertos
+## Endpoints PBI-005 / PBI-007 cubiertos
 
 | Request | Ruta |
 |---------|------|
 | GET month calendar | `GET /api/organizations/{id}/calendar?year=&month=` |
 | Assign shift | `POST /api/organizations/{id}/assignments` |
 | Cancel shift | `POST /api/assignments/{id}/cancel` |
+| Register leave | `POST /api/organizations/{id}/leaves` |
+| List leaves | `GET /api/organizations/{id}/leaves` |
+| Cancel leave | `POST /api/leaves/{id}/cancel` |

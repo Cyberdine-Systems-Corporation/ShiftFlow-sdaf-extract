@@ -12,8 +12,8 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | 3 | [PBI-003](PBI-003-organization-department-employee.md) | Organization, Department, Employee | 1 | SPEC-DOM-001/002, SPEC-APP-001, SPEC-ACC-001 Approved | Hecho (mergeado) |
 | 4 | [PBI-004](PBI-004-shift-types.md) | Shift types | 1 | SPEC-DOM-003, SPEC-APP-001, SPEC-ACC-001 Approved | Hecho (mergeado) |
 | 5 | [PBI-005](PBI-005-calendar-assign-shift.md) | Calendario y asignación manual | 2 | SPEC-DOM-005/006, SPEC-APP-003, SPEC-ACC-002 Approved | Hecho (mergeado #18+#19; Gate 2 OK) |
-| 6 | [PBI-006](PBI-006-rule-engine-v1.md) | Rule Engine v1 (3 hard rules) | 2 | SPEC-DOM-006/007 Approved, ADR-003 | Ready (HR-02/03) |
-| 7 | [PBI-007](PBI-007-leaves.md) | Leaves / ausencias | 2 | SPEC-DOM-007, SPEC-APP-004, SPEC-ACC-003 Approved | Ready (Gate 0 OK) |
+| 6 | [PBI-006](PBI-006-rule-engine-v1.md) | Rule Engine v1 (3 hard rules) | 2 | SPEC-DOM-006/007 Approved, ADR-003 | Ready (HR-02 en curso con PBI-007; falta HR-03) |
+| 7 | [PBI-007](PBI-007-leaves.md) | Leaves / ausencias | 2 | SPEC-DOM-007, SPEC-APP-004, SPEC-ACC-003 Approved | En curso (API) |
 | 8 | [PBI-008](PBI-008-blazor-shell-crud.md) | Blazor shell + CRUD maestros | 1–2 | SPEC-PRD-002 | Hecho (mergeado #13; Gate 2 OK) |
 | 9 | [PBI-009](PBI-009-acceptance-tests-demo.md) | Acceptance tests del journey | 2–3 | SPEC-PRD-002 | Tras reglas |
 | 10 | [PBI-010](PBI-010-runbook-demo-freeze.md) | Runbook, seed opcional, freeze demo | 3 | SPEC-PRD-001 (C-LOC) | — |
