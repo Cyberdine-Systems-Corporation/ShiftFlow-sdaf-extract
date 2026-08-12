@@ -2,12 +2,12 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.1 |
+| **Versión** | 0.1.2 |
 | **Estado** | Approved |
-| **Fecha** | 2026-08-05 |
+| **Fecha** | 2026-08-13 |
 | **Parte** | IV — Ingeniería IA |
 | **Norma superior** | [13-ai-agent-framework.md](13-ai-agent-framework.md), [07-repository-organization.md](07-repository-organization.md) |
-| **Deriva hacia** | `prompts/`, worklogs, agentes |
+| **Deriva hacia** | `prompts/`, `skills/`, worklogs, agentes |
 
 ---
 
@@ -94,26 +94,37 @@ Si un ad hoc se reutiliza → promover a `prompts/` versionado.
 
 ---
 
-## 8. Relación con Cursor / otros IDEs
+## 8. Relación con skills
 
-- `.cursor/rules/` contiene reglas **finas** (p. ej. idioma) que apuntan al handbook.
-- No duplicar Parte II–IV enteras en rules.
-- El trabajo de agente debe poder reproducirse desde `prompts/` + repo, no solo desde el historial del chat.
+- Los **prompts** definen rol e instrucciones del agente; las **skills** (`skills/`) son playbooks de flujo reutilizables ([13 §6](13-ai-agent-framework.md)).
+- No duplicar el cuerpo de una skill dentro de un prompt: **enlazar** `skills/<id>/SKILL.md`.
+- En worklogs citar `prompt_id@version` y, si se usó, `skill-id@version`.
+- Las skills no viven bajo `.cursor/`; son artefactos del repo (cap. 07).
 
 ---
 
-## 9. Criterios de aceptación de este capítulo (H7)
+## 9. Relación con Cursor / otros IDEs
+
+- `.cursor/rules/` contiene reglas **finas** (p. ej. idioma) que apuntan al handbook.
+- No duplicar Parte II–IV enteras en rules.
+- El trabajo de agente debe poder reproducirse desde `prompts/` + `skills/` + repo, no solo desde el historial del chat.
+
+---
+
+## 10. Criterios de aceptación de este capítulo (H7)
 
 - [ ] Estructura de prompt y árbol de carpetas son claros.
 - [ ] Versionado y citación en worklog son obligatorios.
 - [ ] Ad hoc queda acotado; biblioteca es la norma.
 - [ ] Economía de tokens está normada.
+- [ ] Relación prompts ↔ skills está explícita (enlazar, no pegar).
 
 ---
 
-## 10. Historial
+## 11. Historial
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-12 | Approved: relación con skills y citación en worklog |
 | 0.1.1 | 2026-08-05 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-05 | Borrador inicial (sesión H7) |

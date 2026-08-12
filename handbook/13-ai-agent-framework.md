@@ -2,12 +2,12 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.1 |
+| **Versión** | 0.1.2 |
 | **Estado** | Approved |
-| **Fecha** | 2026-08-05 |
+| **Fecha** | 2026-08-13 |
 | **Parte** | IV — Ingeniería IA |
 | **Norma superior** | [05-sdaf-framework.md](05-sdaf-framework.md), [09-development-workflow.md](09-development-workflow.md) |
-| **Deriva hacia** | `agents/`, `prompts/agents/`, [14-prompt-engineering-standard.md](14-prompt-engineering-standard.md), [15-agent-traceability.md](15-agent-traceability.md) |
+| **Deriva hacia** | `agents/`, `prompts/agents/`, `skills/`, [14-prompt-engineering-standard.md](14-prompt-engineering-standard.md), [15-agent-traceability.md](15-agent-traceability.md) |
 
 ---
 
@@ -92,7 +92,35 @@ Reglas:
 
 ---
 
-## 6. Restricciones globales a todos los agentes
+## 6. Skills (playbooks operativos)
+
+Las **skills** viven en `skills/` (índice: [`skills/README.md`](../skills/README.md)). Son playbooks **tool-agnostic**: no dependen de un IDE concreto ni de `.cursor/skills/`.
+
+| Capa | Contiene | No sustituye |
+|------|----------|--------------|
+| Contrato + prompt de agente | *Quién* / rol | El procedimiento detallado de un flujo |
+| Skill (`SKILL.md`) | *Cómo* ejecutar un flujo repetible | Handbook, specs ni prompts de rol |
+| Rules IDE | Restricciones locales finas | Constitución ni skills |
+
+Reglas:
+
+1. Invocar la skill por **ruta** cuando el disparador aplica (Gate 0, worklog, review, etc.).
+2. Citar `skill-id@version` en el worklog (además del `prompt_id@version` del agente).
+3. Gate 0 ([09](09-development-workflow.md)) manda sobre cualquier skill de implementación.
+4. Las skills no aprueban handbook/specs/ADR ni inventan alcance Out del MVP.
+5. Prioridad y mapa agente típico: ver catálogo en `skills/README.md`.
+
+Mapa resumido prioridad → agente típico:
+
+| Prioridad | Skills (ids) | Agente típico |
+|-----------|--------------|---------------|
+| Alta | `sdaf-gate0`, `sdaf-worklog-handoff`, `sdaf-agent-router`, `csharp-adr006-slice`, `testing-review-pr` | Todos / Domain+Application+Frontend / Testing+Review |
+| Media | `spec-draft-pbi`, `adr-propose`, `blazor-bff-slice`, `aspire-local-run`, `postman-contract-sync` | Specification / Architecture / Frontend / Architecture·DevOps / Domain+Application |
+| Baja | `rule-engine-hr`, `devops-ci-gate`, `product-ia-prompt` | Domain+Application / DevOps stub / AI stub |
+
+---
+
+## 7. Restricciones globales a todos los agentes
 
 - Castellano en artefactos de ingeniería.
 - Respetar handbook Approved y specs Approved.
@@ -104,18 +132,20 @@ Reglas:
 
 ---
 
-## 7. Criterios de aceptación de este capítulo (H7)
+## 8. Criterios de aceptación de este capítulo (H7)
 
 - [ ] Queda clara la diferencia agentes de ingeniería vs IA de producto.
 - [ ] 5 activos + stubs es el modelo MVP.
 - [ ] El contrato mínimo de agente es auditable.
 - [ ] Los handoffs exigen worklog, no solo chat.
+- [ ] Skills quedan definidas como playbooks en `skills/`, distintas de prompts y de rules IDE.
 
 ---
 
-## 8. Historial
+## 9. Historial
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-12 | Approved: sección Skills + mapa prioridad |
 | 0.1.1 | 2026-08-05 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-05 | Borrador inicial (sesión H7) |

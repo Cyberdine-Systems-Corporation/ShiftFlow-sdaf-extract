@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.1 |
+| **Versión** | 0.1.2 |
 | **Estado** | Approved |
-| **Fecha** | 2026-08-05 |
+| **Fecha** | 2026-08-13 |
 | **Parte** | Apéndices |
-| **Norma superior** | Caps. 08, 09, 14, 15; copias operativas en `templates/` |
+| **Norma superior** | Caps. 08, 09, 13, 14, 15; copias operativas en `templates/` |
 
 ---
 
@@ -91,9 +91,16 @@ Ver secciones obligatorias del capítulo 13; archivo `agents/<nombre>.md`.
 
 ---
 
-## 6. Historial
+## 6. Plantilla — Skill
+
+Copia editable: `templates/skill.md`. Catálogo: `skills/README.md`. Norma: cap. 13 §6.
+
+---
+
+## 7. Historial
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-13 | Approved: índice plantilla skill |
 | 0.1.1 | 2026-08-05 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-05 | Borrador inicial (sesión H8) |

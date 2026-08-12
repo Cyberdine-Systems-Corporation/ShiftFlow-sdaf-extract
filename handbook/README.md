@@ -36,7 +36,7 @@ Handbook (esta constitución)
 ```
 
 Los **agentes IA** no son un nivel normativo: ejecutan el pipeline bajo estas reglas.  
-Los **prompts** y **worklogs** son infraestructura de ingeniería, no sustituyen al handbook.
+Los **prompts**, **skills** y **worklogs** son infraestructura de ingeniería, no sustituyen al handbook.
 
 ---
 
