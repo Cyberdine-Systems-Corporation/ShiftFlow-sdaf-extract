@@ -2,12 +2,12 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.1 |
+| **Versión** | 0.1.2 |
 | **Estado** | Approved |
-| **Fecha** | 2026-08-05 |
+| **Fecha** | 2026-08-13 |
 | **Parte** | II — SDAF |
 | **Norma superior** | [05-sdaf-framework.md](05-sdaf-framework.md) |
-| **Deriva hacia** | Specs, ADRs, agentes, prompts, worklogs, `src/`, `tests/` |
+| **Deriva hacia** | Specs, ADRs, agentes, prompts, skills, worklogs, `src/`, `tests/` |
 
 ---
 
@@ -47,12 +47,14 @@ El repo no es solo `src/`.
 │   ├── review/
 │   ├── documentation/
 │   └── quality/
+├── skills/                   # playbooks operativos reutilizables (tool-agnostic)
 ├── worklogs/                 # Agent Traceability Framework
 ├── templates/
 ├── docs/                     # HOWTO / presentaciones / runbooks (no sustituye handbook ni specs)
 │   └── presentation/         # slides MVP (p. ej. mvp-0.1/)
 ├── src/                      # solución .NET
 ├── tests/
+├── postman/                  # colección de contrato API (no sustituye specs)
 ├── .cursor/rules/            # reglas finas del IDE; apuntan al handbook, no lo duplican
 └── .github/
 ```
@@ -70,8 +72,10 @@ El repo no es solo `src/`.
 | `backlog/` | PBIs / historias trazables a specs | Implementación |
 | `agents/` | Contratos de agente | Prompts completos (viven en `prompts/`) |
 | `prompts/` | Prompts versionados | Instrucciones ad hoc no registradas |
+| `skills/` | Playbooks operativos reutilizables (`SKILL.md`) | Prompts de rol, constitución, código |
 | `worklogs/` | Iteraciones ATF | Sustituto de commits o specs |
 | `docs/` | Runbooks, presentación MVP, HOWTO | Constitución ni specs canónicas |
+| `postman/` | Colección HTTP de contrato | Specs canónicas ni secretos |
 | `src/`, `tests/` | Código y pruebas | Knowledge crudo |
 
 ---
@@ -124,5 +128,6 @@ Si el código descubre un error de spec: se enmienda la spec (y el test), no se 
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-12 | Approved: carpeta `skills/` (+ `postman/` en árbol) |
 | 0.1.1 | 2026-08-05 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-05 | Borrador inicial (sesión H4); incluye `docs/presentation` del MVP |

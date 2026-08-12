@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.1.0 |
+| Versión | 0.1.1 |
 | Estado | Approved |
-| Fecha | 2026-08-06 |
-| Norma | `handbook/13-ai-agent-framework.md`, `handbook/14-prompt-engineering-standard.md`, `handbook/15-agent-traceability.md` |
+| Fecha | 2026-08-13 |
+| Norma | `handbook/13-ai-agent-framework.md`, `handbook/14-prompt-engineering-standard.md`, `handbook/15-agent-traceability.md`, `skills/README.md` |
 
 ---
 
@@ -50,10 +50,23 @@ El saliente cierra worklog con “siguiente agente”. El entrante lee worklog +
 | Review | [agents/review-agent.md](agents/review-agent.md) | [prompts/agents/review-agent.md](prompts/agents/review-agent.md) | stub |
 | Testing | [agents/testing-agent.md](agents/testing-agent.md) | [prompts/agents/testing-agent.md](prompts/agents/testing-agent.md) | stub |
 
+## Skills
+
+Playbooks operativos en [`skills/`](skills/) (tool-agnostic; **no** bajo `.cursor/skills/`).
+
+Índice completo: [skills/README.md](skills/README.md). Citar `skill-id@version` en worklogs cuando se usen (H13 §6, H14).
+
+| Prioridad | Skills |
+|-----------|--------|
+| Alta | `sdaf-gate0`, `sdaf-worklog-handoff`, `sdaf-agent-router`, `csharp-adr006-slice`, `testing-review-pr` |
+| Media | `spec-draft-pbi`, `adr-propose`, `blazor-bff-slice`, `aspire-local-run`, `postman-contract-sync` |
+| Baja | `rule-engine-hr`, `devops-ci-gate`, `product-ia-prompt` |
+
 ## Gobernanza
 
 - Prompt de sistema: [prompts/system/master-architect.md](prompts/system/master-architect.md)
 - Biblioteca: [prompts/README.md](prompts/README.md)
+- Skills: [skills/README.md](skills/README.md)
 - Worklogs: `worklogs/` (ATF)
 - Idioma: castellano (`.cursor/rules/idioma-castellano.mdc`)
 - Coding standards C#: ADR-006 + `.cursor/rules/coding-standards-csharp.mdc` (`CS1591` error en `src/`)
