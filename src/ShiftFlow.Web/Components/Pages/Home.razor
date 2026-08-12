@@ -54,8 +54,8 @@
     {
         try
         {
-            var client = HttpClientFactory.CreateClient("api");
-            using var response = await client.GetAsync("/api/status");
+            HttpClient client = HttpClientFactory.CreateClient("api");
+            using HttpResponseMessage response = await client.GetAsync("/api/status");
             response.EnsureSuccessStatusCode();
             _apiStatus = "ok";
         }

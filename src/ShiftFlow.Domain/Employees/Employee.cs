@@ -157,7 +157,7 @@ public sealed class Employee
             throw new DomainException("INV-EMP-02", "El nombre visible del empleado es obligatorio.");
         }
 
-        var trimmed = displayName.Trim();
+        string trimmed = displayName.Trim();
         if (trimmed.Length > DisplayNameMaxLength)
         {
             throw new DomainException(
@@ -175,7 +175,7 @@ public sealed class Employee
             return null;
         }
 
-        var trimmed = email.Trim();
+        string trimmed = email.Trim();
         if (trimmed.Length > EmailMaxLength || !EmailRegex.IsMatch(trimmed))
         {
             throw new DomainException("INV-EMP-01", "El email del empleado no tiene un formato válido.");

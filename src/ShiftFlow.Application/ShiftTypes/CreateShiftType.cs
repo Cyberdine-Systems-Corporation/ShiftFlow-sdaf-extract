@@ -59,7 +59,7 @@ public sealed class CreateShiftTypeHandler(
         CreateShiftTypeCommand request,
         CancellationToken cancellationToken)
     {
-        var organization = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
+        Organization? organization = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
         await EnsureUniquenessAsync(
@@ -70,7 +70,7 @@ public sealed class CreateShiftTypeHandler(
             excludingShiftTypeId: null,
             cancellationToken);
 
-        var shiftType = ShiftType.Create(
+        ShiftType shiftType = ShiftType.Create(
             organization.Id,
             organization.IsActive,
             request.Name,

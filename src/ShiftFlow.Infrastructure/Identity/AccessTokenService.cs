@@ -33,11 +33,11 @@ public sealed class AccessTokenService
     /// </summary>
     public string Issue(string userName, IReadOnlyList<string> roles)
     {
-        var payload = new TokenPayload(
+        TokenPayload payload = new TokenPayload(
             userName,
             roles.ToArray(),
             DateTimeOffset.UtcNow.Add(TokenLifetime).ToUnixTimeSeconds());
-        var json = JsonSerializer.Serialize(payload, JsonOptions);
+        string json = JsonSerializer.Serialize(payload, JsonOptions);
         return _protector.Protect(json);
     }
 
@@ -48,8 +48,8 @@ public sealed class AccessTokenService
     {
         try
         {
-            var json = _protector.Unprotect(token);
-            var payload = JsonSerializer.Deserialize<TokenPayload>(json, JsonOptions);
+            string json = _protector.Unprotect(token);
+            TokenPayload? payload = JsonSerializer.Deserialize<TokenPayload>(json, JsonOptions);
             if (payload is null ||
                 string.IsNullOrWhiteSpace(payload.UserName) ||
                 payload.Exp < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
@@ -57,18 +57,18 @@ public sealed class AccessTokenService
                 return null;
             }
 
-            var claims = new List<Claim>
+            List<Claim> claims = new List<Claim>
             {
                 new(ClaimTypes.Name, payload.UserName),
                 new(ClaimTypes.NameIdentifier, payload.UserName)
             };
-            foreach (var role in payload.Roles ?? [])
+            foreach (string role in payload.Roles ?? [])
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             // authenticationType no nulo ⇒ IsAuthenticated = true
-            var identity = new ClaimsIdentity(claims, authenticationType: "ShiftFlowAccessToken");
+            ClaimsIdentity identity = new ClaimsIdentity(claims, authenticationType: "ShiftFlowAccessToken");
             return new ClaimsPrincipal(identity);
         }
         catch (Exception ex)

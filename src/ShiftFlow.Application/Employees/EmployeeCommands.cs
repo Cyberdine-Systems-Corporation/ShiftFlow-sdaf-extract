@@ -40,10 +40,10 @@ public sealed class UpdateEmployeeHandler(
         UpdateEmployeeCommand request,
         CancellationToken cancellationToken)
     {
-        var employee = await employees.GetByIdAsync(request.Id, cancellationToken)
+        Employee? employee = await employees.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Empleado {request.Id} no encontrado.");
 
-        var department = await departments.GetByIdAsync(request.DepartmentId, cancellationToken)
+        Department? department = await departments.GetByIdAsync(request.DepartmentId, cancellationToken)
             ?? throw new NotFoundException($"Departamento {request.DepartmentId} no encontrado.");
 
         await CreateEmployeeHandler.EnsureEmailUniqueAsync(
@@ -93,7 +93,7 @@ public sealed class SetEmployeeActiveHandler(
         SetEmployeeActiveCommand request,
         CancellationToken cancellationToken)
     {
-        var employee = await employees.GetByIdAsync(request.Id, cancellationToken)
+        Employee? employee = await employees.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Empleado {request.Id} no encontrado.");
 
         employee.SetActive(request.IsActive);

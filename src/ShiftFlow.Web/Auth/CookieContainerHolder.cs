@@ -70,7 +70,7 @@ public sealed class CookieContainerHolder
     /// <param name="nameValuePairs">Pares sin atributos de cookie.</param>
     public void AbsorbNameValuePairs(IEnumerable<string> nameValuePairs)
     {
-        foreach (var pair in nameValuePairs)
+        foreach (string pair in nameValuePairs)
         {
             StorePair(pair.Split(';', 2)[0]);
         }
@@ -83,7 +83,7 @@ public sealed class CookieContainerHolder
     /// <param name="requestUri">URI de la petición (para el <see cref="CookieContainer"/> auxiliar).</param>
     public void AbsorbSetCookieHeaders(IEnumerable<string> setCookieHeaders, Uri? requestUri)
     {
-        foreach (var header in setCookieHeaders)
+        foreach (string header in setCookieHeaders)
         {
             StorePair(header.Split(';', 2)[0]);
 
@@ -118,14 +118,14 @@ public sealed class CookieContainerHolder
 
     private void StorePair(string nameValue)
     {
-        var eq = nameValue.IndexOf('=');
+        int eq = nameValue.IndexOf('=');
         if (eq <= 0)
         {
             return;
         }
 
-        var name = nameValue[..eq].Trim();
-        var value = nameValue[(eq + 1)..].Trim();
+        string name = nameValue[..eq].Trim();
+        string value = nameValue[(eq + 1)..].Trim();
         if (name.Length == 0)
         {
             return;

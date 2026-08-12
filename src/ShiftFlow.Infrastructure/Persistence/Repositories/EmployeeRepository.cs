@@ -40,7 +40,7 @@ public sealed class EmployeeRepository(ShiftFlowDbContext db) : IEmployeeReposit
         Guid? excludingEmployeeId = null,
         CancellationToken cancellationToken = default)
     {
-        var normalized = email.Trim().ToLowerInvariant();
+        string normalized = email.Trim().ToLowerInvariant();
         return db.Employees.AnyAsync(
             x => x.OrganizationId == organizationId
                  && x.Email != null

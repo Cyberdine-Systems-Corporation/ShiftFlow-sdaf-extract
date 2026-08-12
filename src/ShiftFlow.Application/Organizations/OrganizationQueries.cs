@@ -29,7 +29,7 @@ public sealed class GetOrganizationByIdHandler(IOrganizationRepository organizat
         GetOrganizationByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var organization = await organizations.GetByIdAsync(request.Id, cancellationToken)
+        Organization? organization = await organizations.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.Id} no encontrada.");
 
         return CreateOrganizationHandler.ToDto(organization);
@@ -61,7 +61,7 @@ public sealed class ListOrganizationsHandler(IOrganizationRepository organizatio
         ListOrganizationsQuery request,
         CancellationToken cancellationToken)
     {
-        var list = await organizations.ListAsync(cancellationToken);
+        IReadOnlyList<Organization>? list = await organizations.ListAsync(cancellationToken);
         return list.Select(CreateOrganizationHandler.ToDto).ToList();
     }
 }

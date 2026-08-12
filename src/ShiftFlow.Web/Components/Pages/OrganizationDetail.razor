@@ -73,7 +73,7 @@ else
                     <tr><th>Nombre</th><th>Estado</th><th></th></tr>
                 </thead>
                 <tbody>
-                    @foreach (var d in _departments)
+                    @foreach (DepartmentDto d in _departments)
                     {
                         <tr>
                             <td>@d.Name</td>
@@ -97,7 +97,7 @@ else
                 <label for="emp-dept">Departamento</label>
                 <select id="emp-dept" @bind="_newEmpDeptIdText">
                     <option value="">— seleccionar —</option>
-                    @foreach (var d in _departments.Where(x => x.IsActive))
+                    @foreach (DepartmentDto d in _departments.Where(x => x.IsActive))
                     {
                         <option value="@d.Id">@d.Name</option>
                     }
@@ -129,7 +129,7 @@ else
                     <tr><th>Nombre</th><th>Email</th><th>Departamento</th><th>Estado</th><th></th></tr>
                 </thead>
                 <tbody>
-                    @foreach (var e in _employees)
+                    @foreach (EmployeeDto e in _employees)
                     {
                         <tr>
                             <td>@e.DisplayName</td>
@@ -185,7 +185,7 @@ else
                     <tr><th>Nombre</th><th>Código</th><th>Horario</th><th>Estado</th><th></th></tr>
                 </thead>
                 <tbody>
-                    @foreach (var s in _shiftTypes)
+                    @foreach (ShiftTypeDto s in _shiftTypes)
                     {
                         <tr>
                             <td>@s.Name</td>
@@ -233,7 +233,7 @@ else
         _error = null;
         try
         {
-            var org = await Api.GetOrganizationAsync(OrganizationId);
+            ApiResult<OrganizationDto> org = await Api.GetOrganizationAsync(OrganizationId);
             if (!org.Succeeded)
             {
                 _error = org.Error;
@@ -271,7 +271,7 @@ else
     {
         await RunAsync(async () =>
         {
-            var result = await Api.RenameOrganizationAsync(OrganizationId, _renameOrg);
+            ApiResult<OrganizationDto> result = await Api.RenameOrganizationAsync(OrganizationId, _renameOrg);
             if (!result.Succeeded) { _error = result.Error; return; }
             await ReloadAsync();
         });
@@ -282,7 +282,7 @@ else
         if (_org is null) return;
         await RunAsync(async () =>
         {
-            var result = await Api.SetOrganizationActiveAsync(OrganizationId, !_org.IsActive);
+            ApiResult<OrganizationDto> result = await Api.SetOrganizationActiveAsync(OrganizationId, !_org.IsActive);
             if (!result.Succeeded) { _error = result.Error; return; }
             await ReloadAsync();
         });
@@ -292,7 +292,7 @@ else
     {
         await RunAsync(async () =>
         {
-            var result = await Api.CreateDepartmentAsync(OrganizationId, _newDeptName);
+            ApiResult<DepartmentDto> result = await Api.CreateDepartmentAsync(OrganizationId, _newDeptName);
             if (!result.Succeeded) { _error = result.Error; return; }
             _newDeptName = string.Empty;
             await ReloadAsync();
@@ -303,7 +303,7 @@ else
     {
         await RunAsync(async () =>
         {
-            var result = await Api.SetDepartmentActiveAsync(dept.Id, !dept.IsActive);
+            ApiResult<DepartmentDto> result = await Api.SetDepartmentActiveAsync(dept.Id, !dept.IsActive);
             if (!result.Succeeded) { _error = result.Error; return; }
             await ReloadAsync();
         });
@@ -313,14 +313,14 @@ else
     {
         await RunAsync(async () =>
         {
-            if (!Guid.TryParse(_newEmpDeptIdText, out var deptId) || deptId == Guid.Empty)
+            if (!Guid.TryParse(_newEmpDeptIdText, out Guid deptId) || deptId == Guid.Empty)
             {
                 _error = "Selecciona un departamento.";
                 return;
             }
 
-            var email = string.IsNullOrWhiteSpace(_newEmpEmail) ? null : _newEmpEmail;
-            var result = await Api.CreateEmployeeAsync(OrganizationId, deptId, _newEmpName, email);
+            string? email = string.IsNullOrWhiteSpace(_newEmpEmail) ? null : _newEmpEmail;
+            ApiResult<EmployeeDto> result = await Api.CreateEmployeeAsync(OrganizationId, deptId, _newEmpName, email);
             if (!result.Succeeded) { _error = result.Error; return; }
             _newEmpName = string.Empty;
             _newEmpEmail = string.Empty;
@@ -332,7 +332,7 @@ else
     {
         await RunAsync(async () =>
         {
-            var result = await Api.SetEmployeeActiveAsync(emp.Id, !emp.IsActive);
+            ApiResult<EmployeeDto> result = await Api.SetEmployeeActiveAsync(emp.Id, !emp.IsActive);
             if (!result.Succeeded) { _error = result.Error; return; }
             await ReloadAsync();
         });
@@ -342,10 +342,10 @@ else
     {
         await RunAsync(async () =>
         {
-            TimeOnly? start = TimeOnly.TryParse(_newStStart, out var s) ? s : null;
-            TimeOnly? end = TimeOnly.TryParse(_newStEnd, out var e) ? e : null;
-            var code = string.IsNullOrWhiteSpace(_newStCode) ? null : _newStCode;
-            var result = await Api.CreateShiftTypeAsync(OrganizationId, _newStName, code, start, end);
+            TimeOnly? start = TimeOnly.TryParse(_newStStart, out TimeOnly s) ? s : null;
+            TimeOnly? end = TimeOnly.TryParse(_newStEnd, out TimeOnly e) ? e : null;
+            string? code = string.IsNullOrWhiteSpace(_newStCode) ? null : _newStCode;
+            ApiResult<ShiftTypeDto> result = await Api.CreateShiftTypeAsync(OrganizationId, _newStName, code, start, end);
             if (!result.Succeeded) { _error = result.Error; return; }
             _newStName = string.Empty;
             _newStCode = string.Empty;
@@ -357,7 +357,7 @@ else
     {
         await RunAsync(async () =>
         {
-            var result = await Api.SetShiftTypeActiveAsync(shiftType.Id, !shiftType.IsActive);
+            ApiResult<ShiftTypeDto> result = await Api.SetShiftTypeActiveAsync(shiftType.Id, !shiftType.IsActive);
             if (!result.Succeeded) { _error = result.Error; return; }
             await ReloadAsync();
         });

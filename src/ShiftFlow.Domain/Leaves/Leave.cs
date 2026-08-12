@@ -128,8 +128,8 @@ public sealed class Leave
     /// <returns>Par inicio/fin exclusivo para comparar con intervalos de turno.</returns>
     public (DateTimeOffset CoverageStart, DateTimeOffset CoverageEndExclusive) GetCoverage(TimeSpan offset)
     {
-        var coverageStart = new DateTimeOffset(StartOn.ToDateTime(TimeOnly.MinValue), offset);
-        var coverageEnd = new DateTimeOffset(EndOn.AddDays(1).ToDateTime(TimeOnly.MinValue), offset);
+        DateTimeOffset coverageStart = new DateTimeOffset(StartOn.ToDateTime(TimeOnly.MinValue), offset);
+        DateTimeOffset coverageEnd = new DateTimeOffset(EndOn.AddDays(1).ToDateTime(TimeOnly.MinValue), offset);
         return (coverageStart, coverageEnd);
     }
 
@@ -142,7 +142,7 @@ public sealed class Leave
     public bool CoversInterval(DateTimeOffset candidateStart, DateTimeOffset candidateEnd)
     {
         // Usa el offset del candidato para alinear cobertura civil y turno en el mismo reloj.
-        var (coverageStart, coverageEnd) = GetCoverage(candidateStart.Offset);
+        (DateTimeOffset coverageStart, DateTimeOffset coverageEnd) = GetCoverage(candidateStart.Offset);
         return candidateStart < coverageEnd && coverageStart < candidateEnd;
     }
 
@@ -190,7 +190,7 @@ public sealed class Leave
             return null;
         }
 
-        var trimmed = value.Trim();
+        string trimmed = value.Trim();
         if (trimmed.Length > maxLength)
         {
             throw new DomainException(

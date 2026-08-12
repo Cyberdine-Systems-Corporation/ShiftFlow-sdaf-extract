@@ -21,7 +21,7 @@ public sealed class ShiftAssignmentRepository(ShiftFlowDbContext db) : IShiftAss
         CancellationToken cancellationToken = default)
     {
         // Filtro Status + OrderBy en memoria: SQLite de tests no traduce bien DateTimeOffset.
-        var items = await db.ShiftAssignments
+        List<ShiftAssignment>? items = await db.ShiftAssignments
             .Where(x => x.EmployeeId == employeeId && x.Status == ShiftAssignmentStatus.Assigned)
             .ToListAsync(cancellationToken);
 
@@ -36,10 +36,10 @@ public sealed class ShiftAssignmentRepository(ShiftFlowDbContext db) : IShiftAss
         CancellationToken cancellationToken = default)
     {
         // Intersección con [monthStart, nextMonthStart) evaluada en memoria (compat. SQLite + Npgsql).
-        var monthStart = new DateTimeOffset(year, month, 1, 0, 0, 0, TimeSpan.Zero);
-        var monthEnd = monthStart.AddMonths(1);
+        DateTimeOffset monthStart = new DateTimeOffset(year, month, 1, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset monthEnd = monthStart.AddMonths(1);
 
-        var items = await db.ShiftAssignments
+        List<ShiftAssignment>? items = await db.ShiftAssignments
             .Where(x => x.OrganizationId == organizationId && x.Status == ShiftAssignmentStatus.Assigned)
             .ToListAsync(cancellationToken);
 

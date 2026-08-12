@@ -62,7 +62,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var org in _items)
+                @foreach (OrganizationDto org in _items)
                 {
                     <tr>
                         <td>@org.Name</td>
@@ -103,7 +103,7 @@
         }
         catch (Exception ex)
         {
-            var authHint = string.IsNullOrWhiteSpace(Session.AccessToken)
+            string authHint = string.IsNullOrWhiteSpace(Session.AccessToken)
                 ? "sin sesión Bearer"
                 : "con sesión Bearer";
             _error = $"No se pudo cargar el listado: {ex.Message} ({authHint}).";
@@ -117,7 +117,7 @@
         _error = null;
         try
         {
-            var result = await Api.CreateOrganizationAsync(_newName);
+            ApiResult<OrganizationDto> result = await Api.CreateOrganizationAsync(_newName);
             if (!result.Succeeded)
             {
                 _error = result.Error;

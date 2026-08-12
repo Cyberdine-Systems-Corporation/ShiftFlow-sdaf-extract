@@ -32,7 +32,7 @@ public sealed class RenameDepartmentHandler(
         RenameDepartmentCommand request,
         CancellationToken cancellationToken)
     {
-        var department = await departments.GetByIdAsync(request.Id, cancellationToken)
+        Department? department = await departments.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Departamento {request.Id} no encontrado.");
 
         if (await departments.ExistsWithNameAsync(
@@ -81,7 +81,7 @@ public sealed class SetDepartmentActiveHandler(
         SetDepartmentActiveCommand request,
         CancellationToken cancellationToken)
     {
-        var department = await departments.GetByIdAsync(request.Id, cancellationToken)
+        Department? department = await departments.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException($"Departamento {request.Id} no encontrado.");
 
         department.SetActive(request.IsActive);

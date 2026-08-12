@@ -1,12 +1,19 @@
 ---
-description: Estándares C# ShiftFlow (ADR-006) — regiones, comentarios y XML docs
-globs: src/**/*.cs
+description: Estándares C# ShiftFlow (ADR-006) — tipado explícito, regiones, comentarios y XML docs
+globs: src/**/*.{cs,razor},tests/**/*.cs
 alwaysApply: false
 ---
 
 # Coding standards C# (ADR-006)
 
-Al editar código bajo `src/`:
+Al editar código bajo `src/` (y al tocar `tests/`):
+
+## Tipado explícito (sin `var`)
+
+- Prohibido `var` en declaraciones locales y de campo.
+- Usa el **contrato** (interfaz/puerto) cuando el símbolo se consume por su abstracción: `ILeaveRepository`, `IReadOnlyList<Leave>`, `IMediator`.
+- Usa la **implementación** cuando el valor es un concreto estable: `Leave`, `List<EmployeeDto>`, `HttpClient`, `StringBuilder`.
+- Aplica también en `foreach` / patrones donde el tipo del elemento aporte claridad.
 
 ## Regiones
 

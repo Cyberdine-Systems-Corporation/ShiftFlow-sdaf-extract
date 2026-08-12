@@ -19,18 +19,18 @@ public static class IdentitySeed
     /// <param name="cancellationToken">Token de cancelación.</param>
     public static async Task InitializeAsync(IServiceProvider services, CancellationToken cancellationToken = default)
     {
-        await using var scope = services.CreateAsyncScope();
-        var sp = scope.ServiceProvider;
-        var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("IdentitySeed");
-        var db = sp.GetRequiredService<ShiftFlowDbContext>();
-        var configuration = sp.GetRequiredService<IConfiguration>();
+        await using AsyncServiceScope scope = services.CreateAsyncScope();
+        IServiceProvider? sp = scope.ServiceProvider;
+        ILogger? logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("IdentitySeed");
+        ShiftFlowDbContext? db = sp.GetRequiredService<ShiftFlowDbContext>();
+        IConfiguration? configuration = sp.GetRequiredService<IConfiguration>();
 
         await db.Database.EnsureCreatedAsync(cancellationToken);
 
-        var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
+        RoleManager<IdentityRole>? roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
         if (!await roleManager.RoleExistsAsync(AuthRoles.Administrator))
         {
-            var roleResult = await roleManager.CreateAsync(new IdentityRole(AuthRoles.Administrator));
+            IdentityResult? roleResult = await roleManager.CreateAsync(new IdentityRole(AuthRoles.Administrator));
             if (!roleResult.Succeeded)
             {
                 throw new InvalidOperationException(
@@ -38,14 +38,14 @@ public static class IdentitySeed
             }
         }
 
-        var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
-        var existing = await userManager.FindByNameAsync(DemoCredentials.UserName);
+        UserManager<ApplicationUser>? userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
+        ApplicationUser? existing = await userManager.FindByNameAsync(DemoCredentials.UserName);
         if (existing is not null)
         {
             return;
         }
 
-        var password = configuration[DemoCredentials.PasswordConfigurationKey];
+        string? password = configuration[DemoCredentials.PasswordConfigurationKey];
         if (string.IsNullOrWhiteSpace(password))
         {
             password = DemoCredentials.DefaultDevelopmentPassword;
@@ -54,21 +54,21 @@ public static class IdentitySeed
                 DemoCredentials.PasswordConfigurationKey);
         }
 
-        var user = new ApplicationUser
+        ApplicationUser user = new ApplicationUser
         {
             UserName = DemoCredentials.UserName,
             Email = "demo.admin@shiftflow.local",
             EmailConfirmed = true
         };
 
-        var createResult = await userManager.CreateAsync(user, password);
+        IdentityResult? createResult = await userManager.CreateAsync(user, password);
         if (!createResult.Succeeded)
         {
             throw new InvalidOperationException(
                 $"No se pudo crear el usuario demo: {FormatErrors(createResult)}");
         }
 
-        var addRole = await userManager.AddToRoleAsync(user, AuthRoles.Administrator);
+        IdentityResult? addRole = await userManager.AddToRoleAsync(user, AuthRoles.Administrator);
         if (!addRole.Succeeded)
         {
             throw new InvalidOperationException(

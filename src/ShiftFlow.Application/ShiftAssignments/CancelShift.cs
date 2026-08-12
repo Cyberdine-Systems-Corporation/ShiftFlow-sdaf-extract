@@ -30,7 +30,7 @@ public sealed class CancelShiftHandler(
         CancelShiftCommand request,
         CancellationToken cancellationToken)
     {
-        var assignment = await assignments.GetByIdAsync(request.ShiftAssignmentId, cancellationToken)
+        ShiftAssignment? assignment = await assignments.GetByIdAsync(request.ShiftAssignmentId, cancellationToken)
             ?? throw new NotFoundException($"Asignación {request.ShiftAssignmentId} no encontrada.");
 
         assignment.Cancel();

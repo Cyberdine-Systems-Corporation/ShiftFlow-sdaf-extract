@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.2 |
+| **Versión** | 0.1.3 |
 | **Estado** | Approved |
-| **Fecha** | 2026-08-09 |
+| **Fecha** | 2026-08-12 |
 | **Parte** | V — Calidad y entrega |
 | **Norma superior** | [09-development-workflow.md](09-development-workflow.md), [06-engineering-principles.md](06-engineering-principles.md), [16-testing-framework.md](16-testing-framework.md), [ADR-006](../architecture/decisions/ADR-006-coding-standards.md) |
 | **Deriva hacia** | Agente Testing+Review, PRs, CI local |
@@ -54,6 +54,7 @@ Ningún agente aprueba enmiendas constitucionales.
 - [ ] **Legibilidad (ADR-006):** regiones conceptuales en tipos no triviales tocados.
 - [ ] **Comentarios (ADR-006):** solo en lógica de alto impacto / no obvia; castellano.
 - [ ] **XML docs (ADR-006):** `<summary>` (y params/returns/exception si aportan) en API pública/`internal` del diff; build sin `CS1591`.
+- [ ] **Tipado explícito (ADR-006):** sin `var`; tipo = contrato o implementación según el uso.
 
 ### 3.4 Producto
 
@@ -70,7 +71,7 @@ Ningún agente aprueba enmiendas constitucionales.
 | QG-Unit | Tests unitarios Domain (+ app relevantes) verdes | Merge / demo |
 | QG-Accept | Acceptance del PBI/flujo tocado verdes | Merge a línea de demo |
 | QG-Arch | Sin violaciones obvias de dependencia (manual o test de arquitectura) | Merge si hay infracción nueva |
-| QG-Docs | Diff de `src/` cumple XML docs + regiones/comentarios según ADR-006 | Merge |
+| QG-Docs | Diff de `src/` cumple XML docs + regiones/comentarios + tipado explícito (sin `var`) según ADR-006 | Merge |
 | QG-Review | Checklist §3 completado | Merge |
 
 CI cloud elaborado es **opcional** en MVP; los gates deben poder ejecutarse **en local**.
@@ -85,7 +86,7 @@ CI cloud elaborado es **opcional** en MVP; los gates deben poder ejecutarse **en
 | Mayor | Corregir o ADR de excepción fechado |
 | Menor | Puede ir a deuda registrada en worklog/backlog |
 
-Hallazgos de ADR-006 (falta XML, regiones omitidas en tipo no trivial, comentarios narrativos inútiles en exceso) son **bloqueantes** en el diff del PR.
+Hallazgos de ADR-006 (falta XML, regiones omitidas en tipo no trivial, comentarios narrativos inútiles en exceso, `var` en el diff) son **bloqueantes** en el diff del PR.
 
 ---
 
@@ -101,6 +102,7 @@ Hallazgos de ADR-006 (falta XML, regiones omitidas en tipo no trivial, comentari
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.3 | 2026-08-12 | ADR-006: tipado explícito sin `var` |
 | 0.1.2 | 2026-08-09 | ADR-006: regiones, comentarios, XML docs y QG-Docs |
 | 0.1.1 | 2026-08-05 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-05 | Borrador inicial (sesión H8) |

@@ -23,10 +23,10 @@ public class ApiStatusTests
     [Fact]
     public async Task GetApiStatus_devuelve_ok()
     {
-        var response = await _client.GetAsync("/api/status");
+        HttpResponseMessage? response = await _client.GetAsync("/api/status");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var payload = await response.Content.ReadFromJsonAsync<StatusResponse>(JsonOptions);
+        StatusResponse? payload = await response.Content.ReadFromJsonAsync<StatusResponse>(JsonOptions);
         payload.Should().NotBeNull();
         payload!.Service.Should().Be("ShiftFlow.Api");
         payload.Status.Should().Be("ok");

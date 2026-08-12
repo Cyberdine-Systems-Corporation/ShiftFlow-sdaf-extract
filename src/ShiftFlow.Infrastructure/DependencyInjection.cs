@@ -34,7 +34,7 @@ public static class DependencyInjection
     {
         #region Persistence
 
-        var connectionString = configuration.GetConnectionString("shiftflow")
+        string connectionString = configuration.GetConnectionString("shiftflow")
             ?? configuration.GetConnectionString("ShiftFlow")
             ?? "Host=localhost;Port=5433;Database=shiftflow;Username=shiftflow;Password=shiftflow";
 

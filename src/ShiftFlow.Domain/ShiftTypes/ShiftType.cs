@@ -88,7 +88,7 @@ public sealed class ShiftType
                 "No se puede crear un tipo de turno en una organización inactiva.");
         }
 
-        var shiftType = new ShiftType
+        ShiftType shiftType = new ShiftType
         {
             Id = Guid.NewGuid(),
             OrganizationId = organizationId,
@@ -143,7 +143,7 @@ public sealed class ShiftType
             throw new DomainException("INV-STT-02", "El nombre del tipo de turno es obligatorio.");
         }
 
-        var trimmed = name.Trim();
+        string trimmed = name.Trim();
         if (trimmed.Length > NameMaxLength)
         {
             throw new DomainException(
@@ -161,7 +161,7 @@ public sealed class ShiftType
             return null;
         }
 
-        var trimmed = code.Trim();
+        string trimmed = code.Trim();
         if (trimmed.Length > CodeMaxLength)
         {
             throw new DomainException(

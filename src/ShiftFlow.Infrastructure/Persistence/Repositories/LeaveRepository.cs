@@ -20,7 +20,7 @@ public sealed class LeaveRepository(ShiftFlowDbContext db) : ILeaveRepository
         Guid employeeId,
         CancellationToken cancellationToken = default)
     {
-        var items = await db.Leaves
+        List<Leave>? items = await db.Leaves
             .Where(x => x.EmployeeId == employeeId && x.Status == LeaveStatus.Active)
             .ToListAsync(cancellationToken);
 
@@ -36,7 +36,7 @@ public sealed class LeaveRepository(ShiftFlowDbContext db) : ILeaveRepository
         bool activeOnly = true,
         CancellationToken cancellationToken = default)
     {
-        var query = db.Leaves.Where(x => x.OrganizationId == organizationId);
+        IQueryable<Leave>? query = db.Leaves.Where(x => x.OrganizationId == organizationId);
 
         if (employeeId.HasValue)
         {
@@ -48,13 +48,13 @@ public sealed class LeaveRepository(ShiftFlowDbContext db) : ILeaveRepository
             query = query.Where(x => x.Status == LeaveStatus.Active);
         }
 
-        var items = await query.ToListAsync(cancellationToken);
+        List<Leave>? items = await query.ToListAsync(cancellationToken);
 
         if (year.HasValue && month.HasValue)
         {
             // Intersección de fechas civiles con el mes: StartOn <= lastDay && EndOn >= firstDay.
-            var firstDay = new DateOnly(year.Value, month.Value, 1);
-            var lastDay = firstDay.AddMonths(1).AddDays(-1);
+            DateOnly firstDay = new DateOnly(year.Value, month.Value, 1);
+            DateOnly lastDay = firstDay.AddMonths(1).AddDays(-1);
             items = items
                 .Where(x => x.StartOn <= lastDay && x.EndOn >= firstDay)
                 .ToList();

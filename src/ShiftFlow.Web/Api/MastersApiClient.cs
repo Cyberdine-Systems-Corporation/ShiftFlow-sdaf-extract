@@ -178,7 +178,7 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
         bool activeOnly = true,
         CancellationToken ct = default)
     {
-        var qs = new List<string> { $"activeOnly={activeOnly}" };
+        List<string> qs = new List<string> { $"activeOnly={activeOnly}" };
         if (employeeId.HasValue)
         {
             qs.Add($"employeeId={employeeId}");
@@ -219,45 +219,45 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
 
     private async Task<T> GetAsyncRequired<T>(string url, CancellationToken ct)
     {
-        using var response = await Client.GetAsync(url, ct);
+        using HttpResponseMessage? response = await Client.GetAsync(url, ct);
         if (!response.IsSuccessStatusCode)
         {
-            var message = await ReadErrorAsync(response, ct);
+            string message = await ReadErrorAsync(response, ct);
             throw new HttpRequestException(message, null, response.StatusCode);
         }
 
-        var value = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct);
+        T? value = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct);
         return value ?? throw new HttpRequestException("Respuesta vacía de la Api.");
     }
 
     private async Task<IReadOnlyList<T>> GetListAsync<T>(string url, CancellationToken ct)
     {
-        using var response = await Client.GetAsync(url, ct);
+        using HttpResponseMessage? response = await Client.GetAsync(url, ct);
         if (!response.IsSuccessStatusCode)
         {
-            var message = await ReadErrorAsync(response, ct);
+            string message = await ReadErrorAsync(response, ct);
             throw new HttpRequestException(message, null, response.StatusCode);
         }
 
-        var list = await response.Content.ReadFromJsonAsync<List<T>>(JsonOptions, ct);
+        List<T>? list = await response.Content.ReadFromJsonAsync<List<T>>(JsonOptions, ct);
         return list ?? [];
     }
 
     private async Task<ApiResult<T>> GetAsync<T>(string url, CancellationToken ct)
     {
-        using var response = await Client.GetAsync(url, ct);
+        using HttpResponseMessage? response = await Client.GetAsync(url, ct);
         return await ToResultAsync<T>(response, ct);
     }
 
     private async Task<ApiResult<T>> PostAsync<T>(string url, object body, CancellationToken ct)
     {
-        using var response = await Client.PostAsJsonAsync(url, body, ct);
+        using HttpResponseMessage? response = await Client.PostAsJsonAsync(url, body, ct);
         return await ToResultAsync<T>(response, ct);
     }
 
     private async Task<ApiResult<T>> PutAsync<T>(string url, object body, CancellationToken ct)
     {
-        using var response = await Client.PutAsJsonAsync(url, body, ct);
+        using HttpResponseMessage? response = await Client.PutAsJsonAsync(url, body, ct);
         return await ToResultAsync<T>(response, ct);
     }
 
@@ -265,13 +265,13 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
     {
         if (response.IsSuccessStatusCode)
         {
-            var value = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct);
+            T? value = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct);
             return value is null
                 ? ApiResult<T>.Fail("Respuesta vacía de la Api.")
                 : ApiResult<T>.Ok(value);
         }
 
-        var message = await ReadErrorAsync(response, ct);
+        string message = await ReadErrorAsync(response, ct);
         return ApiResult<T>.Fail(message);
     }
 
@@ -279,7 +279,7 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
     {
         try
         {
-            var problem = await response.Content.ReadFromJsonAsync<ApiErrorBody>(JsonOptions, ct);
+            ApiErrorBody? problem = await response.Content.ReadFromJsonAsync<ApiErrorBody>(JsonOptions, ct);
             if (problem is not null && !string.IsNullOrWhiteSpace(problem.Error))
             {
                 return string.IsNullOrWhiteSpace(problem.Code)

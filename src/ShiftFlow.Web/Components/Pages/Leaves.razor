@@ -45,7 +45,7 @@ else
         <div class="sf-field">
             <label for="leave-org">Organización</label>
             <select id="leave-org" value="@_organizationIdText" @onchange="OnOrganizationChangedAsync" disabled="@_busy">
-                @foreach (var org in _organizations)
+                @foreach (OrganizationDto org in _organizations)
                 {
                     <option value="@org.Id">@org.Name</option>
                 }
@@ -60,7 +60,7 @@ else
                 <label for="leave-emp">Empleado</label>
                 <select id="leave-emp" @bind="_employeeIdText" disabled="@_busy">
                     <option value="">— seleccionar —</option>
-                    @foreach (var e in _employees.Where(x => x.IsActive))
+                    @foreach (EmployeeDto e in _employees.Where(x => x.IsActive))
                     {
                         <option value="@e.Id">@e.DisplayName</option>
                     }
@@ -124,7 +124,7 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var leave in _leaves)
+                    @foreach (LeaveDto leave in _leaves)
                     {
                         <tr>
                             <td>@EmployeeName(leave.EmployeeId)</td>
@@ -186,7 +186,7 @@ else
 
     private async Task OnOrganizationChangedAsync(ChangeEventArgs e)
     {
-        if (!Guid.TryParse(e.Value?.ToString(), out var orgId))
+        if (!Guid.TryParse(e.Value?.ToString(), out Guid orgId))
         {
             return;
         }
@@ -208,7 +208,7 @@ else
             return;
         }
 
-        if (!Guid.TryParse(_employeeIdText, out var employeeId))
+        if (!Guid.TryParse(_employeeIdText, out Guid employeeId))
         {
             _error = "Selecciona un empleado.";
             return;
@@ -220,12 +220,12 @@ else
             return;
         }
 
-        var start = DateOnly.FromDateTime(_startOn.Value);
-        var end = DateOnly.FromDateTime(_endOn.Value);
+        DateOnly start = DateOnly.FromDateTime(_startOn.Value);
+        DateOnly end = DateOnly.FromDateTime(_endOn.Value);
 
         await RunAsync(async () =>
         {
-            var result = await Api.RegisterLeaveAsync(
+            ApiResult<LeaveDto> result = await Api.RegisterLeaveAsync(
                 _selectedOrganizationId,
                 employeeId,
                 start,
@@ -249,7 +249,7 @@ else
         _success = null;
         await RunAsync(async () =>
         {
-            var result = await Api.CancelLeaveAsync(leaveId);
+            ApiResult<LeaveDto> result = await Api.CancelLeaveAsync(leaveId);
             if (!result.Succeeded)
             {
                 _error = result.Error;

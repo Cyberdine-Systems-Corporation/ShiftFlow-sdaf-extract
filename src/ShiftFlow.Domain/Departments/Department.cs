@@ -95,7 +95,7 @@ public sealed class Department
             throw new DomainException("INV-DEP-02", "El nombre del departamento es obligatorio.");
         }
 
-        var trimmed = name.Trim();
+        string trimmed = name.Trim();
         if (trimmed.Length > NameMaxLength)
         {
             throw new DomainException(

@@ -20,10 +20,10 @@ public sealed class RuleEngine
         IReadOnlyList<ShiftAssignment> existingAssigned,
         IReadOnlyList<Leave>? activeLeaves = null)
     {
-        var violations = new List<RuleViolation>();
+        List<RuleViolation> violations = new List<RuleViolation>();
 
         // HR-01: intervalos semiabiertos [StartAt, EndAt); el borde exacto no solapa.
-        foreach (var existing in existingAssigned)
+        foreach (ShiftAssignment existing in existingAssigned)
         {
             if (existing.EmployeeId != candidate.EmployeeId)
             {
@@ -47,7 +47,7 @@ public sealed class RuleEngine
         // HR-02: Leave Active cuya cobertura intersecta el intervalo candidato.
         if (activeLeaves is { Count: > 0 })
         {
-            foreach (var leave in activeLeaves)
+            foreach (Leave leave in activeLeaves)
             {
                 if (leave.EmployeeId != candidate.EmployeeId)
                 {

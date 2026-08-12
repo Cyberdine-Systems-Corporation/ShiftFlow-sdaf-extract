@@ -31,7 +31,7 @@ public sealed class DepartmentRepository(ShiftFlowDbContext db) : IDepartmentRep
         Guid? excludingDepartmentId = null,
         CancellationToken cancellationToken = default)
     {
-        var normalized = name.Trim().ToLowerInvariant();
+        string normalized = name.Trim().ToLowerInvariant();
         return db.Departments.AnyAsync(
             x => x.OrganizationId == organizationId
                  && x.Name.ToLower() == normalized

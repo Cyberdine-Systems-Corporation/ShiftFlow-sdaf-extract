@@ -24,7 +24,7 @@ public static class MasterDataEndpoints
     /// <returns>El mismo <paramref name="endpoints"/> para encadenar.</returns>
     public static IEndpointRouteBuilder MapMasterDataEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var orgs = endpoints.MapGroup("/api/organizations")
+        RouteGroupBuilder? orgs = endpoints.MapGroup("/api/organizations")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Organizations");
 
@@ -55,7 +55,7 @@ public static class MasterDataEndpoints
             .WithName("ListShiftTypesByOrganization")
             .WithTags("ShiftTypes");
 
-        var departments = endpoints.MapGroup("/api/departments")
+        RouteGroupBuilder? departments = endpoints.MapGroup("/api/departments")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Departments");
 
@@ -65,14 +65,14 @@ public static class MasterDataEndpoints
             .WithName("ListEmployeesByDepartment")
             .WithTags("Employees");
 
-        var employees = endpoints.MapGroup("/api/employees")
+        RouteGroupBuilder? employees = endpoints.MapGroup("/api/employees")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("Employees");
 
         employees.MapPut("/{id:guid}", UpdateEmployeeAsync).WithName("UpdateEmployee");
         employees.MapPut("/{id:guid}/active", SetEmployeeActiveAsync).WithName("SetEmployeeActive");
 
-        var shiftTypes = endpoints.MapGroup("/api/shift-types")
+        RouteGroupBuilder? shiftTypes = endpoints.MapGroup("/api/shift-types")
             .RequireAuthorization(AuthRoles.Administrator)
             .WithTags("ShiftTypes");
 
@@ -261,7 +261,7 @@ public static class MasterDataEndpoints
     {
         try
         {
-            var result = await action();
+            T? result = await action();
             return onSuccess(result);
         }
         catch (DomainException ex)
