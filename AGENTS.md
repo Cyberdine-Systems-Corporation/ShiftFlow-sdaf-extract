@@ -59,7 +59,7 @@ Playbooks operativos en [`skills/`](skills/) (tool-agnostic; **no** bajo `.curso
 | Prioridad | Skills |
 |-----------|--------|
 | Alta | `sdaf-gate0`, `sdaf-worklog-handoff`, `sdaf-agent-router`, `csharp-adr006-slice`, `testing-review-pr` |
-| Media | `spec-draft-pbi`, `adr-propose`, `blazor-bff-slice`, `aspire-local-run`, `postman-contract-sync` |
+| Media | `spec-draft-pbi`, `adr-propose`, `blazor-bff-slice`, `aspire-local-run`, `postman-contract-sync`, `security-review-mvp` |
 | Baja | `rule-engine-hr`, `devops-ci-gate`, `product-ia-prompt` |
 
 ## Gobernanza

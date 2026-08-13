@@ -90,6 +90,7 @@ Los **prompts**, **skills** y **worklogs** son infraestructura de ingeniería, n
 | 16 | [16-testing-framework.md](16-testing-framework.md) | Testing Framework | Approved |
 | 17 | [17-code-review-and-quality-gates.md](17-code-review-and-quality-gates.md) | Code Review and Quality Gates | Approved |
 | 18 | [18-devops.md](18-devops.md) | DevOps | Approved |
+| 20 | [20-security-standards.md](20-security-standards.md) | Security Standards (MVP) | Approved |
 
 ### Parte VI — Operación
 

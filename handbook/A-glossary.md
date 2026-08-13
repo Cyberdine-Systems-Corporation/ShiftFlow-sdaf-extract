@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.1 |
+| **Versión** | 0.1.2 |
 | **Estado** | Approved |
-| **Fecha** | 2026-08-05 |
+| **Fecha** | 2026-08-13 |
 | **Parte** | Apéndices |
 | **Norma superior** | Handbook; el glossary de dominio canónico vive en `specs/domain/` |
 
@@ -38,6 +38,8 @@ Glosario **de ingeniería y SDAF** (no sustituye el ubiquitous language de negoc
 | **Runtime local autocontenido** | App + infra (p. ej. Postgres) levantables sin cloud |
 | **Vertical slice** | Unidad de feature en Application (command/query + handler) |
 | **WorkforceScheduling** | Bounded context único del MVP |
+| **QG-Sec** | Gate de calidad: sin secretos en claro ni bypass de auth especificado (cap. 20) |
+| **OWASP Top 10** | Mapa de riesgos web usado como marco en el baseline de seguridad MVP |
 | **IA de producto** | Adaptadores en Infrastructure que asisten al usuario final |
 | **Agente de ingeniería** | Agente que produce artefactos del repo |
 
@@ -47,5 +49,6 @@ Glosario **de ingeniería y SDAF** (no sustituye el ubiquitous language de negoc
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-13 | Approved: QG-Sec, OWASP Top 10 |
 | 0.1.1 | 2026-08-05 | Approved tras revisión humana |
 | 0.1.0 | 2026-08-05 | Borrador inicial (sesión H8) |
