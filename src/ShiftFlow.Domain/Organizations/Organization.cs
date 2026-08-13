@@ -12,6 +12,11 @@ public sealed class Organization
     /// </summary>
     public const int NameMaxLength = 200;
 
+    /// <summary>
+    /// Valor por defecto de descanso mínimo (minutos). <c>0</c> desactiva HR-03.
+    /// </summary>
+    public const int DefaultMinimumRestMinutes = 0;
+
     private Organization()
     {
     }
@@ -31,6 +36,11 @@ public sealed class Organization
     /// </summary>
     public bool IsActive { get; private set; }
 
+    /// <summary>
+    /// Descanso mínimo entre turnos Assigned del mismo empleado (minutos). Usado por HR-03.
+    /// </summary>
+    public int MinimumRestMinutes { get; private set; }
+
     #region Factory
 
     /// <summary>
@@ -44,7 +54,8 @@ public sealed class Organization
         {
             Id = Guid.NewGuid(),
             Name = NormalizeName(name),
-            IsActive = true
+            IsActive = true,
+            MinimumRestMinutes = DefaultMinimumRestMinutes
         };
     }
 
@@ -63,6 +74,22 @@ public sealed class Organization
     /// </summary>
     /// <param name="isActive">Nuevo estado de activación.</param>
     public void SetActive(bool isActive) => IsActive = isActive;
+
+    /// <summary>
+    /// Configura el umbral de descanso mínimo entre turnos (HR-03).
+    /// </summary>
+    /// <param name="minutes">Minutos ≥ 0; <c>0</c> desactiva la regla.</param>
+    public void SetMinimumRestMinutes(int minutes)
+    {
+        if (minutes < 0)
+        {
+            throw new DomainException(
+                "INV-ORG-02",
+                "El descanso mínimo entre turnos no puede ser negativo.");
+        }
+
+        MinimumRestMinutes = minutes;
+    }
 
     #endregion
 

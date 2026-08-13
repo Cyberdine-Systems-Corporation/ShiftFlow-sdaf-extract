@@ -4,9 +4,9 @@
 |--------|--------|
 | Sprint | 2 |
 | Prioridad | 6 |
-| Specs | [SPEC-DOM-006](../specs/domain/SPEC-DOM-006-rule-engine-v1.md) **Approved**; Leave [SPEC-DOM-007](../specs/domain/SPEC-DOM-007-leave.md) **Approved**; SPEC-PRD-001/002 (C-RUL), ADR-003 |
+| Specs | [SPEC-DOM-006](../specs/domain/SPEC-DOM-006-rule-engine-v1.md) **Approved**; Leave [SPEC-DOM-007](../specs/domain/SPEC-DOM-007-leave.md) **Approved**; [SPEC-ACC-004](../specs/acceptance/SPEC-ACC-004-hr03-min-rest.md) **Approved**; SPEC-PRD-001/002 (C-RUL), ADR-003 |
 | DoD | Tres hard rules con tests; rechazo observable en API/UI |
-| Estado | Ready (HR-01 hecho; HR-02/03 implementables — Leave Gate 0 OK) |
+| Estado | En curso (HR-03 implementado; SPEC-ACC-004 Approved) |
 
 ## Descripción
 

@@ -45,7 +45,7 @@ public sealed record ShiftAssignmentDto(
     string Status);
 
 /// <summary>
-/// Handler que crea la asignación tras invariantes estructurales y Rule Engine (HR-01/HR-02).
+/// Handler que crea la asignación tras invariantes estructurales y Rule Engine (HR-01/HR-02/HR-03).
 /// </summary>
 public sealed class AssignShiftHandler(
     IOrganizationRepository organizations,
@@ -69,7 +69,7 @@ public sealed class AssignShiftHandler(
         AssignShiftCommand request,
         CancellationToken cancellationToken)
     {
-        _ = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
+        Organization organization = await organizations.GetByIdAsync(request.OrganizationId, cancellationToken)
             ?? throw new NotFoundException($"Organización {request.OrganizationId} no encontrada.");
 
         Employee? employee = await employees.GetByIdAsync(request.EmployeeId, cancellationToken)
@@ -89,10 +89,13 @@ public sealed class AssignShiftHandler(
             request.StartAt,
             request.EndAt);
 
-        // ADR-003: Evaluate antes de persistir (HR-01 solape + HR-02 leave).
+        // ADR-003: Evaluate antes de persistir (HR-01/HR-02/HR-03).
         IReadOnlyList<ShiftAssignment>? existing = await assignments.ListAssignedByEmployeeAsync(employee.Id, cancellationToken);
         IReadOnlyList<Leave>? activeLeaves = await leaves.ListActiveByEmployeeAsync(employee.Id, cancellationToken);
-        IReadOnlyList<RuleViolation>? violations = _ruleEngine.Evaluate(candidate, existing, activeLeaves);
+        TimeSpan? minimumRest = organization.MinimumRestMinutes > 0
+            ? TimeSpan.FromMinutes(organization.MinimumRestMinutes)
+            : null;
+        IReadOnlyList<RuleViolation>? violations = _ruleEngine.Evaluate(candidate, existing, activeLeaves, minimumRest);
         if (violations.Count > 0)
         {
             RuleViolation? first = violations[0];

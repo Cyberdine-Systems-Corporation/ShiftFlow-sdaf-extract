@@ -33,6 +33,8 @@ public static class MasterDataEndpoints
         orgs.MapGet("/{id:guid}", GetOrganizationAsync).WithName("GetOrganizationById");
         orgs.MapPut("/{id:guid}/name", RenameOrganizationAsync).WithName("RenameOrganization");
         orgs.MapPut("/{id:guid}/active", SetOrganizationActiveAsync).WithName("SetOrganizationActive");
+        orgs.MapPut("/{id:guid}/minimum-rest", SetOrganizationMinimumRestAsync)
+            .WithName("SetOrganizationMinimumRest");
 
         orgs.MapPost("/{organizationId:guid}/departments", CreateDepartmentAsync)
             .WithName("CreateDepartment")
@@ -114,6 +116,15 @@ public static class MasterDataEndpoints
         CancellationToken cancellationToken) =>
         ExecuteAsync(
             () => mediator.Send(new SetOrganizationActiveCommand(id, body.IsActive), cancellationToken),
+            Results.Ok);
+
+    private static Task<IResult> SetOrganizationMinimumRestAsync(
+        Guid id,
+        [FromBody] MinimumRestBody body,
+        IMediator mediator,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            () => mediator.Send(new SetOrganizationMinimumRestCommand(id, body.MinimumRestMinutes), cancellationToken),
             Results.Ok);
 
     private static Task<IResult> CreateDepartmentAsync(
@@ -289,6 +300,12 @@ public static class MasterDataEndpoints
     /// </summary>
     /// <param name="IsActive">Nuevo estado de activación.</param>
     public sealed record ActiveBody(bool IsActive);
+
+    /// <summary>
+    /// Cuerpo para configurar el descanso mínimo (HR-03).
+    /// </summary>
+    /// <param name="MinimumRestMinutes">Minutos ≥ 0.</param>
+    public sealed record MinimumRestBody(int MinimumRestMinutes);
 
     /// <summary>
     /// Cuerpo de alta de empleado.

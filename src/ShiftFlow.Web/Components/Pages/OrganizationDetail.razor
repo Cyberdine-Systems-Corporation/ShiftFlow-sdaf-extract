@@ -48,6 +48,14 @@ else
                 @(_org.IsActive ? "Desactivar" : "Activar")
             </button>
         </div>
+        <div class="sf-field" style="margin-top:1rem">
+            <label for="min-rest">Descanso mínimo entre turnos (minutos, HR-03)</label>
+            <InputNumber id="min-rest" @bind-Value="_minimumRestMinutes" />
+            <p class="sf-hint">0 = regla desactivada. Ej. 660 = 11 horas.</p>
+        </div>
+        <div class="sf-actions">
+            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="SaveMinimumRestAsync">Guardar descanso</button>
+        </div>
     </section>
 
     <section class="sf-section">
@@ -214,6 +222,7 @@ else
     private IReadOnlyList<ShiftTypeDto> _shiftTypes = [];
 
     private string _renameOrg = string.Empty;
+    private int _minimumRestMinutes;
     private string _newDeptName = string.Empty;
     private string _newEmpDeptIdText = string.Empty;
     private string _newEmpName = string.Empty;
@@ -243,6 +252,7 @@ else
 
             _org = org.Value;
             _renameOrg = _org!.Name;
+            _minimumRestMinutes = _org.MinimumRestMinutes;
             _departments = await Api.ListDepartmentsAsync(OrganizationId);
             _employees = await Api.ListEmployeesAsync(OrganizationId);
             _shiftTypes = await Api.ListShiftTypesAsync(OrganizationId);
@@ -283,6 +293,18 @@ else
         await RunAsync(async () =>
         {
             ApiResult<OrganizationDto> result = await Api.SetOrganizationActiveAsync(OrganizationId, !_org.IsActive);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            await ReloadAsync();
+        });
+    }
+
+    private async Task SaveMinimumRestAsync()
+    {
+        await RunAsync(async () =>
+        {
+            ApiResult<OrganizationDto> result = await Api.SetOrganizationMinimumRestAsync(
+                OrganizationId,
+                _minimumRestMinutes);
             if (!result.Succeeded) { _error = result.Error; return; }
             await ReloadAsync();
         });

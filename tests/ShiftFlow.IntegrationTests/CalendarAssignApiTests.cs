@@ -184,6 +184,61 @@ public class CalendarAssignApiTests
         return client;
     }
 
+    [Fact]
+    public async Task ACC_S2_R01_rechazo_por_descanso_minimo_HR03()
+    {
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Rest corto");
+
+        HttpResponseMessage? rest = await client.PutAsJsonAsync(
+            $"/api/organizations/{org.Id}/minimum-rest",
+            new { minimumRestMinutes = 660 });
+        rest.EnsureSuccessStatusCode();
+
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
+        await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day.AddHours(8), day.AddHours(16));
+
+        HttpResponseMessage? tooSoon = await client.PostAsJsonAsync(
+            $"/api/organizations/{org.Id}/assignments",
+            new
+            {
+                employeeId = emp.Id,
+                shiftTypeId = shiftType.Id,
+                startAt = day.AddHours(16),
+                endAt = day.AddHours(20)
+            });
+
+        tooSoon.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        ErrorBody? body = await tooSoon.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
+        body!.Code.Should().Be("HR-03");
+    }
+
+    [Fact]
+    public async Task ACC_S2_R02_permite_gap_igual_al_umbral()
+    {
+        HttpClient? client = await CreateAuthenticatedClientAsync();
+        (OrganizationResponse org, EmployeeResponse emp, ShiftTypeResponse shiftType) = await SeedOrgAsync(client, "Org Rest OK");
+
+        HttpResponseMessage? rest = await client.PutAsJsonAsync(
+            $"/api/organizations/{org.Id}/minimum-rest",
+            new { minimumRestMinutes = 660 });
+        rest.EnsureSuccessStatusCode();
+
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
+        await AssignAsync(client, org.Id, emp.Id, shiftType.Id, day.AddHours(8), day.AddHours(16));
+
+        DateTimeOffset nextStart = day.AddHours(16).AddMinutes(660);
+        ShiftAssignmentResponse? second = await AssignAsync(
+            client,
+            org.Id,
+            emp.Id,
+            shiftType.Id,
+            nextStart,
+            nextStart.AddHours(4));
+
+        second.Status.Should().Be("Assigned");
+    }
+
     private static async Task<(OrganizationResponse Org, EmployeeResponse Emp, ShiftTypeResponse ShiftType)> SeedOrgAsync(
         HttpClient client,
         string orgName)
@@ -258,7 +313,7 @@ public class CalendarAssignApiTests
         return (await response.Content.ReadFromJsonAsync<ShiftTypeResponse>(JsonOptions))!;
     }
 
-    private sealed record OrganizationResponse(Guid Id, string Name, bool IsActive);
+    private sealed record OrganizationResponse(Guid Id, string Name, bool IsActive, int MinimumRestMinutes);
 
     private sealed record DepartmentResponse(Guid Id, Guid OrganizationId, string Name, bool IsActive);
 
