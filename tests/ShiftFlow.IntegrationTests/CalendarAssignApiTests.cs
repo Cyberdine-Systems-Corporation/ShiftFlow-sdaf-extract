@@ -211,6 +211,11 @@ public class CalendarAssignApiTests
         tooSoon.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         ErrorBody? body = await tooSoon.Content.ReadFromJsonAsync<ErrorBody>(JsonOptions);
         body!.Code.Should().Be("HR-03");
+
+        MonthCalendarResponse? calendar = await client.GetFromJsonAsync<MonthCalendarResponse>(
+            $"/api/organizations/{org.Id}/calendar?year=2026&month=8",
+            JsonOptions);
+        calendar!.Assignments.Should().ContainSingle();
     }
 
     [Fact]

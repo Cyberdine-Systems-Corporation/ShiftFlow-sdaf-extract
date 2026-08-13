@@ -15,7 +15,7 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | 6 | [PBI-006](PBI-006-rule-engine-v1.md) | Rule Engine v1 (3 hard rules) | 2 | SPEC-DOM-006/007 Approved, ADR-003; SPEC-ACC-004 Approved | Hecho (mergeado #28; Gate 2 OK) |
 | 7 | [PBI-007](PBI-007-leaves.md) | Leaves / ausencias | 2 | SPEC-DOM-007, SPEC-APP-004, SPEC-ACC-003 Approved | Hecho (mergeado #22+#23) |
 | 8 | [PBI-008](PBI-008-blazor-shell-crud.md) | Blazor shell + CRUD maestros | 1–2 | SPEC-PRD-002 | Hecho (mergeado #13; Gate 2 OK) |
-| 9 | [PBI-009](PBI-009-acceptance-tests-demo.md) | Acceptance tests del journey | 2–3 | SPEC-PRD-002 | Tras reglas |
+| 9 | [PBI-009](PBI-009-acceptance-tests-demo.md) | Acceptance tests del journey | 2–3 | SPEC-PRD-002 Approved | En curso |
 | 10 | [PBI-010](PBI-010-runbook-demo-freeze.md) | Runbook, seed opcional, freeze demo | 3 | SPEC-PRD-001 (C-LOC) | — |
 | 11 | [PBI-011](PBI-011-ai-explain-stub.md) | Stub IA explicación de reglas | 3 | ADR-003, SPEC-PRD-001 | — |
 | 12 | [PBI-012](PBI-012-presentacion-slides-video.md) | Slides + vídeo de presentación | 3 | SPEC-PRD-001 (C-PRE) | — |
