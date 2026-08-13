@@ -8,12 +8,12 @@ using ShiftFlow.Infrastructure.Persistence;
 namespace ShiftFlow.Infrastructure.Identity;
 
 /// <summary>
-/// Provisiona esquema, rol Administrator y usuario demo en desarrollo.
+/// Provisiona esquema (ADR-007), rol Administrator y usuario demo en desarrollo.
 /// </summary>
 public static class IdentitySeed
 {
     /// <summary>
-    /// Asegura la base de datos, el rol Administrator y el usuario demo si no existen.
+    /// Aplica el esquema (migraciones Npgsql o EnsureCreated en SQLite) y provisiona rol Administrator y usuario demo si no existen.
     /// </summary>
     /// <param name="services">Proveedor raíz de servicios (se crea un scope interno).</param>
     /// <param name="cancellationToken">Token de cancelación.</param>
@@ -25,7 +25,7 @@ public static class IdentitySeed
         ShiftFlowDbContext? db = sp.GetRequiredService<ShiftFlowDbContext>();
         IConfiguration? configuration = sp.GetRequiredService<IConfiguration>();
 
-        await db.Database.EnsureCreatedAsync(cancellationToken);
+        await DatabaseInitializer.EnsureSchemaAsync(db, logger, cancellationToken);
 
         RoleManager<IdentityRole>? roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
         if (!await roleManager.RoleExistsAsync(AuthRoles.Administrator))

@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.3.0 |
-| Fecha | 2026-08-09 |
-| Relacionado | PBI-001…003, ADR-001, ADR-004, ADR-005, C-LOC, C-AUTH, C-ORG |
+| Versión | 0.4.0 |
+| Fecha | 2026-08-13 |
+| Relacionado | PBI-001…014, ADR-001, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG |
 
 ---
 
@@ -26,6 +26,7 @@ Opcional: Visual Studio 2022 / VS Code / Cursor con workload ASP.NET.
 git clone <url-del-repo> ShiftFlow
 cd ShiftFlow
 dotnet restore ShiftFlow.sln
+dotnet tool restore
 ```
 
 ---
@@ -95,7 +96,17 @@ API (rol `Administrator`):
 
 Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (auth + maestros + calendario; ver `postman/README.md`).
 
-El esquema se crea con `EnsureCreated`. Si ya tenías un volumen Postgres sin tablas nuevas, **resetea el volumen** (§6) y vuelve a arrancar.
+### 3.1. Migraciones EF Core (ADR-007 / PBI-014)
+
+Tras `dotnet tool restore` en la raíz:
+
+```powershell
+dotnet ef migrations add <Nombre> --project src/ShiftFlow.Infrastructure --startup-project src/ShiftFlow.Api --output-dir Persistence/Migrations --context ShiftFlowDbContext
+```
+
+Commitear los archivos generados en `src/ShiftFlow.Infrastructure/Persistence/Migrations/`. Al arrancar la Api se aplica `MigrateAsync` (PostgreSQL). Los tests de integración siguen usando SQLite + `EnsureCreated`.
+
+Si el volumen se creó con `EnsureCreated` (antes de PBI-014), **resetea el volumen una vez** (§6) y vuelve a arrancar. Mezclar `EnsureCreated` y `Migrate` en la misma base no es compatible. Los cambios de modelo posteriores no exigen wipe si la migración es aditiva.
 
 ---
 
@@ -152,6 +163,7 @@ dotnet test ShiftFlow.sln
 | Web no ve la Api | Arrancar vía AppHost (inyecta service discovery) o configurar base address manualmente |
 | SDK incorrecto | Este skeleton usa **net10.0**. Instala .NET 10 SDK (`dotnet --list-sdks`) |
 | Dashboard Aspire: `UntrustedRoot` / gRPC SSL | `dotnet dev-certs https --trust` (aceptar el diálogo de Windows). Cerrar navegadores y reiniciar el AppHost. |
+| Api falla al arrancar: tablas ya existen / historial de migraciones vacío | Volumen creado con `EnsureCreated` (pre PBI-014). Resetear volumen (§6) una vez. |
 
 ---
 

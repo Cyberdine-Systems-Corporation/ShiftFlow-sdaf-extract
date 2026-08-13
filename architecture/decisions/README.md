@@ -8,6 +8,8 @@
 | [ADR-004](ADR-004-layout-solucion.md) | Layout de la solución .NET (skeleton) | Aceptado |
 | [ADR-005](ADR-005-auth-basica-mvp.md) | Auth básica (Identity + cookie); código en PBI-002 | Aceptado |
 | [ADR-006](ADR-006-coding-standards.md) | Estándares de código (regiones, comentarios, XML docs, tipado explícito) | Aceptado |
+| [ADR-007](ADR-007-ef-migrations.md) | Evolución de esquema con migraciones EF Core | Aceptado (PBI-014) |
 
 Sprint 0–1 (ADRs de stack, cliente, motores, layout, auth, coding standards): **completo a nivel de decisión**.  
-Implementación de auth: **PBI-002** (no implícita en ADR-005).
+Implementación de auth: **PBI-002** (no implícita en ADR-005).  
+Migraciones EF (diferido de ADR-004): **ADR-007** Aceptado; código en **PBI-014**.
