@@ -2,7 +2,7 @@
 
 | Versión handbook | Fecha | Cambio |
 |------------------|--------|--------|
-| 1.0.2 | 2026-08-13 | Approved caps. 07/13/14/B + catálogo `skills/` (playbooks SDAF) |
+| 1.0.3 | 2026-08-13 | Approved cap. 20 Security Standards (MVP) + H17 QG-Sec + glosario |
 | 1.0.1 | 2026-08-09 | Cap. 17 v0.1.2 + ADR-006 (regiones, XML docs, QG-Docs) |
 | 1.0.0 | 2026-08-05 | Handbook completo Approved: caps. 10–19, A–B (Partes III–VI + apéndices) |
 | 0.1.14 | 2026-08-05 | H8 Draft: caps. 16–19, A–B |

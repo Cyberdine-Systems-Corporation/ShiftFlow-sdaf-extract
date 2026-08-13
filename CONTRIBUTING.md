@@ -8,6 +8,7 @@ Gracias por contribuir. Este repo combina **producto** (MVP demostrable) y **mé
 2. **Gate 0** antes de implementar producto ([handbook/09](handbook/09-development-workflow.md)): specs + acceptance + ADR si aplica + PBI + worklog.
 3. Artefactos de ingeniería en **castellano** (commits, PRs, issues, worklogs, specs).
 4. Código C# en `src/` / `tests/`: [ADR-006](architecture/decisions/ADR-006-coding-standards.md) (tipado explícito sin `var`, XML docs/`CS1591`, regiones cuando apliquen).
+5. Seguridad MVP: [handbook/20](handbook/20-security-standards.md) y [SECURITY.md](SECURITY.md).
 
 ## Flujo recomendado
 

@@ -21,6 +21,7 @@ Respuesta orientativa: acuse en unos días laborables; corrección o plan según
 
 ## Prácticas del proyecto
 
+- Baseline de diseño/implementación: [handbook/20-security-standards.md](handbook/20-security-standards.md).
 - No commitear secretos (`.env`, passwords, connection strings con credenciales, user-secrets).
 - Contraseña del usuario demo: override con **user-secrets** o variables de entorno (ver [docs/runbook-local.md](docs/runbook-local.md) y [ADR-005](architecture/decisions/ADR-005-auth-basica-mvp.md)).
 - Auth del MVP es básica a propósito (sin MFA, etc.); no se considera “bug” el alcance diferido documentado en ADR/specs, salvo que haya bypass inesperado de lo **sí** especificado.

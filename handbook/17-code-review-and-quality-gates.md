@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.3 |
+| **Versión** | 0.1.4 |
 | **Estado** | Approved |
-| **Fecha** | 2026-08-12 |
+| **Fecha** | 2026-08-13 |
 | **Parte** | V — Calidad y entrega |
-| **Norma superior** | [09-development-workflow.md](09-development-workflow.md), [06-engineering-principles.md](06-engineering-principles.md), [16-testing-framework.md](16-testing-framework.md), [ADR-006](../architecture/decisions/ADR-006-coding-standards.md) |
+| **Norma superior** | [09-development-workflow.md](09-development-workflow.md), [06-engineering-principles.md](06-engineering-principles.md), [16-testing-framework.md](16-testing-framework.md), [20-security-standards.md](20-security-standards.md), [ADR-006](../architecture/decisions/ADR-006-coding-standards.md) |
 | **Deriva hacia** | Agente Testing+Review, PRs, CI local |
 
 ---
@@ -61,6 +61,14 @@ Ningún agente aprueba enmiendas constitucionales.
 - [ ] Auth/roles no rotos si el diff los toca.
 - [ ] Runbook local sigue siendo válido si cambia composición.
 
+### 3.5 Seguridad (H20)
+
+Cuando el diff toque auth, cookies, endpoints, secretos o input externo — ver checklist completo en [20-security-standards.md](20-security-standards.md) §5.1:
+
+- [ ] Sin secretos nuevos en el diff.
+- [ ] Autorización coherente en API (y UI si aplica).
+- [ ] Sin injection obvia; alineado a ADR-005 / ACC de auth si aplica.
+
 ---
 
 ## 4. Quality gates técnicos
@@ -72,6 +80,7 @@ Ningún agente aprueba enmiendas constitucionales.
 | QG-Accept | Acceptance del PBI/flujo tocado verdes | Merge a línea de demo |
 | QG-Arch | Sin violaciones obvias de dependencia (manual o test de arquitectura) | Merge si hay infracción nueva |
 | QG-Docs | Diff de `src/` cumple XML docs + regiones/comentarios + tipado explícito (sin `var`) según ADR-006 | Merge |
+| QG-Sec | Diff no introduce secreto en claro ni bypass de auth de lo especificado ([H20](20-security-standards.md)) | Merge |
 | QG-Review | Checklist §3 completado | Merge |
 
 CI cloud elaborado es **opcional** en MVP; los gates deben poder ejecutarse **en local**.
@@ -88,6 +97,8 @@ CI cloud elaborado es **opcional** en MVP; los gates deben poder ejecutarse **en
 
 Hallazgos de ADR-006 (falta XML, regiones omitidas en tipo no trivial, comentarios narrativos inútiles en exceso, `var` en el diff) son **bloqueantes** en el diff del PR.
 
+Hallazgos QG-Sec / H20 (secreto en claro, bypass de auth especificado) son **bloqueantes**.
+
 ---
 
 ## 6. Criterios de aceptación de este capítulo (H8)
@@ -102,6 +113,7 @@ Hallazgos de ADR-006 (falta XML, regiones omitidas en tipo no trivial, comentari
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.4 | 2026-08-13 | Approved: checklist §3.5 seguridad + QG-Sec (H20) |
 | 0.1.3 | 2026-08-12 | ADR-006: tipado explícito sin `var` |
 | 0.1.2 | 2026-08-09 | ADR-006: regiones, comentarios, XML docs y QG-Docs |
 | 0.1.1 | 2026-08-05 | Approved tras revisión humana |

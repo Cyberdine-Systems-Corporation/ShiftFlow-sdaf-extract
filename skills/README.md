@@ -41,7 +41,7 @@ Specification → Architecture → Domain+Application → Frontend
 | Pre-implementación | `sdaf-gate0`, `sdaf-agent-router`, `spec-draft-pbi`, `adr-propose` |
 | Implementación | `csharp-adr006-slice`, `blazor-bff-slice`, `rule-engine-hr`, `postman-contract-sync` |
 | Runtime local | `aspire-local-run` |
-| Cierre / review | `sdaf-worklog-handoff`, `testing-review-pr` |
+| Cierre / review | `sdaf-worklog-handoff`, `testing-review-pr`, `security-review-mvp` |
 | Stubs / futuro | `devops-ci-gate`, `product-ia-prompt` |
 
 ## Catálogo
@@ -65,6 +65,7 @@ Specification → Architecture → Domain+Application → Frontend
 | `blazor-bff-slice` | UI Blazor + BFF | Frontend | [blazor-bff-slice/SKILL.md](blazor-bff-slice/SKILL.md) |
 | `aspire-local-run` | Arrancar demo local | Architecture / DevOps | [aspire-local-run/SKILL.md](aspire-local-run/SKILL.md) |
 | `postman-contract-sync` | Cambio de API | Domain+Application / Testing | [postman-contract-sync/SKILL.md](postman-contract-sync/SKILL.md) |
+| `security-review-mvp` | Review seguridad MVP (H20) | Testing+Review | [security-review-mvp/SKILL.md](security-review-mvp/SKILL.md) |
 
 ### Prioridad baja
 
