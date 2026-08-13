@@ -285,7 +285,7 @@ public class LeaveApiTests
         return (await response.Content.ReadFromJsonAsync<ShiftTypeResponse>(JsonOptions))!;
     }
 
-    private sealed record OrganizationResponse(Guid Id, string Name, bool IsActive);
+    private sealed record OrganizationResponse(Guid Id, string Name, bool IsActive, int MinimumRestMinutes);
 
     private sealed record DepartmentResponse(Guid Id, Guid OrganizationId, string Name, bool IsActive);
 

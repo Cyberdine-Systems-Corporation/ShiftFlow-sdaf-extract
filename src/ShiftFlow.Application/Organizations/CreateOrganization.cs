@@ -16,7 +16,8 @@ public sealed record CreateOrganizationCommand(string Name) : IRequest<Organizat
 /// <param name="Id">Identificador de la organización.</param>
 /// <param name="Name">Nombre de la organización.</param>
 /// <param name="IsActive">Indica si la organización está activa.</param>
-public sealed record OrganizationDto(Guid Id, string Name, bool IsActive);
+/// <param name="MinimumRestMinutes">Descanso mínimo entre turnos (HR-03), en minutos.</param>
+public sealed record OrganizationDto(Guid Id, string Name, bool IsActive, int MinimumRestMinutes);
 
 /// <summary>
 /// Handler que crea una organización y la persiste.
@@ -47,5 +48,5 @@ public sealed class CreateOrganizationHandler(
     /// <param name="organization">Agregado de dominio.</param>
     /// <returns>DTO equivalente.</returns>
     internal static OrganizationDto ToDto(Organization organization) =>
-        new(organization.Id, organization.Name, organization.IsActive);
+        new(organization.Id, organization.Name, organization.IsActive, organization.MinimumRestMinutes);
 }

@@ -43,6 +43,16 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
     public Task<ApiResult<OrganizationDto>> SetOrganizationActiveAsync(Guid id, bool isActive, CancellationToken ct = default) =>
         PutAsync<OrganizationDto>($"/api/organizations/{id}/active", new { isActive }, ct);
 
+    /// <summary>Configura el descanso mínimo entre turnos (HR-03) de una organización.</summary>
+    public Task<ApiResult<OrganizationDto>> SetOrganizationMinimumRestAsync(
+        Guid id,
+        int minimumRestMinutes,
+        CancellationToken ct = default) =>
+        PutAsync<OrganizationDto>(
+            $"/api/organizations/{id}/minimum-rest",
+            new { minimumRestMinutes },
+            ct);
+
     #endregion
 
     #region Departments

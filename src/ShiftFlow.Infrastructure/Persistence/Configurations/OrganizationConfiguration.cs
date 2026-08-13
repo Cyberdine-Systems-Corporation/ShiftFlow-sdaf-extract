@@ -21,5 +21,6 @@ public sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organiz
             .IsRequired()
             .HasMaxLength(Organization.NameMaxLength);
         builder.Property(x => x.IsActive).IsRequired();
+        builder.Property(x => x.MinimumRestMinutes).IsRequired();
     }
 }

@@ -101,6 +101,70 @@ public class ShiftAssignmentAndRulesTests
         violations.Should().BeEmpty();
     }
 
+    [Fact]
+    public void HR03_rechaza_gap_inferior_al_umbral()
+    {
+        ShiftAssignment? existing = CreateAssigned(8, 16);
+        ShiftAssignment? candidate = CreateAssigned(16, 20);
+        RuleEngine engine = new RuleEngine();
+
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(
+            candidate,
+            [existing],
+            minimumRest: TimeSpan.FromMinutes(660));
+
+        violations.Should().ContainSingle(v => v.Code == "HR-03");
+    }
+
+    [Fact]
+    public void HR03_permite_gap_igual_al_umbral()
+    {
+        DateTimeOffset day = new DateTimeOffset(2026, 8, 10, 0, 0, 0, TimeSpan.Zero);
+        ShiftAssignment existing = ShiftAssignment.Create(
+            OrgId,
+            EmployeeId,
+            OrgId,
+            employeeIsActive: true,
+            ShiftTypeId,
+            OrgId,
+            shiftTypeIsActive: true,
+            day.AddHours(8),
+            day.AddHours(16));
+        ShiftAssignment candidate = ShiftAssignment.Create(
+            OrgId,
+            EmployeeId,
+            OrgId,
+            employeeIsActive: true,
+            ShiftTypeId,
+            OrgId,
+            shiftTypeIsActive: true,
+            day.AddHours(16).AddMinutes(660),
+            day.AddHours(16).AddMinutes(660 + 240));
+        RuleEngine engine = new RuleEngine();
+
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(
+            candidate,
+            [existing],
+            minimumRest: TimeSpan.FromMinutes(660));
+
+        violations.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void HR03_no_aplica_si_umbral_cero()
+    {
+        ShiftAssignment? existing = CreateAssigned(10, 14);
+        ShiftAssignment? candidate = CreateAssigned(14, 18);
+        RuleEngine engine = new RuleEngine();
+
+        IReadOnlyList<RuleViolation>? violations = engine.Evaluate(
+            candidate,
+            [existing],
+            minimumRest: TimeSpan.Zero);
+
+        violations.Should().BeEmpty();
+    }
+
     private static ShiftAssignment CreateAssigned(int startHour, int endHour) =>
         ShiftAssignment.Create(
             OrgId,

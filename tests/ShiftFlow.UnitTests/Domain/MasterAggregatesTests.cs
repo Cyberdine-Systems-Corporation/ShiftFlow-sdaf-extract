@@ -17,6 +17,21 @@ public class MasterAggregatesTests
     }
 
     [Fact]
+    public void Organization_rechaza_descanso_negativo()
+    {
+        Organization org = Organization.Create("Demo");
+        Action act = () => org.SetMinimumRestMinutes(-1);
+        act.Should().Throw<DomainException>().Which.Code.Should().Be("INV-ORG-02");
+    }
+
+    [Fact]
+    public void Organization_default_descanso_cero()
+    {
+        Organization org = Organization.Create("Demo");
+        org.MinimumRestMinutes.Should().Be(0);
+    }
+
+    [Fact]
     public void Department_exige_organization_activa()
     {
         Guid orgId = Guid.NewGuid();
