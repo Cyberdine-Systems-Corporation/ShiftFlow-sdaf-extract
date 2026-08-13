@@ -2,7 +2,7 @@
 
 | Colección | Contenido |
 |-----------|-----------|
-| [ShiftFlow-PBI-003-auth-masters.postman_collection.json](ShiftFlow-PBI-003-auth-masters.postman_collection.json) | Auth cookie + maestros (PBI-002…004) + calendario/asignación (PBI-005) + Leaves/HR-02 (PBI-007) |
+| [ShiftFlow-PBI-003-auth-masters.postman_collection.json](ShiftFlow-PBI-003-auth-masters.postman_collection.json) | Auth cookie + maestros (PBI-002…004) + calendario/asignación (PBI-005) + Leaves/HR-02 (PBI-007) + descanso mínimo HR-03 (PBI-006/009) |
 
 ## Uso
 
@@ -13,7 +13,8 @@
    1. **Login**
    2. Create organization → department → employee → shift type
    3. **Calendar & Assignments**: Get month calendar → Assign shift → overlap (HR-01) → adjacent → Cancel
-   4. **Leaves**: Register leave → List → Assign under leave (HR-02) → Cancel leave
+   4. **HR-03 (opcional):** PUT minimum-rest 660 → assign too soon → `HR-03`
+   5. **Leaves**: Register leave → List → Assign under leave (HR-02) → Cancel leave
 
 La cookie `ShiftFlow.Auth` la gestiona Postman tras el login. Los scripts de test guardan `organizationId`, `departmentId`, `employeeId`, `shiftTypeId`, `assignmentId` y `leaveId`.
 
@@ -28,4 +29,5 @@ Variables útiles de calendario: `calendarYear` / `calendarMonth` (por defecto `
 | Cancel shift | `POST /api/assignments/{id}/cancel` |
 | Register leave | `POST /api/organizations/{id}/leaves` |
 | List leaves | `GET /api/organizations/{id}/leaves` |
-| Cancel leave | `POST /api/leaves/{id}/cancel` |
+| PUT minimum rest | `PUT /api/organizations/{id}/minimum-rest` |
+| Assign too soon (HR-03) | `POST /api/organizations/{id}/assignments` → `HR-03` |
