@@ -6,7 +6,7 @@
 | Prioridad | 11 |
 | Specs | [SPEC-APP-005](../specs/application/SPEC-APP-005-rule-explain-stub.md) **Approved**; [SPEC-ACC-005](../specs/acceptance/SPEC-ACC-005-rule-explain-stub.md) **Approved**; SPEC-DOM-006 Approved (HR-*); ADR-003; SPEC-PRD-001 (C-RUL) |
 | DoD | Explicación de violación HR-01/02/03 en castellano; stub en Infrastructure; **sin** mutar cuadrante; visible en API y calendario |
-| Estado | En curso (Frontend calendario) |
+| Estado | Gate 2 OK (#34 mergeado; #35 merge sí) |
 
 ## Descripción
 
@@ -38,4 +38,4 @@ El mensaje corto de `RuleViolation` (SPEC-APP-003) se mantiene; la explicación 
 | G0.4 | Este archivo. |
 | G0.5 | `worklogs/PBI-011-ai-explain-stub/` |
 
-Gate 0 cumplido. API en `feat/pbi-011-explain-stub` (#34). Frontend: mostrar `title`/`body` en calendario (ACC-S3-X07) → Testing+Review.
+Gate 2 OK (Iteration-005). API mergeada (#34). Dictamen UI: merge sí (#35).
