@@ -85,9 +85,9 @@ AppHost → Api, Web (proyectos ejecutables)
 
 ### Diferido
 
-- Auth/Identity en Api (PBI-002 / ADR de auth).
-- Migraciones EF con datos de dominio (Sprint 1+).
-- Testcontainers en IntegrationTests (cuando haya persistencia real).
+- Auth/Identity en Api (PBI-002 / ADR de auth) — **cerrado**.
+- Migraciones EF con datos de dominio (Sprint 1+) — **cerrado por ADR-007** (Aceptado) / PBI-014.
+- Testcontainers en IntegrationTests (cuando haya persistencia real) — sigue diferido; tests de integración usan SQLite + `EnsureCreated` (ADR-007).
 
 ---
 

@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.3.0 |
-| Fecha | 2026-08-09 |
-| Relacionado | PBI-001…003, ADR-001, ADR-004, ADR-005, C-LOC, C-AUTH, C-ORG |
+| Versión | 0.5.0 |
+| Fecha | 2026-08-14 |
+| Relacionado | PBI-001…014, ADR-001, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG, SPEC-PRD-002 |
 
 ---
 
@@ -26,6 +26,7 @@ Opcional: Visual Studio 2022 / VS Code / Cursor con workload ASP.NET.
 git clone <url-del-repo> ShiftFlow
 cd ShiftFlow
 dotnet restore ShiftFlow.sln
+dotnet tool restore
 ```
 
 ---
@@ -95,7 +96,30 @@ API (rol `Administrator`):
 
 Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (auth + maestros + calendario; ver `postman/README.md`).
 
-El esquema se crea con `EnsureCreated`. Si ya tenías un volumen Postgres sin tablas nuevas, **resetea el volumen** (§6) y vuelve a arrancar.
+### 3.1. Migraciones EF Core (ADR-007 / PBI-014)
+
+Tras `dotnet tool restore` en la raíz:
+
+```powershell
+dotnet ef migrations add <Nombre> --project src/ShiftFlow.Infrastructure --startup-project src/ShiftFlow.Api --output-dir Persistence/Migrations --context ShiftFlowDbContext
+```
+
+Commitear los archivos generados en `src/ShiftFlow.Infrastructure/Persistence/Migrations/`. Al arrancar la Api se aplica `MigrateAsync` (PostgreSQL). Los tests de integración siguen usando SQLite + `EnsureCreated`.
+
+Si el volumen se creó con `EnsureCreated` (antes de PBI-014), **resetea el volumen una vez** (§6) y vuelve a arrancar. Mezclar `EnsureCreated` y `Migrate` en la misma base no es compatible. Los cambios de modelo posteriores no exigen wipe si la migración es aditiva.
+
+### 3.2. Catálogo de demo (PBI-010)
+
+Con `Demo:SeedCatalog=true` (default en Development) y PostgreSQL, el arranque siembra dos organizaciones de vitrina **si no existen**. No corre en SQLite (tests). Desactivar: `"Demo": { "SeedCatalog": false }` o `Demo__SeedCatalog=false`.
+
+| Organización | Umbral HR-03 | Para qué |
+|--------------|--------------|----------|
+| `Demo — Operación` | 0 min | Calendario del **mes UTC** en curso: Ana (turno válido 08:00–14:00 UTC), Bruno (10–14 y 14–18 UTC; intenta 12–16 → HR-01), Carla (leave activo → HR-02), Elena (inactiva), Fran (asignación cancelada), tipo Noche inactivo |
+| `Demo — Descanso` | 660 min | Diego 08:00–20:00 UTC hoy; intentar 20:00–22:00 UTC → HR-03 |
+
+Los instantes de turno se guardan con offset 0 (UTC): Npgsql no acepta `DateTimeOffset` local en `timestamptz`. La UI de calendario ya usa el mismo convenio.
+
+El journey SPEC-PRD-002 (crear maestros a mano) sigue válido; el catálogo **complementa** para ver casuísticas sin partir de cero. Reset de datos: §6.
 
 ---
 
@@ -152,6 +176,7 @@ dotnet test ShiftFlow.sln
 | Web no ve la Api | Arrancar vía AppHost (inyecta service discovery) o configurar base address manualmente |
 | SDK incorrecto | Este skeleton usa **net10.0**. Instala .NET 10 SDK (`dotnet --list-sdks`) |
 | Dashboard Aspire: `UntrustedRoot` / gRPC SSL | `dotnet dev-certs https --trust` (aceptar el diálogo de Windows). Cerrar navegadores y reiniciar el AppHost. |
+| Api falla al arrancar: tablas ya existen / historial de migraciones vacío | Volumen creado con `EnsureCreated` (pre PBI-014). Resetear volumen (§6) una vez. |
 
 ---
 

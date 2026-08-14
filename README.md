@@ -23,6 +23,7 @@ Prerrequisitos: **.NET SDK 10**, Docker (PostgreSQL vía Aspire), Git.
 git clone https://github.com/mortiz-iadev/ShiftFlow.git
 cd ShiftFlow
 dotnet restore ShiftFlow.sln
+dotnet tool restore
 dotnet run --project src/ShiftFlow.AppHost --launch-profile https
 ```
 
