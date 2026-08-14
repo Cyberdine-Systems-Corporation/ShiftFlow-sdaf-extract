@@ -6,7 +6,7 @@
 | Prioridad | Infra transversal (habilita C-LOC sin reset rutinario) |
 | Specs | SPEC-PRD-001 (C-LOC), ADR-001, ADR-004, **ADR-007** (Aceptado) |
 | DoD | Baseline `InitialCreate`; `MigrateAsync` en Postgres; SQLite de tests con `EnsureCreated`; runbook actualizado; tests verdes |
-| Estado | En curso |
+| Estado | Hecho (mergeado #31; Gate 2 OK) |
 
 ## Descripción
 
@@ -37,3 +37,7 @@ No cambia capacidades de producto; cierra el diferido de ADR-004 «Migraciones E
 | G0.3 | `architecture/decisions/ADR-007-ef-migrations.md` (Aceptado 2026-08-13). |
 | G0.4 | Este archivo. |
 | G0.5 | `worklogs/PBI-014-ef-migrations/` |
+
+## Notas
+
+- Mergeado en #31 junto al catálogo de demo (PBI-010). Gate 2: `worklogs/PBI-014-ef-migrations/Iteration-004.md`.

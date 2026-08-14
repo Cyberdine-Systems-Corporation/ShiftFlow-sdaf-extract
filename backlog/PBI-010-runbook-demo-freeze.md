@@ -6,15 +6,15 @@
 | Prioridad | 10 |
 | Specs | SPEC-PRD-001 (C-LOC), SPEC-PRD-002 (journey), ADR-007 |
 | DoD | Runbook en `docs/`; catálogo de demo opcional; etiqueta `mvp-0.1`; arranque en frío verificado |
-| Estado | En curso (slice catálogo de demo) |
+| Estado | Catálogo hecho (mergeado #31; Gate 2 OK); freeze pendiente |
 
 ## Descripción
 
 Documentar y congelar el camino local de evaluación.
 
-Esta iteración cubre el **seed de catálogo** (vitrina de casuísticas). No sustituye el journey SPEC-PRD-002 (el evaluador puede seguir creando maestros). Freeze de etiqueta `mvp-0.1` queda pendiente.
+El **seed de catálogo** (vitrina de casuísticas) está mergeado en #31. No sustituye el journey SPEC-PRD-002 (el evaluador puede seguir creando maestros). Queda pendiente el freeze: etiqueta `mvp-0.1` y verificación de arranque en frío.
 
-## Catálogo de demo (slice actual)
+## Catálogo de demo (hecho, #31)
 
 Tras migraciones e Identity, si `Demo:SeedCatalog` es true y el provider no es SQLite, se siembran dos organizaciones ancla con datos del mes en curso.
 
@@ -26,11 +26,12 @@ Tras migraciones e Identity, si `Demo:SeedCatalog` es true y el provider no es S
 - El seed usa factories de dominio; no `HasData` en migraciones.
 - Fechas relativas al reloj local para que el calendario del mes actual las muestre.
 
-### Fuera de alcance de este slice
+### Pendiente (freeze)
 
 - Etiqueta git `mvp-0.1`.
-- Verificación formal de arranque en frío / freeze demo.
-- Worker Aspire de migraciones.
+- Verificación formal de arranque en frío.
+
+Worker Aspire de migraciones sigue fuera de alcance (ADR-007).
 
 ## Gate 0 (slice catálogo)
 
