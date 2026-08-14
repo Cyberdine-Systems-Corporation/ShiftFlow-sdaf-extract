@@ -17,7 +17,7 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | 8 | [PBI-008](PBI-008-blazor-shell-crud.md) | Blazor shell + CRUD maestros | 1–2 | SPEC-PRD-002 | Hecho (mergeado #13; Gate 2 OK) |
 | 9 | [PBI-009](PBI-009-acceptance-tests-demo.md) | Acceptance tests del journey | 2–3 | SPEC-PRD-002 Approved | Hecho (mergeado #30) |
 | 10 | [PBI-010](PBI-010-runbook-demo-freeze.md) | Runbook, seed opcional, freeze demo | 3 | SPEC-PRD-001 (C-LOC), SPEC-PRD-002 | Catálogo hecho (#31); freeze pendiente |
-| 11 | [PBI-011](PBI-011-ai-explain-stub.md) | Stub IA explicación de reglas | 3 | SPEC-APP-005 / SPEC-ACC-005 Approved; ADR-003 | Ready (Gate 0 OK) |
+| 11 | [PBI-011](PBI-011-ai-explain-stub.md) | Stub IA explicación de reglas | 3 | SPEC-APP-005 / SPEC-ACC-005 Approved; ADR-003 | En curso (API) |
 | 12 | [PBI-012](PBI-012-presentacion-slides-video.md) | Slides + vídeo de presentación | 3 | SPEC-PRD-001 (C-PRE) | — |
 | 13 | [PBI-013](PBI-013-ux-blazor-redesign.md) | Rediseño UX demo (Blazor) | 2–3 | SPEC-PRD-003 Approved | Hecho (mergeado; Gate 2 OK) |
 | 14 | [PBI-014](PBI-014-ef-migrations.md) | Migraciones EF Core (histórico de esquema) | 2–3 | SPEC-PRD-001 (C-LOC), ADR-007 Aceptado | Hecho (mergeado #31; Gate 2 OK) |

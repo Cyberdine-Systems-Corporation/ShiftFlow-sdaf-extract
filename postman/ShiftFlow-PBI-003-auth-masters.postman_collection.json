@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "shiftflow-pbi-003-auth-masters",
-    "name": "ShiftFlow — Auth + Maestros + Calendario + Leaves + HR-03 (PBI-003…009)",
+    "name": "ShiftFlow — Auth + Maestros + Calendario + Leaves + HR-03 + Explain (PBI-003…011)",
     "description": "Cookie auth (ShiftFlow.Auth).\n\n1. Ajusta `baseUrl` a la URL HTTPS de la Api en Aspire.\n2. Desactiva verificación SSL en Settings (cert de desarrollo) o confía el certificado.\n3. Ejecuta Login (Postman guarda la cookie sola).\n4. Create Organization → Department → Employee → ShiftType (scripts guardan IDs).\n5. Calendario / Assignments (PBI-005): GetMonthCalendar → AssignShift → solape HR-01 → adyacente → CancelShift.\n6. Leaves (PBI-007): RegisterLeave → ListLeaves → Assign bajo leave (HR-02) → CancelLeave.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -562,6 +562,47 @@
             },
             "url": "{{baseUrl}}/api/organizations/{{organizationId}}/leaves",
             "description": "ACC-S2-L05: EndOn < StartOn → INV-LEA-03."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rules explain (PBI-011)",
+      "item": [
+        {
+          "name": "GET explain HR-01",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/rules/explain?code=HR-01",
+            "description": "ACC-S3-X01: explicación determinista de solape. No muta el cuadrante."
+          }
+        },
+        {
+          "name": "GET explain HR-02",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/rules/explain?code=HR-02",
+            "description": "ACC-S3-X02: explicación de ausencia / leave."
+          }
+        },
+        {
+          "name": "GET explain HR-03",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/rules/explain?code=HR-03",
+            "description": "ACC-S3-X03: explicación de descanso mínimo."
+          }
+        },
+        {
+          "name": "GET explain unsupported (HR-99)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/rules/explain?code=HR-99",
+            "description": "ACC-S3-X04: código no soportado; no inventa hard rule."
           }
         }
       ]

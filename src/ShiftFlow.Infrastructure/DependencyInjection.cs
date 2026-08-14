@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShiftFlow.Application.Auth;
+using ShiftFlow.Application.Rules;
 using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Departments;
 using ShiftFlow.Domain.Employees;
@@ -13,6 +14,7 @@ using ShiftFlow.Domain.ShiftTypes;
 using ShiftFlow.Infrastructure.Identity;
 using ShiftFlow.Infrastructure.Persistence;
 using ShiftFlow.Infrastructure.Persistence.Repositories;
+using ShiftFlow.Infrastructure.Rules;
 
 // AddIdentity / cookie viven en Microsoft.Extensions.DependencyInjection (FrameworkReference AspNetCore.App).
 
@@ -25,7 +27,7 @@ namespace ShiftFlow.Infrastructure;
 public static class DependencyInjection
 {
     /// <summary>
-    /// Registra persistencia EF Core, repositorios, Identity y políticas de autorización.
+    /// Registra persistencia EF Core, repositorios, Identity, políticas de autorización y el stub de explicación de reglas.
     /// </summary>
     /// <param name="services">Colección de servicios de la aplicación anfitriona.</param>
     /// <param name="configuration">Configuración (cadena de conexión e Identity).</param>
@@ -48,6 +50,12 @@ public static class DependencyInjection
         services.AddScoped<IShiftTypeRepository, ShiftTypeRepository>();
         services.AddScoped<IShiftAssignmentRepository, ShiftAssignmentRepository>();
         services.AddScoped<ILeaveRepository, LeaveRepository>();
+
+        #endregion
+
+        #region Rules
+
+        services.AddSingleton<IRuleExplanation, StubRuleExplanation>();
 
         #endregion
 

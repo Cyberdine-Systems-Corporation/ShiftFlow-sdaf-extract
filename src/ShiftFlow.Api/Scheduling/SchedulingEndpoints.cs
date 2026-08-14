@@ -87,9 +87,20 @@ public static class SchedulingEndpoints
         {
             return Results.BadRequest(new { error = ex.Message, code = "INV-CAL-01" });
         }
+        catch (RuleViolationException ex)
+        {
+            return Results.BadRequest(new
+            {
+                error = ex.Message,
+                code = ex.Code,
+                title = ex.Title,
+                body = ex.Body,
+                mutatesSchedule = ex.MutatesSchedule
+            });
+        }
         catch (DomainException ex)
         {
-            // INV-ASN-* estructurales y HR-01/HR-02… se distinguen por el código en el cuerpo.
+            // INV-ASN-* estructurales se distinguen por el código en el cuerpo.
             return Results.BadRequest(new { error = ex.Message, code = ex.Code });
         }
         catch (NotFoundException ex)
