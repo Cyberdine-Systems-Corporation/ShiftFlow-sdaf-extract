@@ -15,6 +15,7 @@
    3. **Calendar & Assignments**: Get month calendar → Assign shift → overlap (HR-01) → adjacent → Cancel
    4. **HR-03 (opcional):** PUT minimum-rest 660 → assign too soon → `HR-03`
    5. **Leaves**: Register leave → List → Assign under leave (HR-02) → Cancel leave
+   6. **Explain (PBI-011):** `GET /api/rules/explain?code=HR-01` (también HR-02/HR-03; HR-99 = no soportado). El rechazo de AssignShift incluye `title`/`body`.
 
 La cookie `ShiftFlow.Auth` la gestiona Postman tras el login. Los scripts de test guardan `organizationId`, `departmentId`, `employeeId`, `shiftTypeId`, `assignmentId` y `leaveId`.
 
@@ -30,4 +31,4 @@ Variables útiles de calendario: `calendarYear` / `calendarMonth` (por defecto `
 | Register leave | `POST /api/organizations/{id}/leaves` |
 | List leaves | `GET /api/organizations/{id}/leaves` |
 | PUT minimum rest | `PUT /api/organizations/{id}/minimum-rest` |
-| Assign too soon (HR-03) | `POST /api/organizations/{id}/assignments` → `HR-03` |
+| GET explain rule | `GET /api/rules/explain?code=HR-01` |

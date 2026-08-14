@@ -2,6 +2,7 @@ using Serilog;
 using ShiftFlow.Api.Auth;
 using ShiftFlow.Api.Leaves;
 using ShiftFlow.Api.Masters;
+using ShiftFlow.Api.Rules;
 using ShiftFlow.Api.Scheduling;
 using ShiftFlow.Application;
 using ShiftFlow.Infrastructure;
@@ -62,6 +63,7 @@ try
     app.MapMasterDataEndpoints();
     app.MapSchedulingEndpoints();
     app.MapLeaveEndpoints();
+    app.MapRuleExplainEndpoints();
 
     app.Run();
 }

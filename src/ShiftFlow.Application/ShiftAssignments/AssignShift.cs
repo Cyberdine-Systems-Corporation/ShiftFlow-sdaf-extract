@@ -1,5 +1,6 @@
 using MediatR;
 using ShiftFlow.Application.Common;
+using ShiftFlow.Application.Rules;
 using ShiftFlow.Domain.Common;
 using ShiftFlow.Domain.Employees;
 using ShiftFlow.Domain.Leaves;
@@ -53,7 +54,8 @@ public sealed class AssignShiftHandler(
     IShiftTypeRepository shiftTypes,
     IShiftAssignmentRepository assignments,
     ILeaveRepository leaves,
-    IUnitOfWork unitOfWork) : IRequestHandler<AssignShiftCommand, ShiftAssignmentDto>
+    IUnitOfWork unitOfWork,
+    IRuleExplanation explanations) : IRequestHandler<AssignShiftCommand, ShiftAssignmentDto>
 {
     private readonly RuleEngine _ruleEngine = new();
 
@@ -64,7 +66,8 @@ public sealed class AssignShiftHandler(
     /// <param name="cancellationToken">Token de cancelación.</param>
     /// <returns>DTO de la asignación creada.</returns>
     /// <exception cref="NotFoundException">Si falta organización, empleado o tipo.</exception>
-    /// <exception cref="DomainException">Si falla invariante estructural o hard rule.</exception>
+    /// <exception cref="DomainException">Si falla invariante estructural.</exception>
+    /// <exception cref="RuleViolationException">Si el Rule Engine bloquea (HR-*) con explicación adjunta.</exception>
     public async Task<ShiftAssignmentDto> Handle(
         AssignShiftCommand request,
         CancellationToken cancellationToken)
@@ -98,8 +101,16 @@ public sealed class AssignShiftHandler(
         IReadOnlyList<RuleViolation>? violations = _ruleEngine.Evaluate(candidate, existing, activeLeaves, minimumRest);
         if (violations.Count > 0)
         {
-            RuleViolation? first = violations[0];
-            throw new DomainException(first.Code, first.Message);
+            RuleViolation first = violations[0];
+            // SPEC-APP-005 §4: adjuntar explicación del stub; no persiste ni bypassea Evaluate.
+            RuleExplanation explanation = explanations.Explain(
+                new RuleExplanationRequest(
+                    first.Code,
+                    request.OrganizationId,
+                    request.EmployeeId,
+                    request.StartAt,
+                    request.EndAt));
+            throw new RuleViolationException(first.Code, first.Message, explanation.Title, explanation.Body);
         }
 
         await assignments.AddAsync(candidate, cancellationToken);
