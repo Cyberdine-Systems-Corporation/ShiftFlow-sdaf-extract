@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.4.0 |
-| Fecha | 2026-08-13 |
-| Relacionado | PBI-001…014, ADR-001, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG |
+| Versión | 0.5.0 |
+| Fecha | 2026-08-14 |
+| Relacionado | PBI-001…014, ADR-001, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG, SPEC-PRD-002 |
 
 ---
 
@@ -107,6 +107,19 @@ dotnet ef migrations add <Nombre> --project src/ShiftFlow.Infrastructure --start
 Commitear los archivos generados en `src/ShiftFlow.Infrastructure/Persistence/Migrations/`. Al arrancar la Api se aplica `MigrateAsync` (PostgreSQL). Los tests de integración siguen usando SQLite + `EnsureCreated`.
 
 Si el volumen se creó con `EnsureCreated` (antes de PBI-014), **resetea el volumen una vez** (§6) y vuelve a arrancar. Mezclar `EnsureCreated` y `Migrate` en la misma base no es compatible. Los cambios de modelo posteriores no exigen wipe si la migración es aditiva.
+
+### 3.2. Catálogo de demo (PBI-010)
+
+Con `Demo:SeedCatalog=true` (default en Development) y PostgreSQL, el arranque siembra dos organizaciones de vitrina **si no existen**. No corre en SQLite (tests). Desactivar: `"Demo": { "SeedCatalog": false }` o `Demo__SeedCatalog=false`.
+
+| Organización | Umbral HR-03 | Para qué |
+|--------------|--------------|----------|
+| `Demo — Operación` | 0 min | Calendario del **mes UTC** en curso: Ana (turno válido 08:00–14:00 UTC), Bruno (10–14 y 14–18 UTC; intenta 12–16 → HR-01), Carla (leave activo → HR-02), Elena (inactiva), Fran (asignación cancelada), tipo Noche inactivo |
+| `Demo — Descanso` | 660 min | Diego 08:00–20:00 UTC hoy; intentar 20:00–22:00 UTC → HR-03 |
+
+Los instantes de turno se guardan con offset 0 (UTC): Npgsql no acepta `DateTimeOffset` local en `timestamptz`. La UI de calendario ya usa el mismo convenio.
+
+El journey SPEC-PRD-002 (crear maestros a mano) sigue válido; el catálogo **complementa** para ver casuísticas sin partir de cero. Reset de datos: §6.
 
 ---
 

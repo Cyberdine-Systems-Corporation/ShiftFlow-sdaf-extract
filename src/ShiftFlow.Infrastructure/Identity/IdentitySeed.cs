@@ -8,12 +8,12 @@ using ShiftFlow.Infrastructure.Persistence;
 namespace ShiftFlow.Infrastructure.Identity;
 
 /// <summary>
-/// Provisiona esquema (ADR-007), rol Administrator y usuario demo en desarrollo.
+/// Provisiona esquema (ADR-007), rol Administrator, usuario demo y catálogo de vitrina (PBI-010).
 /// </summary>
 public static class IdentitySeed
 {
     /// <summary>
-    /// Aplica el esquema (migraciones Npgsql o EnsureCreated en SQLite) y provisiona rol Administrator y usuario demo si no existen.
+    /// Aplica el esquema, provisiona Identity de demo y, si aplica, el catálogo de casuísticas.
     /// </summary>
     /// <param name="services">Proveedor raíz de servicios (se crea un scope interno).</param>
     /// <param name="cancellationToken">Token de cancelación.</param>
@@ -40,45 +40,45 @@ public static class IdentitySeed
 
         UserManager<ApplicationUser>? userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
         ApplicationUser? existing = await userManager.FindByNameAsync(DemoCredentials.UserName);
-        if (existing is not null)
+        if (existing is null)
         {
-            return;
+            string? password = configuration[DemoCredentials.PasswordConfigurationKey];
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                password = DemoCredentials.DefaultDevelopmentPassword;
+                logger.LogWarning(
+                    "No hay {Key} configurada; se usa la contraseña de desarrollo por defecto. Sobrescribe con user-secrets o env.",
+                    DemoCredentials.PasswordConfigurationKey);
+            }
+
+            ApplicationUser user = new ApplicationUser
+            {
+                UserName = DemoCredentials.UserName,
+                Email = "demo.admin@shiftflow.local",
+                EmailConfirmed = true
+            };
+
+            IdentityResult? createResult = await userManager.CreateAsync(user, password);
+            if (!createResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"No se pudo crear el usuario demo: {FormatErrors(createResult)}");
+            }
+
+            IdentityResult? addRole = await userManager.AddToRoleAsync(user, AuthRoles.Administrator);
+            if (!addRole.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"No se pudo asignar el rol Administrator: {FormatErrors(addRole)}");
+            }
+
+            logger.LogInformation(
+                "Usuario demo {User} provisionado con rol {Role}.",
+                DemoCredentials.UserName,
+                AuthRoles.Administrator);
         }
 
-        string? password = configuration[DemoCredentials.PasswordConfigurationKey];
-        if (string.IsNullOrWhiteSpace(password))
-        {
-            password = DemoCredentials.DefaultDevelopmentPassword;
-            logger.LogWarning(
-                "No hay {Key} configurada; se usa la contraseña de desarrollo por defecto. Sobrescribe con user-secrets o env.",
-                DemoCredentials.PasswordConfigurationKey);
-        }
-
-        ApplicationUser user = new ApplicationUser
-        {
-            UserName = DemoCredentials.UserName,
-            Email = "demo.admin@shiftflow.local",
-            EmailConfirmed = true
-        };
-
-        IdentityResult? createResult = await userManager.CreateAsync(user, password);
-        if (!createResult.Succeeded)
-        {
-            throw new InvalidOperationException(
-                $"No se pudo crear el usuario demo: {FormatErrors(createResult)}");
-        }
-
-        IdentityResult? addRole = await userManager.AddToRoleAsync(user, AuthRoles.Administrator);
-        if (!addRole.Succeeded)
-        {
-            throw new InvalidOperationException(
-                $"No se pudo asignar el rol Administrator: {FormatErrors(addRole)}");
-        }
-
-        logger.LogInformation(
-            "Usuario demo {User} provisionado con rol {Role}.",
-            DemoCredentials.UserName,
-            AuthRoles.Administrator);
+        await DemoCatalogSeed.EnsureAsync(db, configuration, logger, cancellationToken);
     }
 
     private static string FormatErrors(IdentityResult result) =>
