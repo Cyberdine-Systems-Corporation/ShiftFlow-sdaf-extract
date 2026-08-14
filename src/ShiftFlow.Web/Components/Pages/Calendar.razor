@@ -14,13 +14,26 @@
 
 <h1 class="sf-page-title">Calendario</h1>
 <p class="sf-lede">
-    Vista mensual con turnos y ausencias. Los rechazos de regla (solape HR-01, ausencia HR-02)
-    se muestran sin mutar el cuadrante.
+    Vista mensual con turnos y ausencias. Los rechazos de regla (HR-01 solape, HR-02 ausencia, HR-03 descanso)
+    se explican en castellano sin mutar el cuadrante.
 </p>
 
-@if (!string.IsNullOrEmpty(_error))
+@if (!string.IsNullOrEmpty(_errorTitle) || !string.IsNullOrEmpty(_error))
 {
-    <p class="sf-alert" role="alert">@_error</p>
+    <div class="sf-alert" role="alert">
+        @if (!string.IsNullOrEmpty(_errorTitle))
+        {
+            <strong class="sf-alert-title">@RuleAlertHeading()</strong>
+            @if (!string.IsNullOrEmpty(_errorBody))
+            {
+                <p class="sf-alert-body">@_errorBody</p>
+            }
+        }
+        else
+        {
+            @_error
+        }
+    </div>
 }
 
 @if (_organizations is null)
@@ -257,6 +270,9 @@ else
     private int _month;
     private string _monthLabel = string.Empty;
     private string? _error;
+    private string? _errorCode;
+    private string? _errorTitle;
+    private string? _errorBody;
     private bool _busy;
 
     protected override async Task OnInitializedAsync()
@@ -279,7 +295,7 @@ else
         }
         catch (Exception ex)
         {
-            _error = ex.Message;
+            SetError(ex.Message);
             _organizations = [];
         }
     }
@@ -318,17 +334,17 @@ else
 
     private async Task AssignAsync()
     {
-        _error = null;
+        ClearError();
         if (_selectedOrganizationId == Guid.Empty)
         {
-            _error = "Selecciona una organización.";
+            SetError("Selecciona una organización.");
             return;
         }
 
         if (!Guid.TryParse(_employeeIdText, out Guid employeeId) ||
             !Guid.TryParse(_shiftTypeIdText, out Guid shiftTypeId))
         {
-            _error = "Selecciona empleado y tipo de turno.";
+            SetError("Selecciona empleado y tipo de turno.");
             return;
         }
 
@@ -336,7 +352,7 @@ else
             !TimeOnly.TryParse(_startTimeText, out TimeOnly startTime) ||
             !TimeOnly.TryParse(_endTimeText, out TimeOnly endTime))
         {
-            _error = "Indica fecha, hora de inicio y hora de fin válidas.";
+            SetError("Indica fecha, hora de inicio y hora de fin válidas.");
             return;
         }
 
@@ -354,7 +370,7 @@ else
                 endAt);
             if (!result.Succeeded)
             {
-                _error = result.Error;
+                ApplyApiError(result);
                 return;
             }
 
@@ -364,13 +380,13 @@ else
 
     private async Task CancelAsync(Guid assignmentId)
     {
-        _error = null;
+        ClearError();
         await RunAsync(async () =>
         {
             ApiResult<ShiftAssignmentDto> result = await Api.CancelShiftAsync(assignmentId);
             if (!result.Succeeded)
             {
-                _error = result.Error;
+                ApplyApiError(result);
                 return;
             }
 
@@ -410,7 +426,7 @@ else
         }
         catch (Exception ex)
         {
-            _error = ex.Message;
+            SetError(ex.Message);
         }
         finally
         {
@@ -420,6 +436,38 @@ else
 
     private void RefreshMonthLabel() =>
         _monthLabel = new DateTime(_year, _month, 1).ToString("MMMM yyyy", Es);
+
+    private void ClearError()
+    {
+        _error = null;
+        _errorCode = null;
+        _errorTitle = null;
+        _errorBody = null;
+    }
+
+    private void SetError(string message)
+    {
+        ClearError();
+        _error = message;
+    }
+
+    private void ApplyApiError<T>(ApiResult<T> result)
+    {
+        _error = result.Error;
+        _errorCode = result.ErrorCode;
+        _errorTitle = result.ErrorTitle;
+        _errorBody = result.ErrorBody;
+    }
+
+    private string RuleAlertHeading()
+    {
+        if (!string.IsNullOrWhiteSpace(_errorCode) && !string.IsNullOrWhiteSpace(_errorTitle))
+        {
+            return $"{_errorCode} · {_errorTitle}";
+        }
+
+        return _errorTitle ?? _error ?? string.Empty;
+    }
 
     private IEnumerable<CalendarAssignmentDto> AssignmentsOn(DateOnly day) =>
         (_calendar?.Assignments ?? []).Where(a => DateOnly.FromDateTime(a.StartAt.UtcDateTime) == day);
