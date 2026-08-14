@@ -377,6 +377,17 @@ code {
     font-weight: 600;
 }
 
+.sf-alert-title {
+    display: block;
+    font-weight: 700;
+}
+
+.sf-alert-body {
+    margin: 0.4rem 0 0;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
 .sf-empty {
     padding: 1.25rem 0.25rem;
     color: var(--sf-ink-muted);

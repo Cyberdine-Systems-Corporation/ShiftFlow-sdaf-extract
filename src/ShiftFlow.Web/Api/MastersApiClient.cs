@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Net;
 using System.Text.Json;
 using ShiftFlow.Application.Departments;
 using ShiftFlow.Application.Employees;
@@ -232,8 +233,8 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
         using HttpResponseMessage? response = await Client.GetAsync(url, ct);
         if (!response.IsSuccessStatusCode)
         {
-            string message = await ReadErrorAsync(response, ct);
-            throw new HttpRequestException(message, null, response.StatusCode);
+            ApiErrorBody? problem = await TryReadErrorBodyAsync(response, ct);
+            throw new HttpRequestException(FormatError(problem, response.StatusCode), null, response.StatusCode);
         }
 
         T? value = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct);
@@ -245,8 +246,8 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
         using HttpResponseMessage? response = await Client.GetAsync(url, ct);
         if (!response.IsSuccessStatusCode)
         {
-            string message = await ReadErrorAsync(response, ct);
-            throw new HttpRequestException(message, null, response.StatusCode);
+            ApiErrorBody? problem = await TryReadErrorBodyAsync(response, ct);
+            throw new HttpRequestException(FormatError(problem, response.StatusCode), null, response.StatusCode);
         }
 
         List<T>? list = await response.Content.ReadFromJsonAsync<List<T>>(JsonOptions, ct);
@@ -281,33 +282,44 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
                 : ApiResult<T>.Ok(value);
         }
 
-        string message = await ReadErrorAsync(response, ct);
+        ApiErrorBody? problem = await TryReadErrorBodyAsync(response, ct);
+        string message = FormatError(problem, response.StatusCode);
+        if (problem is not null &&
+            (!string.IsNullOrWhiteSpace(problem.Title) || !string.IsNullOrWhiteSpace(problem.Body)))
+        {
+            return ApiResult<T>.Fail(message, problem.Code, problem.Title, problem.Body);
+        }
+
         return ApiResult<T>.Fail(message);
     }
 
-    private static async Task<string> ReadErrorAsync(HttpResponseMessage response, CancellationToken ct)
+    private static string FormatError(ApiErrorBody? problem, HttpStatusCode statusCode)
+    {
+        if (problem is not null && !string.IsNullOrWhiteSpace(problem.Error))
+        {
+            return string.IsNullOrWhiteSpace(problem.Code)
+                ? problem.Error
+                : $"{problem.Code}: {problem.Error}";
+        }
+
+        return $"Error HTTP {(int)statusCode}";
+    }
+
+    private static async Task<ApiErrorBody?> TryReadErrorBodyAsync(HttpResponseMessage response, CancellationToken ct)
     {
         try
         {
-            ApiErrorBody? problem = await response.Content.ReadFromJsonAsync<ApiErrorBody>(JsonOptions, ct);
-            if (problem is not null && !string.IsNullOrWhiteSpace(problem.Error))
-            {
-                return string.IsNullOrWhiteSpace(problem.Code)
-                    ? problem.Error
-                    : $"{problem.Code}: {problem.Error}";
-            }
+            return await response.Content.ReadFromJsonAsync<ApiErrorBody>(JsonOptions, ct);
         }
         catch
         {
-            // ignore parse errors
+            return null;
         }
-
-        return $"Error HTTP {(int)response.StatusCode}";
     }
 
     #endregion
 
-    private sealed record ApiErrorBody(string? Error, string? Code);
+    private sealed record ApiErrorBody(string? Error, string? Code, string? Title, string? Body);
 }
 
 /// <summary>
@@ -316,10 +328,13 @@ public sealed class MastersApiClient(IHttpClientFactory httpClientFactory)
 /// <typeparam name="T">Tipo del valor.</typeparam>
 public sealed class ApiResult<T>
 {
-    private ApiResult(T? value, string? error)
+    private ApiResult(T? value, string? error, string? errorCode, string? errorTitle, string? errorBody)
     {
         Value = value;
         Error = error;
+        ErrorCode = errorCode;
+        ErrorTitle = errorTitle;
+        ErrorBody = errorBody;
     }
 
     /// <summary>Valor cuando la llamada tuvo éxito.</summary>
@@ -328,12 +343,29 @@ public sealed class ApiResult<T>
     /// <summary>Mensaje de error cuando falló.</summary>
     public string? Error { get; }
 
+    /// <summary>Código de regla o invariante cuando la Api lo envía.</summary>
+    public string? ErrorCode { get; }
+
+    /// <summary>Título de explicación (stub PBI-011) cuando el rechazo es HR-*.</summary>
+    public string? ErrorTitle { get; }
+
+    /// <summary>Cuerpo de explicación en castellano; no implica mutación del cuadrante.</summary>
+    public string? ErrorBody { get; }
+
     /// <summary>Indica si la llamada tuvo éxito.</summary>
     public bool Succeeded => Error is null && Value is not null;
 
     /// <summary>Crea un resultado correcto.</summary>
-    public static ApiResult<T> Ok(T value) => new(value, null);
+    public static ApiResult<T> Ok(T value) => new(value, null, null, null, null);
 
     /// <summary>Crea un resultado de error.</summary>
-    public static ApiResult<T> Fail(string error) => new(default, error);
+    public static ApiResult<T> Fail(string error) => new(default, error, null, null, null);
+
+    /// <summary>Crea un resultado de error con explicación de regla adjunta.</summary>
+    /// <param name="error">Mensaje corto (código + texto de dominio).</param>
+    /// <param name="code">Código HR-* o invariante.</param>
+    /// <param name="title">Título de la explicación.</param>
+    /// <param name="body">Cuerpo de la explicación.</param>
+    public static ApiResult<T> Fail(string error, string? code, string? title, string? body) =>
+        new(default, error, code, title, body);
 }
