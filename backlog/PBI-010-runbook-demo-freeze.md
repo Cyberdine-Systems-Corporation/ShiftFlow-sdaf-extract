@@ -6,13 +6,13 @@
 | Prioridad | 10 |
 | Specs | SPEC-PRD-001 (C-LOC), SPEC-PRD-002 (journey), ADR-007 |
 | DoD | Runbook en `docs/`; catálogo de demo opcional; etiqueta `mvp-0.1`; arranque en frío verificado |
-| Estado | Catálogo hecho (mergeado #31; Gate 2 OK); freeze pendiente |
+| Estado | Arranque en frío verificado (2026-08-17, post-#36); **pendiente** etiqueta git `mvp-0.1` |
 
 ## Descripción
 
 Documentar y congelar el camino local de evaluación.
 
-El **seed de catálogo** (vitrina de casuísticas) está mergeado en #31. No sustituye el journey SPEC-PRD-002 (el evaluador puede seguir creando maestros). Queda pendiente el freeze: etiqueta `mvp-0.1` y verificación de arranque en frío.
+El **seed de catálogo** (vitrina de casuísticas) está mergeado en #31. No sustituye el journey SPEC-PRD-002 (el evaluador puede seguir creando maestros). El arranque en frío quedó verificado el 2026-08-17. Queda la etiqueta `mvp-0.1` **después** del commit de docs de freeze (runbook 0.6.0).
 
 ## Catálogo de demo (hecho, #31)
 
@@ -26,10 +26,10 @@ Tras migraciones e Identity, si `Demo:SeedCatalog` es true y el provider no es S
 - El seed usa factories de dominio; no `HasData` en migraciones.
 - Fechas relativas al reloj local para que el calendario del mes actual las muestre.
 
-### Pendiente (freeze)
+### Freeze
 
-- Etiqueta git `mvp-0.1`.
-- Verificación formal de arranque en frío.
+- [x] Verificación formal de arranque en frío (2026-08-17; runbook §3.3).
+- [ ] Etiqueta git `mvp-0.1` (humano; sobre `main` con docs de freeze).
 
 Worker Aspire de migraciones sigue fuera de alcance (ADR-007).
 
@@ -41,4 +41,4 @@ Worker Aspire de migraciones sigue fuera de alcance (ADR-007).
 | G0.2 | Criterios de esta PBI |
 | G0.3 | N/A (datos; ADR-007 ya separa seed del esquema) |
 | G0.4 | Este archivo |
-| G0.5 | `worklogs/PBI-010-demo-catalog/` |
+| G0.5 | `worklogs/PBI-010-demo-catalog/` (catálogo 001–003; freeze `Iteration-004.md`) |
