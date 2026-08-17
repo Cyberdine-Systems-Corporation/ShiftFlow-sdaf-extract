@@ -1,5 +1,4 @@
 @page "/organizations/{OrganizationId:guid}"
-@rendermode InteractiveServer
 @attribute [Authorize(Roles = AuthRoles.Administrator)]
 @using ShiftFlow.Application.Auth
 @using ShiftFlow.Application.Departments
@@ -8,6 +7,9 @@
 @using ShiftFlow.Application.ShiftTypes
 @using ShiftFlow.Web.Api
 @inject MastersApiClient Api
+@inject WorkspaceContext Workspace
+@inject NavigationManager Navigation
+@implements IDisposable
 
 <PageTitle>@( _org?.Name ?? "Organización" ) — ShiftFlow</PageTitle>
 
@@ -24,196 +26,234 @@
 }
 else
 {
-    <div class="sf-section-head" style="margin-bottom:1.25rem">
+    <div class="sf-section-head" style="margin-bottom:1rem">
         <h1 class="sf-page-title">@_org.Name</h1>
-        @if (_org.IsActive)
-        {
-            <span class="sf-badge">Activa</span>
-        }
-        else
-        {
-            <span class="sf-badge sf-badge-muted">Inactiva</span>
-        }
+        <span class="sf-status-dot @(_org.IsActive ? "sf-status-dot-on" : null)">
+            @(_org.IsActive ? "Activa" : "Inactiva")
+        </span>
     </div>
 
-    <section class="sf-section">
-        <h2>Organización</h2>
-        <div class="sf-field">
-            <label for="rename-org">Renombrar</label>
-            <InputText id="rename-org" @bind-Value="_renameOrg" />
-        </div>
-        <div class="sf-actions">
-            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="RenameOrgAsync">Guardar nombre</button>
-            <button type="button" class="sf-btn sf-btn-secondary" disabled="@_busy" @onclick="ToggleOrgActiveAsync">
-                @(_org.IsActive ? "Desactivar" : "Activar")
-            </button>
-        </div>
-        <div class="sf-field" style="margin-top:1rem">
-            <label for="min-rest">Descanso mínimo entre turnos (minutos, HR-03)</label>
-            <InputNumber id="min-rest" @bind-Value="_minimumRestMinutes" />
-            <p class="sf-hint">0 = regla desactivada. Ej. 660 = 11 horas.</p>
-        </div>
-        <div class="sf-actions">
-            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="SaveMinimumRestAsync">Guardar descanso</button>
-        </div>
-    </section>
+    <div class="sf-tabs" role="tablist" aria-label="Secciones de la organización">
+        <button type="button"
+                class="sf-tab @(_tab == TabPersonal ? "active" : null)"
+                role="tab"
+                aria-selected="@(_tab == TabPersonal)"
+                @onclick="() => _tab = TabPersonal">Personal</button>
+        <button type="button"
+                class="sf-tab @(_tab == TabShiftTypes ? "active" : null)"
+                role="tab"
+                aria-selected="@(_tab == TabShiftTypes)"
+                @onclick="() => _tab = TabShiftTypes">Tipos de turno</button>
+        <button type="button"
+                class="sf-tab @(_tab == TabSettings ? "active" : null)"
+                role="tab"
+                aria-selected="@(_tab == TabSettings)"
+                @onclick="() => _tab = TabSettings">Ajustes</button>
+    </div>
 
-    <section class="sf-section">
-        <h2>Departamentos</h2>
-        <div class="sf-field">
-            <label for="new-dept">Nuevo departamento</label>
-            <InputText id="new-dept" @bind-Value="_newDeptName" />
-        </div>
-        <div class="sf-actions">
-            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateDeptAsync">Crear departamento</button>
-        </div>
-        @if (_departments.Count == 0)
-        {
-            <div class="sf-empty">
-                <strong>Sin departamentos</strong>
-                Crea al menos uno para poder dar de alta empleados.
+    @if (_tab == TabPersonal)
+    {
+        <section class="sf-section">
+            <h2>Departamentos</h2>
+            <div class="sf-field">
+                <label for="new-dept">Nuevo departamento</label>
+                <InputText id="new-dept" @bind-Value="_newDeptName" />
             </div>
-        }
-        else
-        {
-            <table class="sf-table">
-                <thead>
-                    <tr><th>Nombre</th><th>Estado</th><th></th></tr>
-                </thead>
-                <tbody>
-                    @foreach (DepartmentDto d in _departments)
-                    {
-                        <tr>
-                            <td>@d.Name</td>
-                            <td>@(d.IsActive ? "Activo" : "Inactivo")</td>
-                            <td>
-                                <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => ToggleDeptAsync(d)">
-                                    @(d.IsActive ? "Desactivar" : "Activar")
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </section>
+            <div class="sf-actions">
+                <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateDeptAsync">Crear departamento</button>
+            </div>
+            @if (_departments.Count == 0)
+            {
+                <div class="sf-empty">
+                    <strong>Sin departamentos</strong>
+                    Crea al menos uno para poder dar de alta empleados.
+                </div>
+            }
+            else
+            {
+                <table class="sf-table">
+                    <thead>
+                        <tr><th>Nombre</th><th>Estado</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (DepartmentDto d in _departments)
+                        {
+                            <tr>
+                                <td>@d.Name</td>
+                                <td>
+                                    <span class="sf-status-dot @(d.IsActive ? "sf-status-dot-on" : null)">
+                                        @(d.IsActive ? "Activo" : "Inactivo")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => ToggleDeptAsync(d)">
+                                        @(d.IsActive ? "Desactivar" : "Activar")
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
 
-    <section class="sf-section">
-        <h2>Empleados</h2>
-        <div class="sf-field-row">
+        <section class="sf-section">
+            <h2>Empleados</h2>
+            <div class="sf-field-row">
+                <div class="sf-field">
+                    <label for="emp-dept">Departamento</label>
+                    <select id="emp-dept" @bind="_newEmpDeptIdText">
+                        <option value="">— seleccionar —</option>
+                        @foreach (DepartmentDto d in _departments.Where(x => x.IsActive))
+                        {
+                            <option value="@d.Id">@d.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label for="emp-name">Nombre visible</label>
+                    <InputText id="emp-name" @bind-Value="_newEmpName" />
+                </div>
+                <div class="sf-field">
+                    <label for="emp-email">Email (opcional)</label>
+                    <InputText id="emp-email" @bind-Value="_newEmpEmail" />
+                </div>
+            </div>
+            <div class="sf-actions">
+                <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateEmpAsync">Crear empleado</button>
+            </div>
+            @if (_employees.Count == 0)
+            {
+                <div class="sf-empty">
+                    <strong>Sin empleados</strong>
+                    Añade personal para asignar turnos.
+                </div>
+            }
+            else
+            {
+                <table class="sf-table">
+                    <thead>
+                        <tr><th>Nombre</th><th>Email</th><th>Departamento</th><th>Estado</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (EmployeeDto e in _employees)
+                        {
+                            <tr>
+                                <td>@e.DisplayName</td>
+                                <td>@(e.Email ?? "—")</td>
+                                <td>@DeptName(e.DepartmentId)</td>
+                                <td>
+                                    <span class="sf-status-dot @(e.IsActive ? "sf-status-dot-on" : null)">
+                                        @(e.IsActive ? "Activo" : "Inactivo")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => ToggleEmpAsync(e)">
+                                        @(e.IsActive ? "Desactivar" : "Activar")
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    }
+    else if (_tab == TabShiftTypes)
+    {
+        <section class="sf-section">
+            <h2>Tipos de turno</h2>
+            <div class="sf-field-row">
+                <div class="sf-field">
+                    <label for="st-name">Nombre</label>
+                    <InputText id="st-name" @bind-Value="_newStName" />
+                </div>
+                <div class="sf-field">
+                    <label for="st-code">Código (opcional)</label>
+                    <InputText id="st-code" @bind-Value="_newStCode" />
+                </div>
+                <div class="sf-field">
+                    <label for="st-start">Inicio por defecto (HH:mm)</label>
+                    <InputText id="st-start" @bind-Value="_newStStart" placeholder="08:00" />
+                </div>
+                <div class="sf-field">
+                    <label for="st-end">Fin por defecto (HH:mm)</label>
+                    <InputText id="st-end" @bind-Value="_newStEnd" placeholder="15:00" />
+                </div>
+            </div>
+            <div class="sf-actions">
+                <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateShiftTypeAsync">Crear tipo de turno</button>
+            </div>
+            @if (_shiftTypes.Count == 0)
+            {
+                <div class="sf-empty">
+                    <strong>Sin tipos de turno</strong>
+                    Define al menos un tipo antes de asignar en el calendario.
+                </div>
+            }
+            else
+            {
+                <table class="sf-table">
+                    <thead>
+                        <tr><th>Nombre</th><th>Código</th><th>Horario</th><th>Estado</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ShiftTypeDto s in _shiftTypes)
+                        {
+                            <tr>
+                                <td>@s.Name</td>
+                                <td>@(s.Code ?? "—")</td>
+                                <td>
+                                    <span class="sf-badge sf-badge-muted">@FormatWindow(s.DefaultStartTime, s.DefaultEndTime)</span>
+                                </td>
+                                <td>
+                                    <span class="sf-status-dot @(s.IsActive ? "sf-status-dot-on" : null)">
+                                        @(s.IsActive ? "Activo" : "Inactivo")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => ToggleShiftTypeAsync(s)">
+                                        @(s.IsActive ? "Desactivar" : "Activar")
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    }
+    else
+    {
+        <section class="sf-section">
+            <h2>Organización</h2>
             <div class="sf-field">
-                <label for="emp-dept">Departamento</label>
-                <select id="emp-dept" @bind="_newEmpDeptIdText">
-                    <option value="">— seleccionar —</option>
-                    @foreach (DepartmentDto d in _departments.Where(x => x.IsActive))
-                    {
-                        <option value="@d.Id">@d.Name</option>
-                    }
-                </select>
+                <label for="rename-org">Nombre</label>
+                <InputText id="rename-org" @bind-Value="_renameOrg" />
             </div>
-            <div class="sf-field">
-                <label for="emp-name">Nombre visible</label>
-                <InputText id="emp-name" @bind-Value="_newEmpName" />
+            <div class="sf-actions">
+                <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="RenameOrgAsync">Guardar nombre</button>
+                <button type="button" class="sf-btn sf-btn-secondary" disabled="@_busy" @onclick="ToggleOrgActiveAsync">
+                    @(_org.IsActive ? "Desactivar" : "Activar")
+                </button>
             </div>
-            <div class="sf-field">
-                <label for="emp-email">Email (opcional)</label>
-                <InputText id="emp-email" @bind-Value="_newEmpEmail" />
+            <div class="sf-field" style="margin-top:1rem">
+                <label for="min-rest">Descanso mínimo entre turnos (minutos)</label>
+                <InputNumber id="min-rest" @bind-Value="_minimumRestMinutes" />
+                <p class="sf-hint">0 = regla desactivada. Ejemplo: 660 = 11 horas.</p>
             </div>
-        </div>
-        <div class="sf-actions">
-            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateEmpAsync">Crear empleado</button>
-        </div>
-        @if (_employees.Count == 0)
-        {
-            <div class="sf-empty">
-                <strong>Sin empleados</strong>
-                Añade personal para el journey de asignación (Sprint 2).
+            <div class="sf-actions">
+                <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="SaveMinimumRestAsync">Guardar descanso</button>
             </div>
-        }
-        else
-        {
-            <table class="sf-table">
-                <thead>
-                    <tr><th>Nombre</th><th>Email</th><th>Departamento</th><th>Estado</th><th></th></tr>
-                </thead>
-                <tbody>
-                    @foreach (EmployeeDto e in _employees)
-                    {
-                        <tr>
-                            <td>@e.DisplayName</td>
-                            <td>@(e.Email ?? "—")</td>
-                            <td>@DeptName(e.DepartmentId)</td>
-                            <td>@(e.IsActive ? "Activo" : "Inactivo")</td>
-                            <td>
-                                <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => ToggleEmpAsync(e)">
-                                    @(e.IsActive ? "Desactivar" : "Activar")
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </section>
-
-    <section class="sf-section">
-        <h2>Tipos de turno</h2>
-        <div class="sf-field-row">
-            <div class="sf-field">
-                <label for="st-name">Nombre</label>
-                <InputText id="st-name" @bind-Value="_newStName" />
-            </div>
-            <div class="sf-field">
-                <label for="st-code">Código (opcional)</label>
-                <InputText id="st-code" @bind-Value="_newStCode" />
-            </div>
-            <div class="sf-field">
-                <label for="st-start">Inicio por defecto (HH:mm)</label>
-                <InputText id="st-start" @bind-Value="_newStStart" placeholder="08:00" />
-            </div>
-            <div class="sf-field">
-                <label for="st-end">Fin por defecto (HH:mm)</label>
-                <InputText id="st-end" @bind-Value="_newStEnd" placeholder="15:00" />
-            </div>
-        </div>
-        <div class="sf-actions">
-            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateShiftTypeAsync">Crear tipo de turno</button>
-        </div>
-        @if (_shiftTypes.Count == 0)
-        {
-            <div class="sf-empty">
-                <strong>Sin tipos de turno</strong>
-                Define al menos un tipo antes de asignar en calendario.
-            </div>
-        }
-        else
-        {
-            <table class="sf-table">
-                <thead>
-                    <tr><th>Nombre</th><th>Código</th><th>Horario</th><th>Estado</th><th></th></tr>
-                </thead>
-                <tbody>
-                    @foreach (ShiftTypeDto s in _shiftTypes)
-                    {
-                        <tr>
-                            <td>@s.Name</td>
-                            <td>@(s.Code ?? "—")</td>
-                            <td>@FormatWindow(s.DefaultStartTime, s.DefaultEndTime)</td>
-                            <td>@(s.IsActive ? "Activo" : "Inactivo")</td>
-                            <td>
-                                <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => ToggleShiftTypeAsync(s)">
-                                    @(s.IsActive ? "Desactivar" : "Activar")
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </section>
+        </section>
+    }
 }
 
 @code {
+    private const string TabPersonal = "personal";
+    private const string TabShiftTypes = "tipos";
+    private const string TabSettings = "ajustes";
+
     [Parameter] public Guid OrganizationId { get; set; }
 
     private OrganizationDto? _org;
@@ -221,6 +261,7 @@ else
     private IReadOnlyList<EmployeeDto> _employees = [];
     private IReadOnlyList<ShiftTypeDto> _shiftTypes = [];
 
+    private string _tab = TabPersonal;
     private string _renameOrg = string.Empty;
     private int _minimumRestMinutes;
     private string _newDeptName = string.Empty;
@@ -234,8 +275,42 @@ else
 
     private string? _error;
     private bool _busy;
+    private bool _disposed;
 
-    protected override async Task OnParametersSetAsync() => await ReloadAsync();
+    protected override void OnInitialized()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Workspace.SetOrganization(OrganizationId);
+        await ReloadAsync();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        Workspace.Changed -= OnWorkspaceChanged;
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        _ = InvokeAsync(() =>
+        {
+            Guid? next = Workspace.SelectedOrganizationId;
+            if (next is Guid id && id != OrganizationId)
+            {
+                Navigation.NavigateTo($"/organizations/{id}");
+            }
+        });
+    }
 
     private async Task ReloadAsync()
     {
@@ -273,7 +348,11 @@ else
 
     private static string FormatWindow(TimeOnly? start, TimeOnly? end)
     {
-        if (start is null && end is null) return "—";
+        if (start is null && end is null)
+        {
+            return "—";
+        }
+
         return $"{start?.ToString("HH:mm") ?? "?"} – {end?.ToString("HH:mm") ?? "?"}";
     }
 
@@ -282,18 +361,32 @@ else
         await RunAsync(async () =>
         {
             ApiResult<OrganizationDto> result = await Api.RenameOrganizationAsync(OrganizationId, _renameOrg);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             await ReloadAsync();
         });
     }
 
     private async Task ToggleOrgActiveAsync()
     {
-        if (_org is null) return;
+        if (_org is null)
+        {
+            return;
+        }
+
         await RunAsync(async () =>
         {
             ApiResult<OrganizationDto> result = await Api.SetOrganizationActiveAsync(OrganizationId, !_org.IsActive);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             await ReloadAsync();
         });
     }
@@ -305,7 +398,12 @@ else
             ApiResult<OrganizationDto> result = await Api.SetOrganizationMinimumRestAsync(
                 OrganizationId,
                 _minimumRestMinutes);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             await ReloadAsync();
         });
     }
@@ -315,7 +413,12 @@ else
         await RunAsync(async () =>
         {
             ApiResult<DepartmentDto> result = await Api.CreateDepartmentAsync(OrganizationId, _newDeptName);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             _newDeptName = string.Empty;
             await ReloadAsync();
         });
@@ -326,7 +429,12 @@ else
         await RunAsync(async () =>
         {
             ApiResult<DepartmentDto> result = await Api.SetDepartmentActiveAsync(dept.Id, !dept.IsActive);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             await ReloadAsync();
         });
     }
@@ -343,7 +451,12 @@ else
 
             string? email = string.IsNullOrWhiteSpace(_newEmpEmail) ? null : _newEmpEmail;
             ApiResult<EmployeeDto> result = await Api.CreateEmployeeAsync(OrganizationId, deptId, _newEmpName, email);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             _newEmpName = string.Empty;
             _newEmpEmail = string.Empty;
             await ReloadAsync();
@@ -355,7 +468,12 @@ else
         await RunAsync(async () =>
         {
             ApiResult<EmployeeDto> result = await Api.SetEmployeeActiveAsync(emp.Id, !emp.IsActive);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             await ReloadAsync();
         });
     }
@@ -368,7 +486,12 @@ else
             TimeOnly? end = TimeOnly.TryParse(_newStEnd, out TimeOnly e) ? e : null;
             string? code = string.IsNullOrWhiteSpace(_newStCode) ? null : _newStCode;
             ApiResult<ShiftTypeDto> result = await Api.CreateShiftTypeAsync(OrganizationId, _newStName, code, start, end);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             _newStName = string.Empty;
             _newStCode = string.Empty;
             await ReloadAsync();
@@ -380,7 +503,12 @@ else
         await RunAsync(async () =>
         {
             ApiResult<ShiftTypeDto> result = await Api.SetShiftTypeActiveAsync(shiftType.Id, !shiftType.IsActive);
-            if (!result.Succeeded) { _error = result.Error; return; }
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
             await ReloadAsync();
         });
     }

@@ -1,12 +1,16 @@
-@rendermode InteractiveServer
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
 @using ShiftFlow.Application.Auth
+@using ShiftFlow.Application.Organizations
+@using ShiftFlow.Web.Api
 @using ShiftFlow.Web.Auth
 @inject IHttpClientFactory HttpClientFactory
 @inject ApiAuthenticationStateProvider AuthState
 @inject CookieContainerHolder CookieJar
 @inject NavigationManager Navigation
+@inject WorkspaceContext Workspace
+@inject MastersApiClient Api
+@implements IDisposable
 
 <header class="sf-nav" role="banner">
     <div class="sf-nav-inner">
@@ -14,9 +18,23 @@
         <nav class="sf-nav-links" aria-label="Principal">
             <AuthorizeView Roles="@AuthRoles.Administrator">
                 <Authorized>
-                    <NavLink class="sf-nav-link" href="/organizations" Match="NavLinkMatch.Prefix">Organizaciones</NavLink>
                     <NavLink class="sf-nav-link" href="/calendar">Calendario</NavLink>
                     <NavLink class="sf-nav-link" href="/leaves">Ausencias</NavLink>
+                    <NavLink class="sf-nav-link" href="/organizations" Match="NavLinkMatch.Prefix">Organizaciones</NavLink>
+                    @if (_organizations is { Count: > 0 })
+                    {
+                        <label class="sf-nav-org">
+                            <span class="sf-visually-hidden">Organización activa</span>
+                            <select value="@_selectedText"
+                                    @onchange="OnOrganizationChangedAsync"
+                                    aria-label="Organización activa">
+                                @foreach (OrganizationDto org in _organizations)
+                                {
+                                    <option value="@org.Id">@org.Name</option>
+                                }
+                            </select>
+                        </label>
+                    }
                     <span class="sf-nav-user">@context.User.Identity?.Name</span>
                     <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" @onclick="LogoutAsync">Salir</button>
                 </Authorized>
@@ -29,11 +47,100 @@
 </header>
 
 @code {
+    private IReadOnlyList<OrganizationDto> _organizations = [];
+    private string _selectedText = string.Empty;
+    private bool _disposed;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+        await ReloadOrganizationsAsync();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        Workspace.Changed -= OnWorkspaceChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        _selectedText = Workspace.SelectedOrganizationId?.ToString() ?? string.Empty;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        await ReloadOrganizationsAsync();
+        if (_disposed)
+        {
+            return;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnOrganizationChangedAsync(ChangeEventArgs e)
+    {
+        if (!Guid.TryParse(e.Value?.ToString(), out Guid orgId))
+        {
+            return;
+        }
+
+        Workspace.SetOrganization(orgId);
+        _selectedText = orgId.ToString();
+    }
+
+    private async Task ReloadOrganizationsAsync()
+    {
+        try
+        {
+            AuthenticationState state = await AuthState.GetAuthenticationStateAsync();
+            if (state.User.Identity?.IsAuthenticated != true)
+            {
+                _organizations = [];
+                _selectedText = string.Empty;
+                return;
+            }
+
+            _organizations = await Api.ListOrganizationsAsync();
+            if (_organizations.Count == 0)
+            {
+                Workspace.SetOrganization(null);
+                _selectedText = string.Empty;
+                return;
+            }
+
+            Guid? current = Workspace.SelectedOrganizationId;
+            bool currentExists = current is Guid id && _organizations.Any(o => o.Id == id);
+            if (!currentExists)
+            {
+                Workspace.SetOrganization(_organizations[0].Id);
+            }
+
+            _selectedText = Workspace.SelectedOrganizationId!.Value.ToString();
+        }
+        catch
+        {
+            _organizations = [];
+        }
+    }
+
     private async Task LogoutAsync()
     {
         HttpClient client = HttpClientFactory.CreateClient("api");
         await client.PostAsync("/api/auth/logout", null);
         CookieJar.Clear();
+        Workspace.SetOrganization(null);
         AuthState.NotifyChanged();
         Navigation.NavigateTo("/login");
     }

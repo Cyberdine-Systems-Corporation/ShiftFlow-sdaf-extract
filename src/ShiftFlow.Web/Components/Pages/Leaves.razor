@@ -1,5 +1,4 @@
 @page "/leaves"
-@rendermode InteractiveServer
 @attribute [Authorize(Roles = AuthRoles.Administrator)]
 @using ShiftFlow.Application.Auth
 @using ShiftFlow.Application.Employees
@@ -7,14 +6,26 @@
 @using ShiftFlow.Application.Organizations
 @using ShiftFlow.Web.Api
 @inject MastersApiClient Api
+@inject WorkspaceContext Workspace
+@implements IDisposable
 
 <PageTitle>Ausencias — ShiftFlow</PageTitle>
 
-<h1 class="sf-page-title">Ausencias</h1>
-<p class="sf-lede">
-    Registra vacaciones o ausencias que bloquean nuevas asignaciones (HR-02).
-    Las ausencias activas también se proyectan en el <a href="/calendar">calendario</a>.
-</p>
+<div class="sf-section-head">
+    <div>
+        <h1 class="sf-page-title">Ausencias</h1>
+        <p class="sf-lede">
+            Las ausencias activas bloquean nuevas asignaciones en esas fechas y se muestran en el
+            <a href="/calendar">calendario</a>.
+        </p>
+    </div>
+    <button type="button"
+            class="sf-btn sf-btn-primary sf-btn-sm"
+            disabled="@_busy"
+            @onclick="() => _showCreate = !_showCreate">
+        @(_showCreate ? "Cerrar" : "Registrar ausencia")
+    </button>
+</div>
 
 @if (!string.IsNullOrEmpty(_error))
 {
@@ -41,54 +52,48 @@ else if (_organizations.Count == 0)
 }
 else
 {
-    <section class="sf-section">
-        <div class="sf-field">
-            <label for="leave-org">Organización</label>
-            <select id="leave-org" value="@_organizationIdText" @onchange="OnOrganizationChangedAsync" disabled="@_busy">
-                @foreach (OrganizationDto org in _organizations)
-                {
-                    <option value="@org.Id">@org.Name</option>
-                }
-            </select>
-        </div>
-    </section>
-
-    <section class="sf-section">
-        <h2>Registrar ausencia</h2>
-        <div class="sf-field-row">
-            <div class="sf-field">
-                <label for="leave-emp">Empleado</label>
-                <select id="leave-emp" @bind="_employeeIdText" disabled="@_busy">
-                    <option value="">— seleccionar —</option>
-                    @foreach (EmployeeDto e in _employees.Where(x => x.IsActive))
-                    {
-                        <option value="@e.Id">@e.DisplayName</option>
-                    }
-                </select>
+    @if (_showCreate || (_leaves is { Count: 0 }))
+    {
+        <section class="sf-panel" aria-label="Registrar ausencia">
+            <h2>Registrar ausencia</h2>
+            <div class="sf-field-row">
+                <div class="sf-field">
+                    <label for="leave-emp">Empleado</label>
+                    <select id="leave-emp" @bind="_employeeIdText" disabled="@_busy">
+                        <option value="">— seleccionar —</option>
+                        @foreach (EmployeeDto e in _employees.Where(x => x.IsActive))
+                        {
+                            <option value="@e.Id">@e.DisplayName</option>
+                        }
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label for="leave-start">Desde</label>
+                    <InputDate id="leave-start" @bind-Value="_startOn" disabled="@_busy" />
+                </div>
+                <div class="sf-field">
+                    <label for="leave-end">Hasta</label>
+                    <InputDate id="leave-end" @bind-Value="_endOn" disabled="@_busy" />
+                </div>
+                <div class="sf-field">
+                    <label for="leave-kind">Tipo</label>
+                    <select id="leave-kind" @bind="_kind" disabled="@_busy">
+                        <option value="Vacation">Vacaciones</option>
+                        <option value="Other">Otra</option>
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label for="leave-reason">Motivo</label>
+                    <InputText id="leave-reason" @bind-Value="_reason" disabled="@_busy" placeholder="Opcional" />
+                </div>
             </div>
-            <div class="sf-field">
-                <label for="leave-start">Desde</label>
-                <InputDate id="leave-start" @bind-Value="_startOn" disabled="@_busy" />
+            <div class="sf-actions">
+                <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="RegisterAsync">
+                    @(_busy ? "Registrando…" : "Registrar ausencia")
+                </button>
             </div>
-            <div class="sf-field">
-                <label for="leave-end">Hasta</label>
-                <InputDate id="leave-end" @bind-Value="_endOn" disabled="@_busy" />
-            </div>
-            <div class="sf-field">
-                <label for="leave-kind">Tipo</label>
-                <InputText id="leave-kind" @bind-Value="_kind" disabled="@_busy" placeholder="Vacation" />
-            </div>
-            <div class="sf-field">
-                <label for="leave-reason">Motivo</label>
-                <InputText id="leave-reason" @bind-Value="_reason" disabled="@_busy" placeholder="Opcional" />
-            </div>
-        </div>
-        <div class="sf-actions">
-            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="RegisterAsync">
-                @(_busy ? "Registrando…" : "Registrar ausencia")
-            </button>
-        </div>
-    </section>
+        </section>
+    }
 
     <section class="sf-section">
         <div class="sf-section-head">
@@ -130,9 +135,10 @@ else
                             <td>@EmployeeName(leave.EmployeeId)</td>
                             <td>@leave.StartOn.ToString("dd/MM/yyyy")</td>
                             <td>@leave.EndOn.ToString("dd/MM/yyyy")</td>
-                            <td>@(leave.Kind ?? "—")</td>
+                            <td>@LeaveKindLabel(leave.Kind)</td>
                             <td>@(leave.Reason ?? "—")</td>
                             <td>
+                                <a class="sf-btn sf-btn-ghost sf-btn-sm" href="/calendar">Ver en calendario</a>
                                 <button type="button"
                                         class="sf-btn sf-btn-ghost sf-btn-sm"
                                         disabled="@_busy"
@@ -154,7 +160,6 @@ else
     private IReadOnlyList<LeaveDto>? _leaves;
 
     private Guid _selectedOrganizationId;
-    private string _organizationIdText = string.Empty;
     private string _employeeIdText = string.Empty;
     private DateTime? _startOn = DateTime.Today;
     private DateTime? _endOn = DateTime.Today;
@@ -164,16 +169,18 @@ else
     private string? _error;
     private string? _success;
     private bool _busy;
+    private bool _showCreate;
+    private bool _disposed;
 
     protected override async Task OnInitializedAsync()
     {
+        Workspace.Changed += OnWorkspaceChanged;
         try
         {
             _organizations = await Api.ListOrganizationsAsync();
-            if (_organizations.Count > 0)
+            ApplyWorkspaceOrganization();
+            if (_selectedOrganizationId != Guid.Empty)
             {
-                _selectedOrganizationId = _organizations[0].Id;
-                _organizationIdText = _selectedOrganizationId.ToString();
                 await LoadOrganizationDataAsync();
             }
         }
@@ -184,17 +191,58 @@ else
         }
     }
 
-    private async Task OnOrganizationChangedAsync(ChangeEventArgs e)
+    /// <inheritdoc />
+    public void Dispose()
     {
-        if (!Guid.TryParse(e.Value?.ToString(), out Guid orgId))
+        if (_disposed)
         {
             return;
         }
 
-        _selectedOrganizationId = orgId;
-        _organizationIdText = orgId.ToString();
+        _disposed = true;
+        Workspace.Changed -= OnWorkspaceChanged;
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        _ = InvokeAsync(HandleWorkspaceChangedAsync);
+    }
+
+    private async Task HandleWorkspaceChangedAsync()
+    {
+        Guid next = Workspace.SelectedOrganizationId ?? Guid.Empty;
+        if (next == _selectedOrganizationId)
+        {
+            return;
+        }
+
+        _selectedOrganizationId = next;
         _employeeIdText = string.Empty;
+        _error = null;
+        _success = null;
+        if (_selectedOrganizationId == Guid.Empty)
+        {
+            _employees = [];
+            _leaves = [];
+            return;
+        }
+
         await LoadOrganizationDataAsync();
+    }
+
+    private void ApplyWorkspaceOrganization()
+    {
+        if (Workspace.SelectedOrganizationId is Guid id)
+        {
+            _selectedOrganizationId = id;
+            return;
+        }
+
+        if (_organizations is { Count: > 0 })
+        {
+            Workspace.SetOrganization(_organizations[0].Id);
+            _selectedOrganizationId = _organizations[0].Id;
+        }
     }
 
     private async Task RegisterAsync()
@@ -238,7 +286,8 @@ else
                 return;
             }
 
-            _success = "Ausencia registrada. Bloqueará asignaciones en ese rango (HR-02).";
+            _success = "Ausencia registrada. Bloqueará asignaciones en ese rango.";
+            _showCreate = false;
             await LoadLeavesAsync();
         });
     }
@@ -275,14 +324,24 @@ else
         if (_selectedOrganizationId == Guid.Empty)
         {
             _leaves = [];
+            _showCreate = true;
             return;
         }
 
         _leaves = await Api.ListLeavesAsync(_selectedOrganizationId, activeOnly: true);
+        _showCreate = _leaves.Count == 0;
     }
 
     private string EmployeeName(Guid employeeId) =>
         _employees.FirstOrDefault(e => e.Id == employeeId)?.DisplayName ?? employeeId.ToString("N")[..8];
+
+    private static string LeaveKindLabel(string? kind) =>
+        kind switch
+        {
+            "Vacation" => "Vacaciones",
+            "Other" => "Otra",
+            _ => kind ?? "—"
+        };
 
     private async Task RunAsync(Func<Task> action)
     {

@@ -1,5 +1,4 @@
 @page "/organizations"
-@rendermode InteractiveServer
 @attribute [Authorize(Roles = AuthRoles.Administrator)]
 @using ShiftFlow.Application.Auth
 @using ShiftFlow.Application.Organizations
@@ -7,29 +6,44 @@
 @inject MastersApiClient Api
 @inject CookieContainerHolder Session
 @inject NavigationManager Navigation
+@inject WorkspaceContext Workspace
+@implements IDisposable
 
 <PageTitle>Organizaciones — ShiftFlow</PageTitle>
 
-<h1 class="sf-page-title">Organizaciones</h1>
-<p class="sf-lede">Maestros del núcleo (AC-01). Abre una organización para departamentos, empleados y tipos de turno.</p>
+<div class="sf-section-head">
+    <div>
+        <h1 class="sf-page-title">Organizaciones</h1>
+        <p class="sf-lede">Abre una organización para gestionar personal, tipos de turno y ajustes.</p>
+    </div>
+    <button type="button"
+            class="sf-btn sf-btn-primary sf-btn-sm"
+            disabled="@_busy"
+            @onclick="() => _showCreate = !_showCreate">
+        @(_showCreate ? "Cerrar" : "Nueva organización")
+    </button>
+</div>
 
 @if (!string.IsNullOrEmpty(_error))
 {
     <p class="sf-alert" role="alert">@_error</p>
 }
 
-<section class="sf-section">
-    <h2>Nueva organización</h2>
-    <div class="sf-field">
-        <label for="org-name">Nombre</label>
-        <InputText id="org-name" @bind-Value="_newName" />
-    </div>
-    <div class="sf-actions">
-        <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateAsync">
-            @(_busy ? "Creando…" : "Crear organización")
-        </button>
-    </div>
-</section>
+@if (_showCreate || (_items is { Count: 0 }))
+{
+    <section class="sf-panel" aria-label="Nueva organización">
+        <h2>Nueva organización</h2>
+        <div class="sf-field">
+            <label for="org-name">Nombre</label>
+            <InputText id="org-name" @bind-Value="_newName" />
+        </div>
+        <div class="sf-actions">
+            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="CreateAsync">
+                @(_busy ? "Creando…" : "Crear organización")
+            </button>
+        </div>
+    </section>
+}
 
 <section class="sf-section">
     <div class="sf-section-head">
@@ -48,7 +62,7 @@
     {
         <div class="sf-empty">
             <strong>Aún no hay organizaciones</strong>
-            Crea la primera con el formulario de arriba para empezar el journey demo.
+            Crea la primera para empezar a planificar.
         </div>
     }
     else
@@ -64,17 +78,12 @@
             <tbody>
                 @foreach (OrganizationDto org in _items)
                 {
-                    <tr>
+                    <tr class="@(Workspace.SelectedOrganizationId == org.Id ? "sf-row-active" : null)">
                         <td>@org.Name</td>
                         <td>
-                            @if (org.IsActive)
-                            {
-                                <span class="sf-badge">Activa</span>
-                            }
-                            else
-                            {
-                                <span class="sf-badge sf-badge-muted">Inactiva</span>
-                            }
+                            <span class="sf-status-dot @(org.IsActive ? "sf-status-dot-on" : null)">
+                                @(org.IsActive ? "Activa" : "Inactiva")
+                            </span>
                         </td>
                         <td>
                             <a class="sf-btn sf-btn-ghost sf-btn-sm" href="@($"/organizations/{org.Id}")">Abrir</a>
@@ -91,8 +100,31 @@
     private string _newName = string.Empty;
     private string? _error;
     private bool _busy;
+    private bool _showCreate;
+    private bool _disposed;
 
-    protected override async Task OnInitializedAsync() => await ReloadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        await ReloadAsync();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        Workspace.Changed -= OnWorkspaceChanged;
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
 
     private async Task ReloadAsync()
     {
@@ -100,6 +132,7 @@
         try
         {
             _items = await Api.ListOrganizationsAsync();
+            _showCreate = _items.Count == 0;
         }
         catch (Exception ex)
         {
@@ -108,6 +141,7 @@
                 : "con sesión Bearer";
             _error = $"No se pudo cargar el listado: {ex.Message} ({authHint}).";
             _items = [];
+            _showCreate = true;
         }
     }
 
@@ -125,7 +159,8 @@
             }
 
             _newName = string.Empty;
-            Navigation.NavigateTo($"/organizations/{result.Value!.Id}");
+            Workspace.SetOrganization(result.Value!.Id);
+            Navigation.NavigateTo($"/organizations/{result.Value.Id}");
         }
         finally
         {
