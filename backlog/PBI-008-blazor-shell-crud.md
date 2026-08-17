@@ -14,7 +14,6 @@ UI Web demostrable sobre las capacidades de maestros y planificación.
 
 ## Notas de implementación
 
-- Login + nav Administrator → Organizaciones / Calendario (placeholder Sprint 2).
+- Login + nav Administrator → Organizaciones / Calendario / Ausencias (calendario real: PBI-005; jerarquía: PBI-015).
 - CRUD maestros en `/organizations` y `/organizations/{id}` vía `MastersApiClient`.
-- Calendario: página placeholder hasta PBI-005.
 - Gate 2 Testing+Review documentado a posteriori: `worklogs/PBI-008-blazor-crud/Iteration-002-testing-review-retro.md`.

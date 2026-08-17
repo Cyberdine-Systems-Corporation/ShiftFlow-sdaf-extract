@@ -6,7 +6,7 @@
 | Prioridad | 3 |
 | Specs | SPEC-PRD-001 (C-ORG, C-DEP, C-EMP), SPEC-DOM-001/002, SPEC-APP-001, SPEC-ACC-001 (**Approved**) |
 | DoD | Persistencia + API + tests de aggregates críticos |
-| Estado | Implementado en rama `feat/pbi-003-maestros` (pendiente merge) |
+| Estado | Hecho (mergeado) |
 
 ## Descripción
 

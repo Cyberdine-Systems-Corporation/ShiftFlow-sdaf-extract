@@ -10,11 +10,10 @@
 
 ## Descripción
 
-Sustituir el shell visual mínimo de PBI-008 por un design system CSS propio y jerarquía UX demo (login, nav, maestros, placeholder calendario), sin cambiar contratos de Api ni el journey de negocio.
+Sustituir el shell visual mínimo de PBI-008 por un design system CSS propio (login, nav, maestros, calendario). Jerarquía de información posterior: PBI-015. Sin cambiar contratos de Api ni el journey de negocio.
 
 ## Notas
 
 - Fuente canónica de NFR: SPEC-PRD-003. No duplicar en handbook/ADRs.
 - ADR no requerido mientras se mantenga CSS propio (ADR-002 Web-only sigue vigente).
-- Tras merge: actualizar estado PBI-008 si aún dice “pendiente merge”.
 - Gate 2 Testing+Review documentado a posteriori: `worklogs/PBI-013-ux-blazor-redesign/Iteration-002-testing-review-retro.md` (WCAG formal sigue menor).

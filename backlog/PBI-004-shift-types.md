@@ -6,7 +6,7 @@
 | Prioridad | 4 |
 | Specs | SPEC-PRD-001 (C-STT), SPEC-DOM-003, SPEC-APP-001, SPEC-ACC-001 (**Approved**) |
 | DoD | Catálogo de tipos de turno usable en asignación |
-| Estado | Implementado en rama `feat/pbi-004-shift-types` (pendiente merge) |
+| Estado | Hecho (mergeado) |
 
 ## Descripción
 

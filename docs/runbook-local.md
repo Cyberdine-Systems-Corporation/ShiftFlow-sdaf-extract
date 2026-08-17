@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.5.0 |
-| Fecha | 2026-08-14 |
-| Relacionado | PBI-001…014, ADR-001, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG, SPEC-PRD-002 |
+| Versión | 0.6.0 |
+| Fecha | 2026-08-17 |
+| Relacionado | PBI-001…015, ADR-001, ADR-002, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG, SPEC-PRD-002, SPEC-PRD-003 0.2.0 |
 
 ---
 
@@ -39,6 +39,8 @@ Desde la raíz del repo:
 dotnet run --project src/ShiftFlow.AppHost --launch-profile https
 ```
 
+`--launch-profile https` fija **Development** (`ASPNETCORE_ENVIRONMENT` / `DOTNET_ENVIRONMENT`). `dotnet run` sin `-c` compila en **Debug**. Eso es el camino de evaluador: el catálogo (`Demo:SeedCatalog`) solo está activo en Development. No hace falta `-c Release` para la demo.
+
 **Depurar en Visual Studio / Cursor:** proyecto de arranque = `ShiftFlow.AppHost`, perfil de lanzamiento = **`https`** (no `http`).
 
 Si usas el perfil `http`, Aspire exige `ASPIRE_ALLOW_UNSECURED_TRANSPORT=true` (ya está en ese perfil del AppHost). Sin eso verás:
@@ -58,7 +60,7 @@ Abre el dashboard de Aspire (URL en la consola) para ver endpoints HTTP de Api y
 Comprobación rápida:
 
 - Api: `GET /api/status` → JSON con `"status":"ok"`
-- Web: página de inicio “ShiftFlow” (consulta el status de la Api)
+- Web: Home de planificación (tras login) y selector de organización en la barra
 - Health Aspire (Development): `/health`, `/alive`
 
 ### Usuario demo (PBI-002 / ADR-005)
@@ -77,13 +79,22 @@ dotnet user-secrets set "Authentication:DemoUser:Password" "<tu-password>" --pro
 
 O variable de entorno: `Authentication__DemoUser__Password`.
 
-Login Web: `/login` (prefill demo). Tras login: `/organizations` (CRUD maestros), detalle `/organizations/{id}`, placeholder `/calendar` (Sprint 2). Endpoints Api: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
+Login Web: `/login` (prefill demo). Tras login:
+
+- Home de planificación (briefing; selector de org en la barra)
+- `/organizations` — listado (inventario antes que alta)
+- `/organizations/{id}` — detalle por pestañas Personal / Tipos / Ajustes
+- `/calendar` — mes + aside de asignación; la org activa sale del shell
+- `/leaves` — ausencias de la org del shell
+
+Endpoints Api de auth: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
 
 ### Maestros (PBI-003 / PBI-004)
 
 API (rol `Administrator`):
 
 - `POST/GET /api/organizations`, `GET /api/organizations/{id}`, `PUT .../name`, `PUT .../active`
+- `PUT /api/organizations/{id}/minimum-rest`
 - `POST/GET /api/organizations/{id}/departments`, `PUT /api/departments/{id}/name|active`
 - `POST/GET /api/organizations/{id}/employees`, `GET /api/departments/{id}/employees`, `PUT /api/employees/{id}`, `PUT .../active`
 - `POST/GET /api/organizations/{id}/shift-types`, `PUT /api/shift-types/{id}`, `PUT .../active`
@@ -94,7 +105,17 @@ API (rol `Administrator`):
 - `POST /api/organizations/{id}/assignments`
 - `POST /api/assignments/{id}/cancel`
 
-Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (auth + maestros + calendario; ver `postman/README.md`).
+### Ausencias (PBI-007)
+
+- `GET/POST /api/organizations/{id}/leaves`
+- `POST /api/leaves/{id}/cancel`
+
+### Explicación de reglas (PBI-011)
+
+- `GET /api/rules/explain?code=HR-01` (también HR-02 / HR-03; otro código → no soportado)
+- El `400` de `AssignShift` incluye `title` / `body`; el calendario los muestra. La UI no reimplementa las hard rules.
+
+Colección Postman: `postman/ShiftFlow-PBI-003-auth-masters.postman_collection.json` (auth + maestros + calendario + leaves + explain; ver `postman/README.md`).
 
 ### 3.1. Migraciones EF Core (ADR-007 / PBI-014)
 
@@ -120,6 +141,23 @@ Con `Demo:SeedCatalog=true` (default en Development) y PostgreSQL, el arranque s
 Los instantes de turno se guardan con offset 0 (UTC): Npgsql no acepta `DateTimeOffset` local en `timestamptz`. La UI de calendario ya usa el mismo convenio.
 
 El journey SPEC-PRD-002 (crear maestros a mano) sigue válido; el catálogo **complementa** para ver casuísticas sin partir de cero. Reset de datos: §6.
+
+Dos caminos de demo (menos de 15 min):
+
+1. **Catálogo:** login → elegir `Demo — Operación` o `Demo — Descanso` en la barra → calendario / ausencias → provocar HR-01/02/03.
+2. **Journey a mano (SPEC-PRD-002):** crear org, depto, empleado, tipo → asignar OK → solape → leave que bloquea.
+
+### 3.3. Verificación de arranque en frío (freeze)
+
+Checklist de evaluador (PBI-010). Humano verificado 2026-08-17 (post-merge #36).
+
+1. Parar AppHost (`Ctrl+C`).
+2. Borrar el volumen Docker de Postgres creado por Aspire (§6).
+3. Arrancar con el comando canónico de §3 (`--launch-profile https`, Debug/Development).
+4. `GET /api/status` → `"status":"ok"` y base reachable.
+5. Login `demo.admin` → aparecen `Demo — Operación` y `Demo — Descanso`.
+6. Recorrer el journey (menos de 15 min; catálogo o SPEC-PRD-002): asignación válida, rechazo con explicación, ausencia que bloquea.
+7. Smoke UX (PBI-015): cambiar org en la barra desde Calendario y desde el detalle.
 
 ---
 
@@ -177,6 +215,7 @@ dotnet test ShiftFlow.sln
 | SDK incorrecto | Este skeleton usa **net10.0**. Instala .NET 10 SDK (`dotnet --list-sdks`) |
 | Dashboard Aspire: `UntrustedRoot` / gRPC SSL | `dotnet dev-certs https --trust` (aceptar el diálogo de Windows). Cerrar navegadores y reiniciar el AppHost. |
 | Api falla al arrancar: tablas ya existen / historial de migraciones vacío | Volumen creado con `EnsureCreated` (pre PBI-014). Resetear volumen (§6) una vez. |
+| Catálogo vacío en Production / `-c Release` sin Development | `Demo:SeedCatalog` es false fuera de Development. Usa el perfil `https` del AppHost. |
 
 ---
 

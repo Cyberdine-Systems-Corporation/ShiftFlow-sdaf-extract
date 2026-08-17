@@ -6,7 +6,7 @@
 | Prioridad | 11 |
 | Specs | [SPEC-APP-005](../specs/application/SPEC-APP-005-rule-explain-stub.md) **Approved**; [SPEC-ACC-005](../specs/acceptance/SPEC-ACC-005-rule-explain-stub.md) **Approved**; SPEC-DOM-006 Approved (HR-*); ADR-003; SPEC-PRD-001 (C-RUL) |
 | DoD | Explicación de violación HR-01/02/03 en castellano; stub en Infrastructure; **sin** mutar cuadrante; visible en API y calendario |
-| Estado | Gate 2 OK (#34 mergeado; #35 merge sí) |
+| Estado | Hecho (mergeado #34+#35; Gate 2 OK) |
 
 ## Descripción
 
