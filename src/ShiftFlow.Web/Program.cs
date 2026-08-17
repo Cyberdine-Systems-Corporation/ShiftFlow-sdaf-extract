@@ -44,6 +44,7 @@ try
     builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
         sp.GetRequiredService<ApiAuthenticationStateProvider>());
     builder.Services.AddScoped<ShiftFlow.Web.Api.MastersApiClient>();
+    builder.Services.AddScoped<ShiftFlow.Web.WorkspaceContext>();
     builder.Services.AddCascadingAuthenticationState();
 
     builder.Services.AddHttpClient("api", client =>

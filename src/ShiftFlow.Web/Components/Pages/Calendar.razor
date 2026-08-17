@@ -1,5 +1,4 @@
 @page "/calendar"
-@rendermode InteractiveServer
 @attribute [Authorize(Roles = AuthRoles.Administrator)]
 @using System.Globalization
 @using ShiftFlow.Application.Auth
@@ -9,32 +8,15 @@
 @using ShiftFlow.Application.ShiftTypes
 @using ShiftFlow.Web.Api
 @inject MastersApiClient Api
+@inject WorkspaceContext Workspace
+@implements IDisposable
 
 <PageTitle>Calendario — ShiftFlow</PageTitle>
 
 <h1 class="sf-page-title">Calendario</h1>
 <p class="sf-lede">
-    Vista mensual con turnos y ausencias. Los rechazos de regla (HR-01 solape, HR-02 ausencia, HR-03 descanso)
-    se explican en castellano sin mutar el cuadrante.
+    Asigna turnos en el mes. Si una asignación viola una regla, el sistema la rechaza y explica el motivo sin cambiar el cuadrante.
 </p>
-
-@if (!string.IsNullOrEmpty(_errorTitle) || !string.IsNullOrEmpty(_error))
-{
-    <div class="sf-alert" role="alert">
-        @if (!string.IsNullOrEmpty(_errorTitle))
-        {
-            <strong class="sf-alert-title">@RuleAlertHeading()</strong>
-            @if (!string.IsNullOrEmpty(_errorBody))
-            {
-                <p class="sf-alert-body">@_errorBody</p>
-            }
-        }
-        else
-        {
-            @_error
-        }
-    </div>
-}
 
 @if (_organizations is null)
 {
@@ -42,6 +24,10 @@
 }
 else if (_organizations.Count == 0)
 {
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <p class="sf-alert" role="alert">@_error</p>
+    }
     <div class="sf-empty">
         <strong>Sin organizaciones</strong>
         Crea una organización y maestros antes de planificar.
@@ -52,200 +38,202 @@ else if (_organizations.Count == 0)
 }
 else
 {
-    <section class="sf-section">
-        <div class="sf-field-row">
-            <div class="sf-field">
-                <label for="cal-org">Organización</label>
-                <select id="cal-org" value="@_organizationIdText" @onchange="OnOrganizationChangedAsync" disabled="@_busy">
-                    @foreach (OrganizationDto org in _organizations)
-                    {
-                        <option value="@org.Id">@org.Name</option>
-                    }
-                </select>
+    <div class="sf-cal-layout">
+        <div class="sf-cal-main">
+            <div class="sf-cal-nav" aria-label="Navegación de mes">
+                <button type="button" class="sf-btn sf-btn-secondary sf-btn-sm" disabled="@_busy" @onclick="PreviousMonthAsync">← Mes anterior</button>
+                <h2 class="sf-cal-month-label">@_monthLabel</h2>
+                <button type="button" class="sf-btn sf-btn-secondary sf-btn-sm" disabled="@_busy" @onclick="NextMonthAsync">Mes siguiente →</button>
             </div>
-        </div>
 
-        <div class="sf-cal-nav" aria-label="Navegación de mes">
-            <button type="button" class="sf-btn sf-btn-secondary sf-btn-sm" disabled="@_busy" @onclick="PreviousMonthAsync">← Mes anterior</button>
-            <h2 class="sf-cal-month-label">@_monthLabel</h2>
-            <button type="button" class="sf-btn sf-btn-secondary sf-btn-sm" disabled="@_busy" @onclick="NextMonthAsync">Mes siguiente →</button>
-        </div>
-    </section>
-
-    <section class="sf-section">
-        <h2>Asignar turno</h2>
-        <div class="sf-field-row">
-            <div class="sf-field">
-                <label for="cal-emp">Empleado</label>
-                <select id="cal-emp" @bind="_employeeIdText" disabled="@_busy">
-                    <option value="">— seleccionar —</option>
-                    @foreach (EmployeeDto e in _employees.Where(x => x.IsActive))
-                    {
-                        <option value="@e.Id">@e.DisplayName</option>
-                    }
-                </select>
-            </div>
-            <div class="sf-field">
-                <label for="cal-st">Tipo de turno</label>
-                <select id="cal-st" @bind="_shiftTypeIdText" disabled="@_busy">
-                    <option value="">— seleccionar —</option>
-                    @foreach (ShiftTypeDto s in _shiftTypes.Where(x => x.IsActive))
-                    {
-                        <option value="@s.Id">@s.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="sf-field">
-                <label for="cal-date">Fecha</label>
-                <InputDate id="cal-date" @bind-Value="_assignDate" disabled="@_busy" />
-            </div>
-            <div class="sf-field">
-                <label for="cal-start">Inicio</label>
-                <InputText id="cal-start" @bind-Value="_startTimeText" disabled="@_busy" placeholder="08:00" />
-            </div>
-            <div class="sf-field">
-                <label for="cal-end">Fin</label>
-                <InputText id="cal-end" @bind-Value="_endTimeText" disabled="@_busy" placeholder="12:00" />
-            </div>
-        </div>
-        <div class="sf-actions">
-            <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="AssignAsync">
-                @(_busy ? "Asignando…" : "Asignar turno")
-            </button>
-            <a class="sf-btn sf-btn-secondary" href="/leaves">Gestionar ausencias</a>
-        </div>
-        @if (_employees.Count == 0 || _shiftTypes.Count == 0)
-        {
-            <p class="sf-hint">
-                Faltan empleados o tipos de turno activos.
-                <a href="@($"/organizations/{_selectedOrganizationId}")">Completar maestros</a>
-            </p>
-        }
-    </section>
-
-    <section class="sf-section">
-        <div class="sf-section-head">
-            <h2>Mes</h2>
             @if (_calendar is not null)
             {
-                <span class="sf-badge sf-badge-muted">@_calendar.Assignments.Count turnos</span>
-                <span class="sf-badge sf-badge-danger">@_calendar.Leaves.Count ausencias</span>
-            }
-        </div>
-
-        @if (_calendar is null)
-        {
-            <p class="sf-hint">Cargando calendario…</p>
-        }
-        else
-        {
-            <div class="sf-cal-grid" role="grid" aria-label="@_monthLabel">
-                @foreach (string weekday in _weekdayHeaders)
-                {
-                    <div class="sf-cal-weekday" role="columnheader">@weekday</div>
-                }
-                @foreach (CalendarCell cell in _cells)
-                {
-                    <div class="sf-cal-day @(cell.IsInMonth ? "" : "sf-cal-day-out")" role="gridcell">
-                        <div class="sf-cal-day-num">@cell.Day.Day</div>
-                        @if (cell.IsInMonth)
-                        {
-                            @foreach (CalendarLeaveDto leave in LeavesOn(cell.Day))
-                            {
-                                <div class="sf-cal-item sf-cal-leave" title="Ausencia">
-                                    <span class="sf-cal-item-text">
-                                        @leave.EmployeeDisplayName · ausencia
-                                        <span class="sf-cal-item-time">@FormatLeaveRange(leave)</span>
-                                    </span>
-                                </div>
-                            }
-                            @foreach (CalendarAssignmentDto a in AssignmentsOn(cell.Day))
-                            {
-                                <div class="sf-cal-item">
-                                    <span class="sf-cal-item-text">
-                                        @a.EmployeeDisplayName · @a.ShiftTypeName
-                                        <span class="sf-cal-item-time">@FormatInterval(a)</span>
-                                    </span>
-                                    <button type="button"
-                                            class="sf-btn sf-btn-ghost sf-btn-sm"
-                                            disabled="@_busy"
-                                            @onclick="() => CancelAsync(a.Id)"
-                                            title="Cancelar asignación">
-                                        Cancelar
-                                    </button>
-                                </div>
-                            }
-                        }
-                    </div>
-                }
-            </div>
-
-            @if (_calendar.Assignments.Count == 0 && _calendar.Leaves.Count == 0)
-            {
-                <div class="sf-empty">
-                    <strong>Sin turnos ni ausencias este mes</strong>
-                    Asigna un turno o <a href="/leaves">registra una ausencia</a>.
+                <div class="sf-section-head">
+                    <span class="sf-badge sf-badge-muted">@_calendar.Assignments.Count turnos</span>
+                    <span class="sf-badge sf-badge-danger">@_calendar.Leaves.Count ausencias</span>
                 </div>
+            }
+
+            @if (_calendar is null)
+            {
+                <p class="sf-hint">Cargando calendario…</p>
             }
             else
             {
-                <div class="sf-cal-list" aria-label="Listado del mes">
-                    @if (_calendar.Leaves.Count > 0)
+                <div class="sf-cal-grid" role="grid" aria-label="@_monthLabel">
+                    @foreach (string weekday in _weekdayHeaders)
                     {
-                        <h3 class="sf-cal-list-title">Ausencias</h3>
-                        <table class="sf-table">
-                            <thead>
-                                <tr>
-                                    <th>Empleado</th>
-                                    <th>Rango</th>
-                                    <th>Tipo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (CalendarLeaveDto leave in _calendar.Leaves)
-                                {
-                                    <tr>
-                                        <td>@leave.EmployeeDisplayName</td>
-                                        <td>@FormatLeaveRange(leave)</td>
-                                        <td>@(leave.Kind ?? "—")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <div class="sf-cal-weekday" role="columnheader">@weekday</div>
                     }
-                    @if (_calendar.Assignments.Count > 0)
+                    @foreach (CalendarCell cell in _cells)
                     {
-                        <h3 class="sf-cal-list-title">Turnos</h3>
-                        <table class="sf-table">
-                            <thead>
-                                <tr>
-                                    <th>Empleado</th>
-                                    <th>Tipo</th>
-                                    <th>Intervalo</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (CalendarAssignmentDto a in _calendar.Assignments)
+                        <div class="@DayClass(cell)"
+                             role="gridcell"
+                             @onclick="() => OnDayClick(cell)">
+                            <div class="sf-cal-day-num">@cell.Day.Day</div>
+                            @if (cell.IsInMonth)
+                            {
+                                @foreach (CalendarLeaveDto leave in LeavesOn(cell.Day))
                                 {
-                                    <tr>
-                                        <td>@a.EmployeeDisplayName</td>
-                                        <td>@a.ShiftTypeName</td>
-                                        <td>@a.StartAt.UtcDateTime.ToString("g", Es) – @a.EndAt.UtcDateTime.ToString("HH:mm", Es)</td>
-                                        <td>
-                                            <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => CancelAsync(a.Id)">
-                                                Cancelar
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    <div class="sf-chip sf-chip-leave" title="Ausencia">
+                                        <span>@ShortName(leave.EmployeeDisplayName) · ausencia</span>
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
+                                @foreach (CalendarAssignmentDto a in AssignmentsOn(cell.Day))
+                                {
+                                    <div class="sf-chip" title="@($"{a.EmployeeDisplayName} · {a.ShiftTypeName} {FormatInterval(a)}")">
+                                        <span>@ShortName(a.EmployeeDisplayName) · @ShortShift(a.ShiftTypeName) @FormatInterval(a)</span>
+                                        <button type="button"
+                                                class="sf-chip-x"
+                                                disabled="@_busy"
+                                                @onclick="() => CancelAsync(a.Id)"
+                                                @onclick:stopPropagation="true"
+                                                title="Cancelar asignación"
+                                                aria-label="Cancelar asignación">×</button>
+                                    </div>
+                                }
+                            }
+                        </div>
                     }
                 </div>
+
+                @if (_calendar.Assignments.Count == 0 && _calendar.Leaves.Count == 0)
+                {
+                    <div class="sf-empty">
+                        <strong>Sin turnos ni ausencias este mes</strong>
+                        Elige un día y asigna un turno, o <a href="/leaves">registra una ausencia</a>.
+                    </div>
+                }
+                else
+                {
+                    <div class="sf-cal-list" aria-label="Listado del mes">
+                        @if (_calendar.Leaves.Count > 0)
+                        {
+                            <h3 class="sf-cal-list-title">Ausencias</h3>
+                            <table class="sf-table">
+                                <thead>
+                                    <tr>
+                                        <th>Empleado</th>
+                                        <th>Rango</th>
+                                        <th>Tipo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (CalendarLeaveDto leave in _calendar.Leaves)
+                                    {
+                                        <tr>
+                                            <td>@leave.EmployeeDisplayName</td>
+                                            <td>@FormatLeaveRange(leave)</td>
+                                            <td>@LeaveKindLabel(leave.Kind)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        @if (_calendar.Assignments.Count > 0)
+                        {
+                            <h3 class="sf-cal-list-title">Turnos</h3>
+                            <table class="sf-table">
+                                <thead>
+                                    <tr>
+                                        <th>Empleado</th>
+                                        <th>Tipo</th>
+                                        <th>Intervalo</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (CalendarAssignmentDto a in _calendar.Assignments)
+                                    {
+                                        <tr>
+                                            <td>@a.EmployeeDisplayName</td>
+                                            <td>@a.ShiftTypeName</td>
+                                            <td>@a.StartAt.UtcDateTime.ToString("g", Es) – @a.EndAt.UtcDateTime.ToString("HH:mm", Es)</td>
+                                            <td>
+                                                <button type="button" class="sf-btn sf-btn-ghost sf-btn-sm" disabled="@_busy" @onclick="() => CancelAsync(a.Id)">
+                                                    Cancelar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                }
             }
-        }
-    </section>
+        </div>
+
+        <aside class="sf-cal-aside">
+            <section class="sf-section">
+                <h2>Asignar turno</h2>
+
+                @if (!string.IsNullOrEmpty(_errorTitle) || !string.IsNullOrEmpty(_error))
+                {
+                    <div class="sf-alert" role="alert">
+                        @if (!string.IsNullOrEmpty(_errorTitle))
+                        {
+                            <strong class="sf-alert-title">@RuleAlertHeading()</strong>
+                            @if (!string.IsNullOrEmpty(_errorBody))
+                            {
+                                <p class="sf-alert-body">@_errorBody</p>
+                            }
+                        }
+                        else
+                        {
+                            @_error
+                        }
+                    </div>
+                }
+
+                <div class="sf-field">
+                    <label for="cal-emp">Empleado</label>
+                    <select id="cal-emp" @bind="_employeeIdText" disabled="@_busy">
+                        <option value="">— seleccionar —</option>
+                        @foreach (EmployeeDto e in _employees.Where(x => x.IsActive))
+                        {
+                            <option value="@e.Id">@e.DisplayName</option>
+                        }
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label for="cal-st">Tipo de turno</label>
+                    <select id="cal-st" @bind="_shiftTypeIdText" disabled="@_busy">
+                        <option value="">— seleccionar —</option>
+                        @foreach (ShiftTypeDto s in _shiftTypes.Where(x => x.IsActive))
+                        {
+                            <option value="@s.Id">@s.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="sf-field">
+                    <label for="cal-date">Fecha</label>
+                    <InputDate id="cal-date" @bind-Value="_assignDate" disabled="@_busy" />
+                </div>
+                <div class="sf-field">
+                    <label for="cal-start">Inicio</label>
+                    <InputText id="cal-start" @bind-Value="_startTimeText" disabled="@_busy" placeholder="08:00" />
+                </div>
+                <div class="sf-field">
+                    <label for="cal-end">Fin</label>
+                    <InputText id="cal-end" @bind-Value="_endTimeText" disabled="@_busy" placeholder="12:00" />
+                </div>
+                <div class="sf-actions">
+                    <button type="button" class="sf-btn sf-btn-primary" disabled="@_busy" @onclick="AssignAsync">
+                        @(_busy ? "Asignando…" : "Asignar turno")
+                    </button>
+                    <a class="sf-btn sf-btn-secondary" href="/leaves">Ausencias</a>
+                </div>
+                @if (_employees.Count == 0 || _shiftTypes.Count == 0)
+                {
+                    <p class="sf-hint">
+                        Faltan empleados o tipos de turno activos.
+                        <a href="@($"/organizations/{_selectedOrganizationId}")">Completar maestros</a>
+                    </p>
+                }
+            </section>
+        </aside>
+    </div>
 }
 
 @code {
@@ -259,7 +247,6 @@ else
     private List<CalendarCell> _cells = [];
 
     private Guid _selectedOrganizationId;
-    private string _organizationIdText = string.Empty;
     private string _employeeIdText = string.Empty;
     private string _shiftTypeIdText = string.Empty;
     private DateTime? _assignDate = DateTime.Today;
@@ -274,6 +261,7 @@ else
     private string? _errorTitle;
     private string? _errorBody;
     private bool _busy;
+    private bool _disposed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -283,13 +271,14 @@ else
         _assignDate = today;
         RefreshMonthLabel();
 
+        Workspace.Changed += OnWorkspaceChanged;
+
         try
         {
             _organizations = await Api.ListOrganizationsAsync();
-            if (_organizations.Count > 0)
+            ApplyWorkspaceOrganization();
+            if (_selectedOrganizationId != Guid.Empty)
             {
-                _selectedOrganizationId = _organizations[0].Id;
-                _organizationIdText = _selectedOrganizationId.ToString();
                 await LoadOrganizationDataAsync();
             }
         }
@@ -300,18 +289,93 @@ else
         }
     }
 
-    private async Task OnOrganizationChangedAsync(ChangeEventArgs e)
+    /// <inheritdoc />
+    public void Dispose()
     {
-        if (!Guid.TryParse(e.Value?.ToString(), out Guid orgId))
+        if (_disposed)
         {
             return;
         }
 
-        _selectedOrganizationId = orgId;
-        _organizationIdText = orgId.ToString();
+        _disposed = true;
+        Workspace.Changed -= OnWorkspaceChanged;
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        _ = InvokeAsync(HandleWorkspaceChangedAsync);
+    }
+
+    private async Task HandleWorkspaceChangedAsync()
+    {
+        Guid next = Workspace.SelectedOrganizationId ?? Guid.Empty;
+        if (next == _selectedOrganizationId)
+        {
+            return;
+        }
+
+        _selectedOrganizationId = next;
         _employeeIdText = string.Empty;
         _shiftTypeIdText = string.Empty;
+        ClearError();
+
+        if (_selectedOrganizationId == Guid.Empty)
+        {
+            _calendar = null;
+            _employees = [];
+            _shiftTypes = [];
+            _cells = [];
+            return;
+        }
+
         await LoadOrganizationDataAsync();
+    }
+
+    private void ApplyWorkspaceOrganization()
+    {
+        if (Workspace.SelectedOrganizationId is Guid id)
+        {
+            _selectedOrganizationId = id;
+            return;
+        }
+
+        if (_organizations is { Count: > 0 })
+        {
+            Workspace.SetOrganization(_organizations[0].Id);
+            _selectedOrganizationId = _organizations[0].Id;
+        }
+    }
+
+    private void OnDayClick(CalendarCell cell)
+    {
+        if (!cell.IsInMonth)
+        {
+            return;
+        }
+
+        _assignDate = cell.Day.ToDateTime(TimeOnly.MinValue);
+    }
+
+    private string DayClass(CalendarCell cell)
+    {
+        string css = "sf-cal-day";
+        if (!cell.IsInMonth)
+        {
+            return css + " sf-cal-day-out";
+        }
+
+        css += " sf-cal-day-in";
+        if (cell.Day == DateOnly.FromDateTime(DateTime.Today))
+        {
+            css += " sf-cal-day-today";
+        }
+
+        if (_assignDate is DateTime selected && DateOnly.FromDateTime(selected) == cell.Day)
+        {
+            css += " sf-cal-day-selected";
+        }
+
+        return css;
     }
 
     private async Task PreviousMonthAsync()
@@ -482,6 +546,23 @@ else
         leave.StartOn == leave.EndOn
             ? leave.StartOn.ToString("dd/MM")
             : $"{leave.StartOn:dd/MM}–{leave.EndOn:dd/MM}";
+
+    private static string ShortName(string displayName)
+    {
+        int space = displayName.IndexOf(' ', StringComparison.Ordinal);
+        return space > 0 ? displayName[..space] : displayName;
+    }
+
+    private static string ShortShift(string shiftTypeName) =>
+        shiftTypeName.Length <= 10 ? shiftTypeName : shiftTypeName[..10];
+
+    private static string LeaveKindLabel(string? kind) =>
+        kind switch
+        {
+            "Vacation" => "Vacaciones",
+            "Other" => "Otra",
+            _ => kind ?? "—"
+        };
 
     /// <summary>
     /// Construye celdas de la grilla (lunes–domingo) incluyendo días fuera del mes.
