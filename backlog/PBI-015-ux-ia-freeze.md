@@ -6,7 +6,7 @@
 | Prioridad | 15 |
 | Specs | [SPEC-PRD-003](../specs/product/SPEC-PRD-003-ui-demo-nfr.md) v0.2.0 Approved (AC-UX-06…10; 01…05 vigentes) |
 | DoD | AC-UX-06…10; worklog ATF; sin kit UI externo; sin cambio de API/Domain ni de SPEC-PRD-002 |
-| Estado | Pendiente merge (spec Approved; Gate 2 en PR) |
+| Estado | Gate 2 OK; pendiente merge humano (#36) |
 
 ## Descripción
 

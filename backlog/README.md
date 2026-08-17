@@ -21,10 +21,10 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | 12 | [PBI-012](PBI-012-presentacion-slides-video.md) | Slides + vídeo de presentación | 3 | SPEC-PRD-001 (C-PRE) | — |
 | 13 | [PBI-013](PBI-013-ux-blazor-redesign.md) | Rediseño UX demo (Blazor) | 2–3 | SPEC-PRD-003 Approved | Hecho (mergeado; Gate 2 OK) |
 | 14 | [PBI-014](PBI-014-ef-migrations.md) | Migraciones EF Core (histórico de esquema) | 2–3 | SPEC-PRD-001 (C-LOC), ADR-007 Aceptado | Hecho (mergeado #31; Gate 2 OK) |
-| 15 | [PBI-015](PBI-015-ux-ia-freeze.md) | Jerarquía UX freeze (Blazor) | 3 | SPEC-PRD-003 v0.2.0 Approved (AC-UX-06…10) | Pendiente merge |
+| 15 | [PBI-015](PBI-015-ux-ia-freeze.md) | Jerarquía UX freeze (Blazor) | 3 | SPEC-PRD-003 v0.2.0 Approved (AC-UX-06…10) | Gate 2 OK (#36; merge humano) |
 
 Specs de producto **Approved** (incl. SPEC-PRD-003 0.2.0 / PBI-015). Specs Sprint 1 maestros/auth **Approved**. Specs Sprint 2 calendario/asignación (**SPEC-DOM-005/006**, **SPEC-APP-003**, **SPEC-ACC-002**) **Approved**. Specs Leave (**SPEC-DOM-007**, **SPEC-APP-004**, **SPEC-ACC-003**) **Approved** — Gate 0 listo para PBI-007 / HR-02 (y PBI-006 HR-03).  
-Gate 2 documentado: PBI-008 (#13), PBI-013 (#14), PBI-005 (#18+#19), PBI-007 (#22+#23), PBI-006 HR-03 (#28), PBI-009 (#30), PBI-014 + catálogo PBI-010 (#31), PBI-011 API (#34; UI #35 pendiente merge).  
+Gate 2 documentado: PBI-008 (#13), PBI-013 (#14), PBI-005 (#18+#19), PBI-007 (#22+#23), PBI-006 HR-03 (#28), PBI-009 (#30), PBI-014 + catálogo PBI-010 (#31), PBI-011 API (#34; UI #35), PBI-015 (#36; merge humano).  
 PBI-011: SPEC-APP-005 / SPEC-ACC-005 **Approved** — Gate 2 OK (API #34; UI #35 merge sí).
 
 ## Leyenda de estado Gate 0
