@@ -6,13 +6,13 @@
 | Prioridad | 10 |
 | Specs | SPEC-PRD-001 (C-LOC), SPEC-PRD-002 (journey), ADR-007 |
 | DoD | Runbook en `docs/`; catálogo de demo opcional; etiqueta `mvp-0.1`; arranque en frío verificado |
-| Estado | Arranque en frío verificado (2026-08-17, post-#36); **pendiente** etiqueta git `mvp-0.1` |
+| Estado | Hecho (arranque en frío 2026-08-17; tag `mvp-0.1` en `2685978`) |
 
 ## Descripción
 
 Documentar y congelar el camino local de evaluación.
 
-El **seed de catálogo** (vitrina de casuísticas) está mergeado en #31. No sustituye el journey SPEC-PRD-002 (el evaluador puede seguir creando maestros). El arranque en frío quedó verificado el 2026-08-17. Queda la etiqueta `mvp-0.1` **después** del commit de docs de freeze (runbook 0.6.0).
+El **seed de catálogo** (vitrina de casuísticas) está mergeado en #31. No sustituye el journey SPEC-PRD-002. Arranque en frío verificado el 2026-08-17. Etiqueta `mvp-0.1` publicada sobre el merge de docs de freeze (#37).
 
 ## Catálogo de demo (hecho, #31)
 
@@ -29,7 +29,7 @@ Tras migraciones e Identity, si `Demo:SeedCatalog` es true y el provider no es S
 ### Freeze
 
 - [x] Verificación formal de arranque en frío (2026-08-17; runbook §3.3).
-- [ ] Etiqueta git `mvp-0.1` (humano; sobre `main` con docs de freeze).
+- [x] Etiqueta git `mvp-0.1` (2026-08-17; commit `2685978`).
 
 Worker Aspire de migraciones sigue fuera de alcance (ADR-007).
 

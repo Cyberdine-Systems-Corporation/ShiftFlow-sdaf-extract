@@ -16,16 +16,16 @@ Cada PBI debe enlazar specs; **no implementar** features de producto sin Gate 0 
 | 7 | [PBI-007](PBI-007-leaves.md) | Leaves / ausencias | 2 | SPEC-DOM-007, SPEC-APP-004, SPEC-ACC-003 Approved | Hecho (mergeado #22+#23) |
 | 8 | [PBI-008](PBI-008-blazor-shell-crud.md) | Blazor shell + CRUD maestros | 1–2 | SPEC-PRD-002 | Hecho (mergeado #13; Gate 2 OK) |
 | 9 | [PBI-009](PBI-009-acceptance-tests-demo.md) | Acceptance tests del journey | 2–3 | SPEC-PRD-002 Approved | Hecho (mergeado #30) |
-| 10 | [PBI-010](PBI-010-runbook-demo-freeze.md) | Runbook, seed opcional, freeze demo | 3 | SPEC-PRD-001 (C-LOC), SPEC-PRD-002 | Arranque en frío OK; pendiente tag `mvp-0.1` |
+| 10 | [PBI-010](PBI-010-runbook-demo-freeze.md) | Runbook, seed opcional, freeze demo | 3 | SPEC-PRD-001 (C-LOC), SPEC-PRD-002 | Hecho (frío OK; tag `mvp-0.1`) |
 | 11 | [PBI-011](PBI-011-ai-explain-stub.md) | Stub IA explicación de reglas | 3 | SPEC-APP-005 / SPEC-ACC-005 Approved; ADR-003 | Hecho (mergeado #34+#35) |
-| 12 | [PBI-012](PBI-012-presentacion-slides-video.md) | Slides + vídeo de presentación | 3 | SPEC-PRD-001 (C-PRE) | Brief fijado; pendiente deck + vídeo |
+| 12 | [PBI-012](PBI-012-presentacion-slides-video.md) | Slides + vídeo de presentación | 3 | SPEC-PRD-001 (C-PRE) | Deck y láminas en repo; pendiente grabación y URL del MP4 |
 | 13 | [PBI-013](PBI-013-ux-blazor-redesign.md) | Rediseño UX demo (Blazor) | 2–3 | SPEC-PRD-003 Approved | Hecho (mergeado; Gate 2 OK) |
 | 14 | [PBI-014](PBI-014-ef-migrations.md) | Migraciones EF Core (histórico de esquema) | 2–3 | SPEC-PRD-001 (C-LOC), ADR-007 Aceptado | Hecho (mergeado #31; Gate 2 OK) |
 | 15 | [PBI-015](PBI-015-ux-ia-freeze.md) | Jerarquía UX freeze (Blazor) | 3 | SPEC-PRD-003 v0.2.0 Approved (AC-UX-06…10) | Hecho (mergeado #36; Gate 2 OK) |
 
 Specs de producto **Approved** (incl. SPEC-PRD-003 0.2.0 / PBI-015). Specs Sprint 1 maestros/auth **Approved**. Specs Sprint 2 calendario/asignación (**SPEC-DOM-005/006**, **SPEC-APP-003**, **SPEC-ACC-002**) **Approved**. Specs Leave (**SPEC-DOM-007**, **SPEC-APP-004**, **SPEC-ACC-003**) **Approved** — Gate 0 listo para PBI-007 / HR-02 (y PBI-006 HR-03).  
 Gate 2 documentado: PBI-008 (#13), PBI-013 (#14), PBI-005 (#18+#19), PBI-007 (#22+#23), PBI-006 HR-03 (#28), PBI-009 (#30), PBI-014 + catálogo PBI-010 (#31), PBI-011 (#34+#35), PBI-015 (#36).  
-PBI-011: SPEC-APP-005 / SPEC-ACC-005 **Approved** — Hecho (API #34; UI #35). Freeze PBI-010: arranque en frío 2026-08-17; etiqueta `mvp-0.1` pendiente.
+PBI-011: SPEC-APP-005 / SPEC-ACC-005 **Approved** — Hecho (API #34; UI #35). Freeze PBI-010: arranque en frío 2026-08-17; tag `mvp-0.1`.
 
 ## Leyenda de estado Gate 0
 
