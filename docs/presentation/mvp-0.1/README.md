@@ -1,0 +1,66 @@
+# Presentación MVP `mvp-0.1`
+
+| Campo | Valor |
+|--------|--------|
+| Spec | SPEC-PRD-001 (C-PRE), handbook 03 §4.5 |
+| PBI | [PBI-012](../../../backlog/PBI-012-presentacion-slides-video.md) |
+| Tag | `mvp-0.1` (2026-08-17, commit de freeze docs) |
+
+## Artefactos
+
+| Artefacto | Estado | Ruta |
+|-----------|--------|------|
+| **Vídeo** (arquitectura + método IA, 8–10 min) | Pendiente grabación | URL / checksum: *por rellenar tras exportar* |
+| Guion del vídeo | Listo | [guion-video-arquitectura.md](guion-video-arquitectura.md) |
+| Láminas del vídeo (17) | Fuente lista; PDF/PPTX en `export/` | [video-slides.md](video-slides.md) (Marp) |
+| **Deck de producto** (14 láminas, puente en la 5) | Fuente + capturas 01–07 | [product-slides.md](product-slides.md) (Marp) |
+| Exports (PDF / PPTX) | Regenerar el de producto tras embeber capturas | [export/](export/) |
+| Inventario de capturas | 01–07 hechas (2026-08-19) | [captures/README.md](captures/README.md) |
+
+Los dos artefactos son **complementarios**: el vídeo no sustituye el journey de la app; el deck no detalla SDAF. Juntos cubren Producto + Evolución + Arquitectura de handbook §4.5 (el puente es la lámina 5 del deck + el cierre del vídeo).
+
+Audiencia del vídeo: **evaluador de máster en desarrollo asistido por IA**. Registro de decisiones y método, no repaso de tecnologías.
+
+Audiencia del deck: la misma, en defensa oral **sin** el vídeo. Recorre el producto (problema, alcance, journey, arranque) y deja la arquitectura en un mapa de cinco piezas.
+
+## Cómo usar el deck de producto
+
+1. Abrir `product-slides.md` con **Marp**, o exportar:
+
+   ```powershell
+   npx --yes @marp-team/marp-cli docs/presentation/mvp-0.1/product-slides.md --pdf -o docs/presentation/mvp-0.1/export/product-slides.pdf
+   ```
+
+2. Las láminas 7–11 embeben las PNG de [captures/](captures/). Tras cambiar capturas, **reexportar** PDF/PPTX a [export/](export/).
+3. No improvisar SDAF ni puertas: si preguntan por método, apuntar al vídeo.
+
+**Convención de exports:** las fuentes `.md` viven en este directorio; PDF y PPTX van a [export/](export/). La extensión Marp de VS Code / Cursor escribe junto al `.md`: tras exportar, mover el fichero a `export/` (o «Guardar como» ahí). Ya están los cuatro: `product-slides` y `video-slides` en PDF y PPTX.
+
+## Cómo usar las láminas del vídeo (Fase 0)
+
+1. Abrir `video-slides.md` con la extensión **Marp** en VS Code / Cursor, o exportar:
+
+   ```powershell
+   npx --yes @marp-team/marp-cli docs/presentation/mvp-0.1/video-slides.md --pdf -o docs/presentation/mvp-0.1/export/video-slides.pdf
+   ```
+
+2. Presentar a pantalla completa. El guion abre con la tabla **bloque → láminas** (17 láminas sobre 8 bloques).
+3. Leer [guion-video-arquitectura.md](guion-video-arquitectura.md) en voz alta; no improvisar listas de ADRs.
+
+Las láminas del vídeo llevan **más detalle que la locución** a propósito: identificadores de ADR y spec, semántica exacta de HR-01…03, grafo de dependencias y cadena de trazabilidad. Quien escucha sigue el argumento; quien pausa puede verificarlo. Las láminas 2, 6, 9 y 14 **no se narran**: se dejan en pantalla 2–3 s extra.
+
+Las cifras de la lámina 2 (20 specs, 7 ADRs, 61 worklogs, 13 contratos de agente…) son las del repositorio en la etiqueta `mvp-0.1`. Si se regraba más tarde, reverificarlas antes de exportar.
+
+## Setup de grabación (Fase 0.4)
+
+| Ítem | Recomendación |
+|------|----------------|
+| Imagen | 1080p; ventana de Marp/PDF a pantalla completa |
+| Audio | Micrófono cercano; habitación silenciosa |
+| Software | OBS, ShareX o grabador de Windows |
+| Archivo | `ShiftFlow-mvp-0.1-arquitectura-gobernanza.mp4` |
+| UI de la app | No grabar clics; opcional 10–15 s del dashboard Aspire en el bloque 3 (lámina 7) |
+
+## Tras el vídeo (Fase 4)
+
+Añadir aquí: fecha, duración real, URL (GitHub Releases u otro hosting) y SHA-256 del MP4. Una línea en `docs/runbook-local.md` apuntando a este README.
