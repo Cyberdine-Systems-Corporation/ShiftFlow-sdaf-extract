@@ -6,7 +6,7 @@
 | Prioridad | 12 |
 | Specs | SPEC-PRD-001 (C-PRE), handbook §4.5 |
 | DoD | Deck en `docs/presentation/mvp-0.1/` + vídeo referenciado (8–10 min) |
-| Estado | Guion + 17 láminas de vídeo + deck de producto con capturas y exports; pendiente grabación y URL del MP4 |
+| Estado | Hecho (release [`mvp-0.1`](https://github.com/mortiz-iadev/ShiftFlow/releases/tag/mvp-0.1); vídeo + PPTX de producto) |
 | Audiencia vídeo | Evaluador de máster en desarrollo asistido por IA |
 
 ## Descripción
