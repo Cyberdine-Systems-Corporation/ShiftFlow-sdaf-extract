@@ -4,18 +4,33 @@
 |--------|--------|
 | Spec | SPEC-PRD-001 (C-PRE), handbook 03 §4.5 |
 | PBI | [PBI-012](../../../backlog/PBI-012-presentacion-slides-video.md) |
-| Tag | `mvp-0.1` (2026-08-17, commit de freeze docs) |
+| Tag / release | [`mvp-0.1`](https://github.com/mortiz-iadev/ShiftFlow/releases/tag/mvp-0.1) (código 2026-08-17; assets de presentación 2026-08-21/22) |
 
-## Artefactos
+## Publicación (C-PRE)
+
+GitHub Releases **no reproduce** el MP4 en el navegador: hay que **descargarlo**.
+
+| Campo | Valor |
+|--------|--------|
+| Release | <https://github.com/mortiz-iadev/ShiftFlow/releases/tag/mvp-0.1> |
+| Vídeo | [`ShiftFlow-mvp-0.1-arquitectura-gobernanza.mp4`](https://github.com/mortiz-iadev/ShiftFlow/releases/download/mvp-0.1/ShiftFlow-mvp-0.1-arquitectura-gobernanza.mp4) |
+| Duración | 10:01 (1080p, H.264 + AAC; láminas + locución, sin cámara) |
+| SHA-256 (MP4) | `7c54313e8b340713190123f5a1f15b7ec7090abd020d9e9ab656653110da30b6` |
+| Deck de producto | [`ShiftFlow-mvp-0.1-producto.pptx`](https://github.com/mortiz-iadev/ShiftFlow/releases/download/mvp-0.1/ShiftFlow-mvp-0.1-producto.pptx) |
+| Fecha de assets | vídeo 2026-08-21 · PPTX 2026-08-22 |
+
+El vídeo cubre arquitectura y método (SDAF). El PPTX cubre el journey de la aplicación. Juntos cumplen handbook 03 §4.5.
+
+## Artefactos en el repo
 
 | Artefacto | Estado | Ruta |
 |-----------|--------|------|
-| **Vídeo** (arquitectura + método IA, 8–10 min) | Pendiente grabación | URL / checksum: *por rellenar tras exportar* |
+| **Vídeo** (arquitectura + método IA, 10:01) | Publicado en el release `mvp-0.1` | [descarga](https://github.com/mortiz-iadev/ShiftFlow/releases/download/mvp-0.1/ShiftFlow-mvp-0.1-arquitectura-gobernanza.mp4) |
 | Guion del vídeo | Listo | [guion-video-arquitectura.md](guion-video-arquitectura.md) |
-| Láminas del vídeo (17) | Fuente lista; PDF/PPTX en `export/` | [video-slides.md](video-slides.md) (Marp) |
-| **Deck de producto** (14 láminas, puente en la 5) | Fuente + capturas 01–07 | [product-slides.md](product-slides.md) (Marp) |
-| Exports (PDF / PPTX) | Regenerar el de producto tras embeber capturas | [export/](export/) |
-| Inventario de capturas | 01–07 hechas (2026-08-19) | [captures/README.md](captures/README.md) |
+| Láminas del vídeo (17) | Fuente + PDF/PPTX | [video-slides.md](video-slides.md) · [export/](export/) |
+| **Deck de producto** (14 láminas, puente en la 5) | Fuente + capturas 01–07 | [product-slides.md](product-slides.md) |
+| Exports (PDF / PPTX) | En `export/` y el PPTX de producto también en el release | [export/](export/) |
+| Inventario de capturas | 01–07 (2026-08-19) | [captures/README.md](captures/README.md) |
 
 Los dos artefactos son **complementarios**: el vídeo no sustituye el journey de la app; el deck no detalla SDAF. Juntos cubren Producto + Evolución + Arquitectura de handbook §4.5 (el puente es la lámina 5 del deck + el cierre del vídeo).
 
@@ -51,16 +66,6 @@ Las láminas del vídeo llevan **más detalle que la locución** a propósito: i
 
 Las cifras de la lámina 2 (20 specs, 7 ADRs, 61 worklogs, 13 contratos de agente…) son las del repositorio en la etiqueta `mvp-0.1`. Si se regraba más tarde, reverificarlas antes de exportar.
 
-## Setup de grabación (Fase 0.4)
+## Setup de grabación (histórico)
 
-| Ítem | Recomendación |
-|------|----------------|
-| Imagen | 1080p; ventana de Marp/PDF a pantalla completa |
-| Audio | Micrófono cercano; habitación silenciosa |
-| Software | OBS, ShareX o grabador de Windows |
-| Archivo | `ShiftFlow-mvp-0.1-arquitectura-gobernanza.mp4` |
-| UI de la app | No grabar clics; opcional 10–15 s del dashboard Aspire en el bloque 3 (lámina 7) |
-
-## Tras el vídeo (Fase 4)
-
-Añadir aquí: fecha, duración real, URL (GitHub Releases u otro hosting) y SHA-256 del MP4. Una línea en `docs/runbook-local.md` apuntando a este README.
+La locución se montó contra las 17 láminas (8 takes). El MP4 publicado es `ShiftFlow-mvp-0.1-arquitectura-gobernanza.mp4`. No grabar clics de la app.

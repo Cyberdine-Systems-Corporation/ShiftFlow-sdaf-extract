@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.6.0 |
-| Fecha | 2026-08-17 |
-| Relacionado | PBI-001…015, ADR-001, ADR-002, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG, SPEC-PRD-002, SPEC-PRD-003 0.2.0 |
+| Versión | 0.6.1 |
+| Fecha | 2026-08-22 |
+| Relacionado | PBI-001…015, ADR-001, ADR-002, ADR-004, ADR-005, ADR-007, C-LOC, C-AUTH, C-ORG, C-PRE, SPEC-PRD-002, SPEC-PRD-003 0.2.0 |
 
 ---
 
@@ -222,3 +222,9 @@ dotnet test ShiftFlow.sln
 ## 8. Usuario demo
 
 Ver §3 (usuario `demo.admin`, rol `Administrator`, contraseña vía user-secrets/env o default de desarrollo).
+
+---
+
+## 9. Presentación del MVP (C-PRE)
+
+Vídeo de arquitectura/gobernanza (10:01) y deck de producto: release [`mvp-0.1`](https://github.com/mortiz-iadev/ShiftFlow/releases/tag/mvp-0.1). El MP4 hay que **descargarlo** (GitHub no hace streaming). SHA-256 y detalle: [docs/presentation/mvp-0.1/README.md](presentation/mvp-0.1/README.md).
