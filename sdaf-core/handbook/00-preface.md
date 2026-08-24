@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.0 |
-| **Estado** | Draft |
+| **Versión** | 0.1.1 |
+| **Estado** | Approved |
 | **Fecha** | 2026-08-24 |
 | **Parte** | Front matter |
 | **Norma superior** | Ninguna (inaugura la constitución del método) |
@@ -98,4 +98,5 @@ Arquitecto / director técnico, Product Owner, desarrolladores, agentes IA del r
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Extracción genérica desde laboratorio SDAF (ADR-008) |

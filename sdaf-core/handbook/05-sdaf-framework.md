@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.0 |
-| **Estado** | Draft |
+| **Versión** | 0.1.1 |
+| **Estado** | Approved |
 | **Fecha** | 2026-08-24 |
 | **Parte** | II — SDAF |
 | **Norma superior** | [00-preface.md](00-preface.md) |
@@ -130,4 +130,5 @@ Este capítulo **debe** poder aplicarse a otro producto y otro stack con un hand
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Extracción genérica (ADR-008): norma de `specs/` y gobernanza de stack explícitas |

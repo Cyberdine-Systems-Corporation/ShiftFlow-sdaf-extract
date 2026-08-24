@@ -45,6 +45,6 @@ SDAF gobierna cómo un proyecto produce software con humanos y agentes IA:
 
 ## Estado
 
-Los capítulos del handbook de este core están en **Draft** hasta aprobación humana como constitución de `sdaf-core` (no confundir con el handbook Approved de ShiftFlow).
+Handbook del método: **Approved** (v0.1.1). Agentes, prompts y skills del árbol siguen en Draft hasta aprobación aparte. El destino estable sigue siendo publicar el repo `sdaf-core@0.1.0`.
 
 Norma de extracción: [ADR-008](../architecture/decisions/ADR-008-extraccion-sdaf-core.md).

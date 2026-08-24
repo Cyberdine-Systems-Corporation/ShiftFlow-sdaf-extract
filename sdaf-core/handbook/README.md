@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Idioma | Español |
 | Clasificación | Constitución del método (no del producto) |
 | Última actualización | 2026-08-24 |
@@ -48,32 +48,32 @@ Los **prompts**, **skills** y **worklogs** son infraestructura de ingeniería, n
 
 | Cap. | Archivo | Título | Estado |
 |------|---------|--------|--------|
-| 00 | [00-preface.md](00-preface.md) | Preface | Draft |
+| 00 | [00-preface.md](00-preface.md) | Preface | Approved |
 
 ### Parte II — SDAF
 
 | Cap. | Archivo | Título | Estado |
 |------|---------|--------|--------|
-| 05 | [05-sdaf-framework.md](05-sdaf-framework.md) | SDAF Framework | Draft |
-| 06 | [06-engineering-principles.md](06-engineering-principles.md) | Engineering Principles | Draft |
-| 07 | [07-repository-organization.md](07-repository-organization.md) | Repository Organization | Draft |
-| 08 | [08-specification-standard.md](08-specification-standard.md) | Specification Standard | Draft |
-| 09 | [09-development-workflow.md](09-development-workflow.md) | Development Workflow | Draft |
+| 05 | [05-sdaf-framework.md](05-sdaf-framework.md) | SDAF Framework | Approved |
+| 06 | [06-engineering-principles.md](06-engineering-principles.md) | Engineering Principles | Approved |
+| 07 | [07-repository-organization.md](07-repository-organization.md) | Repository Organization | Approved |
+| 08 | [08-specification-standard.md](08-specification-standard.md) | Specification Standard | Approved |
+| 09 | [09-development-workflow.md](09-development-workflow.md) | Development Workflow | Approved |
 
 ### Parte IV — Ingeniería IA
 
 | Cap. | Archivo | Título | Estado |
 |------|---------|--------|--------|
-| 13 | [13-ai-agent-framework.md](13-ai-agent-framework.md) | AI Agent Framework | Draft |
-| 14 | [14-prompt-engineering-standard.md](14-prompt-engineering-standard.md) | Prompt Engineering Standard | Draft |
-| 15 | [15-agent-traceability.md](15-agent-traceability.md) | Agent Traceability Framework | Draft |
+| 13 | [13-ai-agent-framework.md](13-ai-agent-framework.md) | AI Agent Framework | Approved |
+| 14 | [14-prompt-engineering-standard.md](14-prompt-engineering-standard.md) | Prompt Engineering Standard | Approved |
+| 15 | [15-agent-traceability.md](15-agent-traceability.md) | Agent Traceability Framework | Approved |
 
 ### Apéndices
 
 | Cap. | Archivo | Título | Estado |
 |------|---------|--------|--------|
-| B | [B-templates.md](B-templates.md) | Templates | Draft |
-| — | [CHANGELOG.md](CHANGELOG.md) | Historial de versiones | Draft |
+| B | [B-templates.md](B-templates.md) | Templates | Approved |
+| — | [CHANGELOG.md](CHANGELOG.md) | Historial de versiones | Approved |
 
 **Fuera de v0.1 (consumidor o v0.2+):** Parte I (producto), Parte III (arquitectura de solución), Parte V (testing/devops/security detallados), Parte VI (métricas de sprint), glosario de dominio.
 
