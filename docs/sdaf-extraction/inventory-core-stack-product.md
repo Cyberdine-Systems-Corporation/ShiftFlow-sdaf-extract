@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| Fecha | 2026-08-22 |
-| Estado | Draft revisado (acompaña ADR-008 Propuesto v0.1.1) |
+| Fecha | 2026-08-24 |
+| Estado | Approved (acompaña ADR-008 Aceptado v0.1.2) |
 | Repo | `ShiftFlow-sdaf-extract` (laboratorio) |
 | Norma | [ADR-008](../../architecture/decisions/ADR-008-extraccion-sdaf-core.md) |
 
@@ -165,5 +165,6 @@ Aplazar a v0.2+: Partes V (16–18, 20) tras scrub, pack stack, template de proy
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-24 | Approved junto con ADR-008 Aceptado |
 | 0.1.1 | 2026-08-22 | Revisión: principios norma specs + gobernanza stack |
 | 0.1.0 | 2026-08-22 | Inventario inicial en laboratorio |

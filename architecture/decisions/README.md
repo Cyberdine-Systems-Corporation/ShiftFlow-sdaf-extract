@@ -9,7 +9,9 @@
 | [ADR-005](ADR-005-auth-basica-mvp.md) | Auth básica (Identity + cookie); código en PBI-002 | Aceptado |
 | [ADR-006](ADR-006-coding-standards.md) | Estándares de código (regiones, comentarios, XML docs, tipado explícito) | Aceptado |
 | [ADR-007](ADR-007-ef-migrations.md) | Evolución de esquema con migraciones EF Core | Aceptado (PBI-014) |
+| [ADR-008](ADR-008-extraccion-sdaf-core.md) | Extracción de SDAF a núcleo reutilizable (`sdaf-core`) | Aceptado (laboratorio fork) |
 
 Sprint 0–1 (ADRs de stack, cliente, motores, layout, auth, coding standards): **completo a nivel de decisión**.  
 Implementación de auth: **PBI-002** (no implícita en ADR-005).  
-Migraciones EF (diferido de ADR-004): **ADR-007** Aceptado; código en **PBI-014**.
+Migraciones EF (diferido de ADR-004): **ADR-007** Aceptado; código en **PBI-014**.  
+Extracción SDAF (laboratorio de este fork): **ADR-008** Aceptado; siguiente scrub → `sdaf-core@0.1.0`.
