@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |--------|--------|
-| Estado | Propuesto |
+| Estado | Aceptado |
 | Fecha | 2026-08-22 |
 | Decisores | Director técnico (humano) |
 | Relacionado | `handbook/05-sdaf-framework.md` §8, `handbook/07-repository-organization.md`, `skills/README.md`, worklog `skills-sdaf-portable`, fork `ShiftFlow-sdaf-extract` |
@@ -71,7 +71,7 @@ Se necesita un núcleo de gobernanza reusable sin alterar el repo origen del MVP
 - Los proyectos consumidores necesitarán un mecanismo de upgrade (submodule, subtree o release copy) documentado más adelante.
 
 ### Seguimiento
-1. Aprobar este ADR (humano).
+1. ~~Aprobar este ADR (humano).~~ Hecho el 2026-08-24 (aprobación explícita del director técnico).
 2. Completar scrub y publicar `sdaf-core@0.1.0` desde el trabajo de este fork.
 3. (Opcional) `sdaf-stack-dotnet` y `sdaf-project-template`.
 4. Decidir adopción en el origen ShiftFlow en un ADR posterior.
@@ -84,9 +84,18 @@ Se necesita un núcleo de gobernanza reusable sin alterar el repo origen del MVP
 | Resultado | Coherente con opción C; listo para aprobación humana (paso 3) |
 | Ajustes | Explicitar norma `specs/` como verdad operativa del consumidor; stack concreto fuera / gobernanza de stack dentro |
 
+## Aprobación
+
+| Campo | Valor |
+|--------|--------|
+| Fecha | 2026-08-24 |
+| Decisor | Director técnico (humano, vía chat) |
+| Resultado | ADR-008 **Aceptado**. Siguiente: scrub y bootstrap `sdaf-core@0.1.0`. |
+
 ## Historial
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.2 | 2026-08-24 | Estado Aceptado (aprobación humana) |
 | 0.1.1 | 2026-08-22 | Revisión: norma specs + gobernanza de stack vs contenido excluido |
 | 0.1.0 | 2026-08-22 | Propuesta inicial en fork `ShiftFlow-sdaf-extract` |
