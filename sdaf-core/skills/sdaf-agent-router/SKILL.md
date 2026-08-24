@@ -8,8 +8,8 @@ description: Resuelve qué agente SDAF debe actuar leyendo AGENTS.md y el contra
 | Campo | Valor |
 |--------|--------|
 | ID | sdaf-agent-router |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Prioridad | alta |
 | Fecha | 2026-08-24 |
 | Norma | [AGENTS.md.template](../../AGENTS.md.template), [handbook/13](../../handbook/13-ai-agent-framework.md) |

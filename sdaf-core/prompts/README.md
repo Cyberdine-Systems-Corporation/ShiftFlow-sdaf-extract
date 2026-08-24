@@ -10,3 +10,5 @@ Router: `AGENTS.md.template`.
 | `system/` | master-architect |
 | `agents/` | prompts base (activos + stubs) |
 | `documentation/` | handbook, specification, adr authors |
+
+Los prompts de la biblioteca están **Approved** (v0.1.1). Citar `ID@version` en worklogs.

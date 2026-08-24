@@ -8,8 +8,8 @@ description: Redacta o actualiza specs Draft (DOM/APP/ACC), índices y backlog s
 | Campo | Valor |
 |--------|--------|
 | ID | spec-draft-pbi |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Prioridad | media |
 | Fecha | 2026-08-24 |
 | Norma | [handbook/08](../../handbook/08-specification-standard.md) |
@@ -24,7 +24,7 @@ description: Redacta o actualiza specs Draft (DOM/APP/ACC), índices y backlog s
 2. Usar [templates/spec.md](../../templates/spec.md) / H08: contexto, alcance, acceptance, Out.
 3. Estado **Draft**; versionar según H08.
 4. Actualizar índices en `specs/**` y enlace en `backlog/` (no fingir Approved).
-5. Worklog Specification + `spec-draft-pbi@0.1.0`.
+5. Worklog Specification + `spec-draft-pbi@0.1.1`.
 6. Siguiente agente: **humano** (aprobación) o Architecture si falta ADR.
 
 ## Definition of Done

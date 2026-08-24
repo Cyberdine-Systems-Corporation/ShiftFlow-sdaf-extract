@@ -3,8 +3,8 @@
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-SPEC-001 |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Agente / rol | Specification |
 | Fecha | 2026-08-24 |
 
@@ -47,4 +47,5 @@ Cumple cap. 08; trazable a knowledge/handbook; Out explícito.
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Extracción genérica (ADR-008) |

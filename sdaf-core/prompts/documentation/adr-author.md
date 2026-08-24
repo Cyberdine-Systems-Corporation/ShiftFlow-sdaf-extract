@@ -3,8 +3,8 @@
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-DOC-ADR-001 |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Agente / rol | documentation |
 | Fecha | 2026-08-24 |
 
@@ -40,4 +40,5 @@ Plantilla completa; historial o índice actualizado.
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Extracción genérica |
