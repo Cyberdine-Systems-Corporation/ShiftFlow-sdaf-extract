@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.0 |
-| **Estado** | Draft |
+| **Versión** | 0.1.1 |
+| **Estado** | Approved |
 | **Fecha** | 2026-08-24 |
 | **Parte** | IV — Ingeniería IA |
 | **Norma superior** | [13-ai-agent-framework.md](13-ai-agent-framework.md), [07-repository-organization.md](07-repository-organization.md) |
@@ -89,4 +89,5 @@ Prompts = rol; skills = playbooks de flujo. Enlazar `skills/<id>/SKILL.md`; no p
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Extracción genérica (ADR-008) |

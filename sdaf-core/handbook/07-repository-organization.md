@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.0 |
-| **Estado** | Draft |
+| **Versión** | 0.1.1 |
+| **Estado** | Approved |
 | **Fecha** | 2026-08-24 |
 | **Parte** | II — SDAF |
 | **Norma superior** | [05-sdaf-framework.md](05-sdaf-framework.md) |
@@ -107,4 +107,5 @@ Si el código descubre un error de spec: se enmienda la spec (y el test), no se 
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Árbol genérico; sin asumir runtime concreto (ADR-008) |

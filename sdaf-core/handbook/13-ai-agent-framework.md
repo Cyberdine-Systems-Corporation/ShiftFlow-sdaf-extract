@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.0 |
-| **Estado** | Draft |
+| **Versión** | 0.1.1 |
+| **Estado** | Approved |
 | **Fecha** | 2026-08-24 |
 | **Parte** | IV — Ingeniería IA |
 | **Norma superior** | [05-sdaf-framework.md](05-sdaf-framework.md), [09-development-workflow.md](09-development-workflow.md) |
@@ -107,4 +107,5 @@ Catálogo core (prioridad alta/media): `sdaf-gate0`, `sdaf-worklog-handoff`, `sd
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Agentes genéricos; implementación de stack fuera del core (ADR-008) |

@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| **Versión** | 0.1.0 |
-| **Estado** | Draft |
+| **Versión** | 0.1.1 |
+| **Estado** | Approved |
 | **Fecha** | 2026-08-24 |
 | **Parte** | II — SDAF |
 | **Norma superior** | [05-sdaf-framework.md](05-sdaf-framework.md), [08-specification-standard.md](08-specification-standard.md), [06-engineering-principles.md](06-engineering-principles.md) |
@@ -111,4 +111,5 @@ Debe registrarse, revertirse o regularizarse (spec retroactiva **prohibida** com
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Gates genéricos; sin roles de stack concreto (ADR-008) |
