@@ -3,8 +3,8 @@
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-STUB |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Agente / rol | stub |
 | Fecha | 2026-08-24 |
 
@@ -36,4 +36,5 @@ Encargo explícito registrado; worklog cerrado.
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Stub genérico del core |

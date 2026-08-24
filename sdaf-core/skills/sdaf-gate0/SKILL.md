@@ -8,8 +8,8 @@ description: Verifica Gate 0 (specs Approved, acceptance, ADR si aplica, backlog
 | Campo | Valor |
 |--------|--------|
 | ID | sdaf-gate0 |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Prioridad | alta |
 | Fecha | 2026-08-24 |
 | Norma | [handbook/09](../../handbook/09-development-workflow.md) §3 |
@@ -28,7 +28,7 @@ description: Verifica Gate 0 (specs Approved, acceptance, ADR si aplica, backlog
 5. Comprobar **G0.4**: PBI enlazado a specs.
 6. Comprobar **G0.5**: worklog de iteración iniciado (`worklogs/...`).
 7. Si falta algún ítem → **STOP**. Listar gaps; no implementar producto. Ofrecer solo docs/specs/ADR Draft.
-8. Si todo OK → registrar `sdaf-gate0@0.1.0` en worklog y continuar con el agente de implementación.
+8. Si todo OK → registrar `sdaf-gate0@0.1.1` en worklog y continuar con el agente de implementación.
 
 ## Definition of Done
 

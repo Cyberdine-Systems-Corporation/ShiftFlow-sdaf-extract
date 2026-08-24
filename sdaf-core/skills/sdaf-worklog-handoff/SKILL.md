@@ -8,8 +8,8 @@ description: Cierra o inicia iteraciones ATF y handoffs entre agentes con planti
 | Campo | Valor |
 |--------|--------|
 | ID | sdaf-worklog-handoff |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Prioridad | alta |
 | Fecha | 2026-08-24 |
 | Norma | [handbook/15](../../handbook/15-agent-traceability.md) |

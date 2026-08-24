@@ -3,8 +3,8 @@
 | Campo | Valor |
 |--------|--------|
 | ID | PROMPT-AGT-TESTREV-001 |
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Agente / rol | Testing+Review |
 | Fecha | 2026-08-24 |
 
@@ -42,4 +42,5 @@ Trazabilidad AC→test; checklist de review del consumidor cubierto si aplica.
 
 | Versión | Fecha | Cambio |
 |---------|--------|--------|
+| 0.1.1 | 2026-08-24 | Approved (aprobación humana del director técnico) |
 | 0.1.0 | 2026-08-24 | Extracción genérica; coding standards de stack fuera del core (ADR-008) |

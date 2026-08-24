@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |--------|--------|
-| Versión | 0.1.0 |
-| Estado | Draft |
+| Versión | 0.1.1 |
+| Estado | Approved |
 | Fecha | 2026-08-24 |
 | Modo | stub |
 | Prompt base | `prompts/agents/product-agent.md` |

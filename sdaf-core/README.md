@@ -45,6 +45,9 @@ SDAF gobierna cómo un proyecto produce software con humanos y agentes IA:
 
 ## Estado
 
-Handbook del método: **Approved** (v0.1.1). Agentes, prompts y skills del árbol siguen en Draft hasta aprobación aparte. El destino estable sigue siendo publicar el repo `sdaf-core@0.1.0`.
+- Handbook del método: **Approved** (v0.1.1)
+- Agentes, prompts y skills: **Approved** (v0.1.1)
+
+Listo para publicar el repo `sdaf-core@0.1.0` (tag de release del árbol; versiones internas de capítulos/ops en 0.1.1).
 
 Norma de extracción: [ADR-008](../architecture/decisions/ADR-008-extraccion-sdaf-core.md).
